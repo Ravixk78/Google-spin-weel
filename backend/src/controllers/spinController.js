@@ -74,12 +74,8 @@ const executeCustomerSpin = async (req, res) => {
 
     // B. Decrement Prize Stock
     await runQuery(`
-      UPDATE invoices SET updated_at = CURRENT_TIMESTAMP WHERE id = ?
-    `, [invoice.id]);
-
-    await runQuery(`
       UPDATE spin_prizes
-      SET stock_quantity = stock_quantity - 1, updated_at = CURRENT_TIMESTAMP
+      SET stock_quantity = stock_quantity - 1
       WHERE id = ?
     `, [selectedPrize.id]);
 
