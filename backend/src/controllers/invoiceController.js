@@ -12,55 +12,62 @@ const validateInvoiceForCustomer = async (req, res) => {
 
     const cleanInvoice = invoice_number.trim().toUpperCase();
 
-    // 1. Check invoice exists
-    const invoice = await getQuery(`
+    // Fetch branch info
+    const branch = await getQuery(`SELECT * FROM branches WHERE id = ?`, [branch_id]);
+    if (!branch) {
+      return res.status(404).json({ error: 'Invalid store branch.' });
+    }
+
+    // 1. Check if invoice exists in DB
+    let invoice = await getQuery(`
       SELECT i.*, b.name as branch_name, b.code as branch_code
       FROM invoices i
       JOIN branches b ON i.branch_id = b.id
       WHERE UPPER(i.invoice_number) = ?
     `, [cleanInvoice]);
 
+    // 2. Check if invoice has already been used in spin_history
+    const alreadySpun = await getQuery(`SELECT id FROM spin_history WHERE UPPER(invoice_number_snapshot) = ? OR invoice_id IN (SELECT id FROM invoices WHERE UPPER(invoice_number) = ?)`, [cleanInvoice, cleanInvoice]);
+    if (alreadySpun || (invoice && invoice.is_used === 1)) {
+      return res.status(400).json({
+        valid: false,
+        error: 'This invoice receipt has already been used for a review reward spin.'
+      });
+    }
+
+    // 3. If invoice not pre-uploaded, auto-create it on-the-fly if it matches basic store format (or any non-empty invoice string)
     if (!invoice) {
-      return res.status(404).json({
-        valid: false,
-        error: 'Invoice not found. Please check your invoice receipt and try again.'
-      });
-    }
-
-    // 2. Check belongs to detected branch
-    if (Number(invoice.branch_id) !== Number(branch_id)) {
-      return res.status(400).json({
-        valid: false,
-        error: `This invoice belongs to ${invoice.branch_name}. It cannot be used at this branch.`
-      });
-    }
-
-    // 3. Check if invoice has already been used
-    if (invoice.is_used === 1) {
-      return res.status(400).json({
-        valid: false,
-        error: 'This invoice has already been used for a review reward spin.'
-      });
-    }
-
-    // 4. Check eligibility status
-    if (invoice.status !== 'ELIGIBLE') {
-      return res.status(400).json({
-        valid: false,
-        error: `Invoice status is ${invoice.status}. This invoice is not eligible for rewards.`
-      });
-    }
-
-    // 5. Check expiration date if set
-    if (invoice.expiry_date) {
-      const expiry = new Date(invoice.expiry_date);
-      const today = new Date();
-      if (expiry < today) {
+      // Basic branch prefix or format check (e.g. at least 3 chars)
+      if (cleanInvoice.length < 3) {
         return res.status(400).json({
           valid: false,
-          error: 'This invoice has expired and is no longer eligible.'
+          error: 'Invalid invoice number format. Please enter full invoice reference.'
         });
       }
+
+      // Check if invoice belongs to a different branch if it has explicit prefix
+      if (cleanInvoice.includes('-') || cleanInvoice.includes('/')) {
+        const prefix = cleanInvoice.split(/[-/]/)[0].toLowerCase();
+        if (prefix !== branch.code && ['kalba', 'rak', 'sharjah', 'shj'].includes(prefix) && prefix !== 'inv') {
+          return res.status(400).json({
+            valid: false,
+            error: `This invoice appears to belong to another branch. Current branch is ${branch.name}.`
+          });
+        }
+      }
+
+      // Auto-register invoice on the fly
+      const result = await runQuery(`
+        INSERT INTO invoices (invoice_number, branch_id, amount, is_used, status)
+        VALUES (?, ?, 0, 0, 'ELIGIBLE')
+      `, [cleanInvoice, branch_id]);
+
+      invoice = await getQuery(`
+        SELECT i.*, b.name as branch_name, b.code as branch_code
+        FROM invoices i
+        JOIN branches b ON i.branch_id = b.id
+        WHERE i.id = ?
+      `, [result.id]);
     }
 
     return res.json({
