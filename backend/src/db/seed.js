@@ -23,21 +23,21 @@ const seedDatabase = async () => {
         code: 'kalba',
         name: 'Kalba Branch',
         address: 'Al Corniche Road, Kalba, Sharjah, UAE',
-        google_review_url: 'https://share.google/e6vk5RQNhaebwLv7g',
+        google_review_url: 'https://www.google.com/search?hs=XR0&hl=en-ae&cs=0&output=search&kgmid=/g/11ft04f93y&q=Majlis+al+oud+perfumes&shem=epsd1,ltae,rimspwouoe&shndl=30&kgs=6c16b7d4caf3213a#lrd=0x3ef4fba036b45999:0x7d6143ac6320b799,3,,,,',
         qr_code_token: 'QR-KALBA-2026-TOKEN982'
       },
       {
         code: 'rak',
         name: 'Ras Al Khaimah (RAK) Branch',
         address: 'Al Manama - Ras Al Khaimah Rd, RAK, UAE',
-        google_review_url: 'https://www.google.com/search?client=safari&hs=XR0&sca_esv=90e2c0afef9b02c9&hl=en-ae&sxsrf=APpeQnt8_hxJwVjb4FZF9eJEF5JX3s8vxQ%3A1785217352255&kgmid=%2Fg%2F11sjgr19wg&q=Majlis%20al%20oud%20perfumes%20RAK&shem=epsd1%2Cltae%2Crimspwouoe&shndl=30&source=sh%2Fx%2Floc%2Fact%2Fm1%2F3&kgs=a5fbe012433e15c1',
+        google_review_url: 'https://www.google.com/search?hs=XR0&hl=en-ae&sxsrf=APpeQnt8_hxJwVjb4FZF9eJEF5JX3s8vxQ%3A1785217352255&kgmid=%2Fg%2F11sjgr19wg&q=Majlis%20al%20oud%20perfumes%20RAK&shem=epsd1%2Cltae%2Crimspwouoe&shndl=30&source=sh%2Fx%2Floc%2Act%2Fm1%2F3&kgs=a5fbe012433e15c1#lrd=0x3ef6713486344a03:0x25fcef74095f2e18,3,,,,',
         qr_code_token: 'QR-RAK-2026-TOKEN541'
       },
       {
         code: 'sharjah',
         name: 'Halwan Sharjah Branch',
         address: 'Halwan Sub-District, Wasit Street, Sharjah, UAE',
-        google_review_url: 'https://share.google/wUVh216KL5Vl07pf8',
+        google_review_url: 'https://www.google.com/search?hs=p6Kq&hl=en-ae&cs=0&output=search&kgmid=/g/11yswkrg8k&q=Majlis+al+oud+Perfumes+halwan+/+%D9%85%D8%AC%D9%84%D8%B3+%D8%A7%D9%84%D8%B9%D9%88%D8%AF+%D9%84%D9%84%D8%B9%D8%B7%D9%88%D8%B1+%D8%B3%D9%85%D9%86%D8%A7%D9%86&shem=epsd1,ltae,rimspwouoe&shndl=30&kgs=35a84132b1e92ed3#lrd=0x3e5f598cfc8be895:0x3c1745876fc25a92,3,,,,',
         qr_code_token: 'QR-SHARJAH-2026-TOKEN773'
       }
     ];
