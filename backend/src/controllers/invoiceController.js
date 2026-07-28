@@ -37,9 +37,8 @@ const validateInvoiceForCustomer = async (req, res) => {
     // 2. Check if invoice has already been used in spin_history
     const alreadySpun = await getQuery(`
       SELECT id FROM spin_history 
-      WHERE UPPER(invoice_number_snapshot) = ? 
-         OR invoice_id IN (SELECT id FROM invoices WHERE UPPER(invoice_number) = ?)
-    `, [cleanInvoice, cleanInvoice]);
+      WHERE invoice_id IN (SELECT id FROM invoices WHERE UPPER(invoice_number) = ?)
+    `, [cleanInvoice]);
 
     if (alreadySpun || (invoice && invoice.is_used === 1)) {
       return res.status(400).json({
