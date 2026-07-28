@@ -52,24 +52,7 @@ const Navbar = () => {
             {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
 
-          {/* Admin Panel Link (Only when logged in as admin) */}
-          {adminUser && (
-            <div className="flex items-center gap-3">
-              <Link
-                to="/admin/dashboard"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gold-400/10 border border-gold-400/30 text-gold-300 text-xs font-semibold hover:bg-gold-400/20 transition-all"
-              >
-                <ShieldCheck className="w-4 h-4" /> Admin Panel
-              </Link>
-              <button
-                onClick={() => { logoutAdmin(); navigate('/admin/login'); }}
-                className="p-2 text-slate-400 hover:text-rose-400 transition-colors"
-                title="Logout Admin"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          )}
+
 
         </div>
 

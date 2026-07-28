@@ -4,8 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import { ShieldCheck, Lock, Mail, ArrowRight } from 'lucide-react';
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState('admin@majlisaloud.ae');
-  const [password, setPassword] = useState('Admin@123456');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -59,7 +59,7 @@ const AdminLogin = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-9 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-gold-400"
-                placeholder="admin@majlisaloud.ae"
+                placeholder="Enter admin email..."
                 required
               />
             </div>
@@ -74,7 +74,7 @@ const AdminLogin = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-9 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-gold-400"
-                placeholder="••••••••"
+                placeholder="Enter password..."
                 required
               />
             </div>
@@ -88,10 +88,6 @@ const AdminLogin = () => {
             {loading ? 'Authenticating...' : 'Sign In to Super Admin Panel'} <ArrowRight className="w-4 h-4" />
           </button>
         </form>
-
-        <div className="mt-6 pt-4 border-t border-slate-800 text-center text-xs text-slate-500">
-          Default Admin: <span className="text-slate-300 font-mono">admin@majlisaloud.ae</span>
-        </div>
 
       </div>
     </div>
