@@ -284,21 +284,7 @@ const CustomerFlow = () => {
             </button>
           </form>
 
-          {/* Quick Demo Assist */}
-          <div className="mt-6 pt-4 border-t border-slate-800 text-xs text-slate-400 text-left">
-            <p className="font-semibold text-gold-400 mb-1">Sample Test Invoices:</p>
-            <div className="flex flex-wrap gap-2 mt-1 font-mono text-[11px]">
-              {detectedBranch?.code === 'kalba' && ['INV-KALBA-1001', 'INV-KALBA-1002'].map(inv => (
-                <button key={inv} onClick={() => setInvoiceNumber(inv)} className="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 border border-slate-700">{inv}</button>
-              ))}
-              {detectedBranch?.code === 'rak' && ['INV-RAK-2001', 'INV-RAK-2002'].map(inv => (
-                <button key={inv} onClick={() => setInvoiceNumber(inv)} className="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 border border-slate-700">{inv}</button>
-              ))}
-              {detectedBranch?.code === 'sharjah' && ['INV-SHJ-3001', 'INV-SHJ-3002'].map(inv => (
-                <button key={inv} onClick={() => setInvoiceNumber(inv)} className="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 border border-slate-700">{inv}</button>
-              ))}
-            </div>
-          </div>
+
         </div>
       )}
 

@@ -52,8 +52,8 @@ const Navbar = () => {
             {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
 
-          {/* Admin Navigation Button */}
-          {adminUser ? (
+          {/* Admin Panel Link (Only when logged in as admin) */}
+          {adminUser && (
             <div className="flex items-center gap-3">
               <Link
                 to="/admin/dashboard"
@@ -69,13 +69,6 @@ const Navbar = () => {
                 <LogOut className="w-4 h-4" />
               </button>
             </div>
-          ) : (
-            <Link
-              to="/admin/login"
-              className="text-xs text-slate-400 hover:text-gold-400 transition-colors flex items-center gap-1"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" /> Staff Login
-            </Link>
           )}
 
         </div>
