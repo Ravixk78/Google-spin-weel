@@ -23,21 +23,21 @@ const seedDatabase = async () => {
         code: 'kalba',
         name: 'Kalba Branch',
         address: 'Al Corniche Road, Kalba, Sharjah, UAE',
-        google_review_url: 'https://g.page/r/kalba-branch-majlisaloud/review',
+        google_review_url: 'https://share.google/e6vk5RQNhaebwLv7g',
         qr_code_token: 'QR-KALBA-2026-TOKEN982'
       },
       {
         code: 'rak',
         name: 'Ras Al Khaimah (RAK) Branch',
         address: 'Al Manama - Ras Al Khaimah Rd, RAK, UAE',
-        google_review_url: 'https://g.page/r/rak-branch-majlisaloud/review',
+        google_review_url: 'https://www.google.com/search?client=safari&hs=XR0&sca_esv=90e2c0afef9b02c9&hl=en-ae&sxsrf=APpeQnt8_hxJwVjb4FZF9eJEF5JX3s8vxQ%3A1785217352255&kgmid=%2Fg%2F11sjgr19wg&q=Majlis%20al%20oud%20perfumes%20RAK&shem=epsd1%2Cltae%2Crimspwouoe&shndl=30&source=sh%2Fx%2Floc%2Fact%2Fm1%2F3&kgs=a5fbe012433e15c1',
         qr_code_token: 'QR-RAK-2026-TOKEN541'
       },
       {
         code: 'sharjah',
         name: 'Halwan Sharjah Branch',
         address: 'Halwan Sub-District, Wasit Street, Sharjah, UAE',
-        google_review_url: 'https://g.page/r/sharjah-branch-majlisaloud/review',
+        google_review_url: 'https://share.google/wUVh216KL5Vl07pf8',
         qr_code_token: 'QR-SHARJAH-2026-TOKEN773'
       }
     ];
