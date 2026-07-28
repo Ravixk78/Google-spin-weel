@@ -102,21 +102,18 @@ const CustomerFlow = () => {
     }
   };
 
-  // Step 7: Open Google Business Review Page
+  // Step 7: Open Google Business Review Page & Auto Proceed to Spin Wheel
   const handleOpenGoogleReview = () => {
     if (!detectedBranch?.google_review_url) return;
 
     // Open branch specific Google review URL in new tab
     window.open(detectedBranch.google_review_url, '_blank');
     setReviewOpened(true);
-  };
-
-  const handleCompleteReviewAndProceed = () => {
-    if (!reviewOpened) {
-      alert('Please click the "Leave a Google Review" button first to rate our branch on Google Business!');
-      return;
-    }
-    setCurrentStep(4); // Proceed to Spin Wheel!
+    
+    // Auto-advance to Spin Wheel step immediately
+    setTimeout(() => {
+      setCurrentStep(4);
+    }, 600);
   };
 
   // Step 8: Trigger Server-side Weighted Spin
