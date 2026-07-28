@@ -1,0 +1,12 @@
+{
+  "name": "majlis-al-oud-system",
+  "version": "1.0.0",
+  "description": "Majlis Al Oud Google Review Reward System - Fullstack Enterprise Platform",
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "seed": "npm --prefix backend run seed",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build"
+  }
+}

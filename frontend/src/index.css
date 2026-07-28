@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-luxury-dark text-slate-100 font-sans antialiased min-h-screen overflow-x-hidden;
+  }
+}
+
+/* Glassmorphism Cards */
+.glass-panel {
+  background: rgba(18, 21, 25, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.glass-gold-glow {
+  box-shadow: 0 0 30px -5px rgba(212, 175, 55, 0.25);
+}
+
+/* Metallic Gold Button */
+.btn-gold {
+  background: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 50%, #AA7C11 100%);
+  color: #0A0C0E;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.btn-gold:hover {
+  background: linear-gradient(135deg, #FFF0B8 0%, #E6C687 50%, #C5A059 100%);
+  box-shadow: 0 6px 25px rgba(212, 175, 55, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-gold:active {
+  transform: translateY(1px);
+}
+
+/* Gold Text Gradient */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #FFF0B8 0%, #D4AF37 50%, #AA7C11 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0D0F;
+}
+::-webkit-scrollbar-thumb {
+  background: #232830;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D4AF37;
+}
