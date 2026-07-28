@@ -6,17 +6,25 @@ const validateInvoiceForCustomer = async (req, res) => {
   try {
     const { invoice_number, branch_id } = req.body;
 
-    if (!invoice_number || !branch_id) {
-      return res.status(400).json({ error: 'Invoice number and Branch ID are required.' });
+    if (!invoice_number || !invoice_number.trim()) {
+      return res.status(400).json({ error: 'Invoice number is required.' });
     }
 
     const cleanInvoice = invoice_number.trim().toUpperCase();
 
-    // Fetch branch info
-    const branch = await getQuery(`SELECT * FROM branches WHERE id = ?`, [branch_id]);
-    if (!branch) {
-      return res.status(404).json({ error: 'Invalid store branch.' });
+    // Fetch branch info or fallback to first active branch
+    let branch = null;
+    if (branch_id) {
+      branch = await getQuery(`SELECT * FROM branches WHERE id = ?`, [branch_id]);
     }
+    if (!branch) {
+      branch = await getQuery(`SELECT * FROM branches WHERE status = 'ACTIVE' LIMIT 1`);
+    }
+    if (!branch) {
+      branch = { id: 1, name: 'Kalba Branch', code: 'kalba' };
+    }
+
+    const activeBranchId = branch.id;
 
     // 1. Check if invoice exists in DB
     let invoice = await getQuery(`
@@ -27,7 +35,12 @@ const validateInvoiceForCustomer = async (req, res) => {
     `, [cleanInvoice]);
 
     // 2. Check if invoice has already been used in spin_history
-    const alreadySpun = await getQuery(`SELECT id FROM spin_history WHERE UPPER(invoice_number_snapshot) = ? OR invoice_id IN (SELECT id FROM invoices WHERE UPPER(invoice_number) = ?)`, [cleanInvoice, cleanInvoice]);
+    const alreadySpun = await getQuery(`
+      SELECT id FROM spin_history 
+      WHERE UPPER(invoice_number_snapshot) = ? 
+         OR invoice_id IN (SELECT id FROM invoices WHERE UPPER(invoice_number) = ?)
+    `, [cleanInvoice, cleanInvoice]);
+
     if (alreadySpun || (invoice && invoice.is_used === 1)) {
       return res.status(400).json({
         valid: false,
@@ -35,32 +48,16 @@ const validateInvoiceForCustomer = async (req, res) => {
       });
     }
 
-    // 3. If invoice not pre-uploaded, auto-create it on-the-fly if it matches basic store format (or any non-empty invoice string)
+    // 3. If invoice not pre-uploaded, auto-create it on-the-fly
     if (!invoice) {
-      // Basic branch prefix or format check (e.g. at least 3 chars)
-      if (cleanInvoice.length < 3) {
-        return res.status(400).json({
-          valid: false,
-          error: 'Invalid invoice number format. Please enter full invoice reference.'
-        });
+      try {
+        await runQuery(`
+          INSERT INTO invoices (invoice_number, branch_id, amount, is_used, status)
+          VALUES (?, ?, 0, 0, 'ELIGIBLE')
+        `, [cleanInvoice, activeBranchId]);
+      } catch (insertErr) {
+        // If unique constraint or duplicate insert occurs concurrently
       }
-
-      // Check if invoice belongs to a different branch if it has explicit prefix
-      if (cleanInvoice.includes('-') || cleanInvoice.includes('/')) {
-        const prefix = cleanInvoice.split(/[-/]/)[0].toLowerCase();
-        if (prefix !== branch.code && ['kalba', 'rak', 'sharjah', 'shj'].includes(prefix) && prefix !== 'inv') {
-          return res.status(400).json({
-            valid: false,
-            error: `This invoice appears to belong to another branch. Current branch is ${branch.name}.`
-          });
-        }
-      }
-
-      // Auto-register invoice on the fly
-      await runQuery(`
-        INSERT INTO invoices (invoice_number, branch_id, amount, is_used, status)
-        VALUES (?, ?, 0, 0, 'ELIGIBLE')
-      `, [cleanInvoice, branch_id]);
 
       invoice = await getQuery(`
         SELECT i.*, b.name as branch_name, b.code as branch_code

@@ -85,15 +85,18 @@ const CustomerFlow = () => {
     try {
       const res = await api.post('/customer/invoice/validate', {
         invoice_number: invoiceNumber.trim(),
-        branch_id: detectedBranch.id
+        branch_id: detectedBranch?.id || 1
       });
 
-      if (res.data.valid) {
+      if (res.data?.valid) {
         setValidatedInvoice(res.data.invoice);
         setCurrentStep(3); // Proceed to Google Review step
+      } else {
+        setInvoiceError(res.data?.error || 'Invoice validation failed.');
       }
     } catch (err) {
-      setInvoiceError(err.response?.data?.error || 'Failed to validate invoice.');
+      console.error('Invoice Validation Error:', err);
+      setInvoiceError(err.response?.data?.error || err.message || 'Failed to validate invoice.');
     } finally {
       setValidating(false);
     }
