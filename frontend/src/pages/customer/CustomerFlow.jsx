@@ -121,7 +121,11 @@ const CustomerFlow = () => {
   // Step 7: Open Google Business Review Page & Auto Proceed to Spin Wheel
   const handleOpenGoogleReview = () => {
     if (detectedBranch?.google_review_url) {
-      window.open(detectedBranch.google_review_url, '_blank');
+      const url = detectedBranch.google_review_url.trim();
+      const newWin = window.open(url, '_blank');
+      if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
+        window.location.href = url;
+      }
     }
     setReviewOpened(true);
     
