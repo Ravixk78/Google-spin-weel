@@ -91,7 +91,8 @@ const customerGoogleAuth = async (req, res) => {
     );
 
     const reviewRecord = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE customer_id = ?`, [customer.id]);
-    const hasSubmittedReview = (reviewRecord?.cnt || 0) > 0;
+    const spinRecord = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE customer_id = ?`, [customer.id]);
+    const hasSubmittedReview = (reviewRecord?.cnt || 0) > 0 || (spinRecord?.cnt || 0) > 0;
 
     return res.json({
       message: 'Google authentication successful',

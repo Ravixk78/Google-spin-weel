@@ -60,27 +60,30 @@ const CustomerFlow = () => {
   const handleGoogleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Simulate Google OAuth popup response
-      const mockGoogleAccount = {
-        google_id: `g-account-${Math.floor(100000 + Math.random() * 900000)}`,
-        email: `customer${Math.floor(Math.random() * 1000)}@gmail.com`,
+      // Consistent Google Customer Account for persistent testing & user flow
+      const googleAccount = {
+        google_id: 'g-account-google-verified-customer',
+        email: 'google.customer@majlisaloud.ae',
         name: 'Verified Google Customer',
         avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
       };
-      await loginCustomerGoogle(mockGoogleAccount);
+      const loggedInCustomer = await loginCustomerGoogle(googleAccount);
+      
+      // If customer has already submitted a review previously, start at Step 2 (Invoice entry)
       setCurrentStep(2);
     } catch (err) {
       alert('Google Auth failed. Please try again.');
     }
   };
 
-  // Step 6: Validate Invoice Number
+  // Step 6: Validate Invoice Number (Strict 4-digit rule)
   const handleValidateInvoice = async (e) => {
     e.preventDefault();
     const cleanNum = invoiceNumber.trim();
     if (!cleanNum) return;
 
-    if (!/^\d{4}$/.test(cleanNum)) {
+    // Strict 4-digit enforcement
+    if (cleanNum.length !== 4 || !/^\d{4}$/.test(cleanNum)) {
       setInvoiceError('Invoice number must be exactly 4 digits (e.g. 5879).');
       return;
     }
@@ -132,6 +135,26 @@ const CustomerFlow = () => {
     setCurrentStep(4); // Proceed to Spin Wheel!
   };
 
+  // Reset flow after win modal is closed to allow next 4-digit invoice entry without full page reload
+  const resetFlowForNextSpin = () => {
+    setShowWinModal(false);
+    setInvoiceNumber('');
+    setValidatedInvoice(null);
+    setWinningIndex(null);
+    setWonPrize(null);
+    setClaimTicket(null);
+    setSpinError(null);
+    setReviewOpened(false);
+
+    // Persist has_submitted_review: true on customerUser in local storage
+    if (customerUser) {
+      const updated = { ...customerUser, has_submitted_review: true };
+      localStorage.setItem('customerUser', JSON.stringify(updated));
+    }
+
+    setCurrentStep(2); // Go directly to Step 2 (Invoice Input) for next spin
+  };
+
   // Step 8: Trigger Server-side Weighted Spin
   const handleExecuteSpin = async () => {
     if (spinning || !validatedInvoice || !customerUser || !detectedBranch) return;
@@ -151,6 +174,12 @@ const CustomerFlow = () => {
         setWinningIndex(res.data.prizeIndex);
         setWonPrize(res.data.prize);
         setClaimTicket(res.data.ticket);
+
+        // Update local customer user state to remember review has been submitted
+        if (customerUser) {
+          customerUser.has_submitted_review = true;
+          localStorage.setItem('customerUser', JSON.stringify({ ...customerUser, has_submitted_review: true }));
+        }
       }
     } catch (err) {
       setSpinning(false);
@@ -395,10 +424,7 @@ const CustomerFlow = () => {
         isOpen={showWinModal}
         prize={wonPrize}
         ticket={claimTicket}
-        onClose={() => {
-          setShowWinModal(false);
-          window.location.reload();
-        }}
+        onClose={resetFlowForNextSpin}
       />
 
     </div>

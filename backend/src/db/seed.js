@@ -153,32 +153,7 @@ const seedDatabase = async () => {
       console.log('✔ Seeded 10 Spin Prizes with weighted probabilities.');
     }
 
-    // 4. Seed Test Invoices
-    const testInvoices = [
-      // Kalba
-      { invoice_number: 'INV-KALBA-1001', branch_id: kalbaBranch.id, amount: 450, expiry_date: '2027-12-31' },
-      { invoice_number: 'INV-KALBA-1002', branch_id: kalbaBranch.id, amount: 820, expiry_date: '2027-12-31' },
-      { invoice_number: 'INV-KALBA-1003', branch_id: kalbaBranch.id, amount: 150, expiry_date: '2027-12-31' },
-      // RAK
-      { invoice_number: 'INV-RAK-2001', branch_id: rakBranch.id, amount: 350, expiry_date: '2027-12-31' },
-      { invoice_number: 'INV-RAK-2002', branch_id: rakBranch.id, amount: 690, expiry_date: '2027-12-31' },
-      { invoice_number: 'INV-RAK-2003', branch_id: rakBranch.id, amount: 1200, expiry_date: '2027-12-31' },
-      // Sharjah
-      { invoice_number: 'INV-SHJ-3001', branch_id: sharjahBranch.id, amount: 540, expiry_date: '2027-12-31' },
-      { invoice_number: 'INV-SHJ-3002', branch_id: sharjahBranch.id, amount: 770, expiry_date: '2027-12-31' },
-      { invoice_number: 'INV-SHJ-3003', branch_id: sharjahBranch.id, amount: 210, expiry_date: '2027-12-31' }
-    ];
-
-    for (const inv of testInvoices) {
-      const exists = await getQuery(`SELECT * FROM invoices WHERE invoice_number = ?`, [inv.invoice_number]);
-      if (!exists) {
-        await runQuery(`
-          INSERT INTO invoices (invoice_number, branch_id, amount, expiry_date, is_used, status)
-          VALUES (?, ?, ?, ?, 0, 'ELIGIBLE')
-        `, [inv.invoice_number, inv.branch_id, inv.amount, inv.expiry_date]);
-      }
-    }
-    console.log('✔ Test invoices seeded successfully.');
+    // 4. Seed Test 4-digit Invoices if needed
     console.log('🎉 Database seeding complete!');
     process.exit(0);
   } catch (err) {

@@ -81,11 +81,12 @@ const validateInvoiceForCustomer = async (req, res) => {
       };
     }
 
-    // Check if customer has previously submitted a Google Review
+    // Check if customer has previously submitted a Google Review or spun before
     let hasSubmittedReview = false;
     if (customer_id) {
       const revCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE customer_id = ?`, [customer_id]);
-      hasSubmittedReview = (revCheck?.cnt || 0) > 0;
+      const spinCheck = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE customer_id = ?`, [customer_id]);
+      hasSubmittedReview = (revCheck?.cnt || 0) > 0 || (spinCheck?.cnt || 0) > 0;
     }
 
     return res.json({
