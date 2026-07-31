@@ -1,24 +1,23 @@
+import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useLanguage } from '../../context/LanguageContext';
 import { LayoutDashboard, Store, Receipt, Gift, FileBarChart, Users, LogOut, ShieldCheck } from 'lucide-react';
 
 const AdminLayout = () => {
   const { adminUser, logoutAdmin } = useAuth();
-  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const navItems = [
-    { label: t('adminDashboard'), path: '/admin/dashboard', icon: LayoutDashboard },
-    { label: t('branchManagement'), path: '/admin/branches', icon: Store },
-    { label: t('invoiceManagement'), path: '/admin/invoices', icon: Receipt },
-    { label: t('prizeManagement'), path: '/admin/prizes', icon: Gift },
-    { label: t('reports'), path: '/admin/reports', icon: FileBarChart },
-    { label: t('customerHistory'), path: '/admin/customer-history', icon: Users },
+    { label: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+    { label: 'Branch Management', path: '/admin/branches', icon: Store },
+    { label: 'Invoice Management', path: '/admin/invoices', icon: Receipt },
+    { label: 'Spin Prize Management', path: '/admin/prizes', icon: Gift },
+    { label: 'Reports', path: '/admin/reports', icon: FileBarChart },
+    { label: 'Customer History', path: '/admin/customer-history', icon: Users },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-luxury-dark text-slate-100">
+    <div className="min-h-screen flex flex-col md:flex-row bg-luxury-dark text-slate-100 font-sans">
       
       {/* Sidebar Navigation */}
       <aside className="w-full md:w-64 glass-panel border-r border-gold-400/20 p-4 flex flex-col justify-between shrink-0">
@@ -27,8 +26,8 @@ const AdminLayout = () => {
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-6 h-6 text-gold-400" />
               <div>
-                <h2 className="font-serif font-bold text-white text-sm">{t('superAdminPortal')}</h2>
-                <p className="text-[10px] text-gold-400 tracking-wider">{t('brandName')}</p>
+                <h2 className="font-serif font-bold text-white text-sm">SUPER ADMIN</h2>
+                <p className="text-[10px] text-gold-400 tracking-wider">MAJLIS AL OUD</p>
               </div>
             </div>
           </div>

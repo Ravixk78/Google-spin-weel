@@ -136,7 +136,7 @@ export const translations = {
 };
 
 export const LanguageProvider = ({ children }) => {
-  // Default language is 'ar' (Arabic) as requested
+  // Default language for Customer Flow is 'ar' (Arabic)
   const [lang, setLangState] = useState(() => {
     const saved = localStorage.getItem('appLanguage');
     return saved || 'ar';
@@ -145,14 +145,15 @@ export const LanguageProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('appLanguage', lang);
     
-    // If user is inside /admin, keep direction in LTR to maintain standard admin dashboard layout unless in Arabic
+    // Check if current page is Admin Portal
     const isAdmin = window.location.pathname.startsWith('/admin');
-    if (isAdmin && lang !== 'ar') {
+    if (isAdmin) {
       document.documentElement.dir = 'ltr';
+      document.documentElement.lang = 'en';
     } else {
       document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = lang;
     }
-    document.documentElement.lang = lang;
   }, [lang]);
 
   const toggleLanguage = () => {
@@ -160,7 +161,11 @@ export const LanguageProvider = ({ children }) => {
   };
 
   const t = (key, params = {}) => {
-    let text = translations[lang]?.[key] || translations['en']?.[key] || key;
+    // If inside admin portal, always return English translation for clean unified Admin UI
+    const isAdmin = window.location.pathname.startsWith('/admin');
+    const effectiveLang = isAdmin ? 'en' : lang;
+
+    let text = translations[effectiveLang]?.[key] || translations['en']?.[key] || key;
     Object.keys(params).forEach(pKey => {
       text = text.replace(new RegExp(`{${pKey}}`, 'g'), params[pKey]);
     });
