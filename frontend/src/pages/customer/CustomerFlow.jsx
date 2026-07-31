@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useBranch } from '../../context/BranchContext';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import api from '../../services/api';
 import SpinWheelCanvas from '../../components/SpinWheelCanvas';
 import WinModal from '../../components/WinModal';
@@ -9,6 +10,7 @@ import { MapPin, ShieldCheck, CheckCircle2, Star, ArrowRight, RefreshCw, AlertCi
 const CustomerFlow = () => {
   const { detectedBranch, loadingBranch, branchError } = useBranch();
   const { customerUser, loginCustomerGoogle, logoutCustomer } = useAuth();
+  const { lang, t } = useLanguage();
 
   // Wizard Step State: 1 (Branch/Google Auth) -> 2 (Invoice Verification) -> 3 (Google Review) -> 4 (Spin Wheel)
   const [currentStep, setCurrentStep] = useState(1);
@@ -67,7 +69,7 @@ const CustomerFlow = () => {
         name: 'Verified Google Customer',
         avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
       };
-      const loggedInCustomer = await loginCustomerGoogle(googleAccount);
+      await loginCustomerGoogle(googleAccount);
       
       // If customer has already submitted a review previously, start at Step 2 (Invoice entry)
       setCurrentStep(2);
@@ -84,7 +86,7 @@ const CustomerFlow = () => {
 
     // Strict 4-digit enforcement
     if (cleanNum.length !== 4 || !/^\d{4}$/.test(cleanNum)) {
-      setInvoiceError('Invoice number must be exactly 4 digits (e.g. 5879).');
+      setInvoiceError(t('invoiceFormatError'));
       return;
     }
 
@@ -200,7 +202,7 @@ const CustomerFlow = () => {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-4">
         <div className="w-12 h-12 border-4 border-gold-400 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-gold-300 font-medium animate-pulse">Detecting physical store branch from QR code...</p>
+        <p className="text-gold-300 font-medium animate-pulse">{lang === 'ar' ? 'جاري التعرف على فرع المحل...' : 'Detecting physical store branch from QR code...'}</p>
       </div>
     );
   }
@@ -209,13 +211,13 @@ const CustomerFlow = () => {
     return (
       <div className="max-w-md mx-auto my-12 p-6 glass-panel border-rose-500/40 rounded-2xl text-center">
         <AlertCircle className="w-12 h-12 text-rose-400 mx-auto mb-3" />
-        <h3 className="text-lg font-bold text-white mb-2">QR Code Error</h3>
+        <h3 className="text-lg font-bold text-white mb-2">{t('qrErrorTitle')}</h3>
         <p className="text-xs text-slate-300 mb-6">{branchError}</p>
         <button
           onClick={() => window.location.href = '/?branch=kalba'}
           className="btn-gold px-4 py-2 rounded-lg text-xs font-bold"
         >
-          Try Kalba Branch Demo
+          {t('tryAgainBtn')}
         </button>
       </div>
     );
@@ -229,24 +231,24 @@ const CustomerFlow = () => {
         <div className="absolute top-0 right-0 w-32 h-32 bg-gold-400/10 rounded-full blur-xl pointer-events-none" />
 
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-600/40 text-emerald-300 text-xs font-semibold uppercase tracking-wider mb-2">
-          <MapPin className="w-3.5 h-3.5 text-emerald-400" /> Scanned Branch: {detectedBranch?.name}
+          <MapPin className="w-3.5 h-3.5 text-emerald-400" /> {t('scannedBranch')} {detectedBranch?.name}
         </div>
 
         <h1 className="text-2xl md:text-4xl font-serif font-bold text-white mb-2">
-          Review & Win Exclusive Oud Rewards
+          {t('title')}
         </h1>
 
         <p className="text-xs md:text-sm text-slate-300 max-w-xl mx-auto">
-          Thank you for shopping at <span className="text-gold-400 font-medium">Majlis Al Oud</span> ({detectedBranch?.name}). Follow the simple steps below to spin our luxury reward wheel!
+          {t('subtitle')}
         </p>
 
         {/* Progress Stepper */}
         <div className="grid grid-cols-4 gap-2 max-w-xl mx-auto mt-6 pt-4 border-t border-gold-400/20">
           {[
-            { step: 1, label: 'Google Auth' },
-            { step: 2, label: 'Invoice Check' },
-            { step: 3, label: 'Google Review' },
-            { step: 4, label: 'Spin & Win' }
+            { step: 1, label: t('step1Label') },
+            { step: 2, label: t('step2Label') },
+            { step: 3, label: t('step3Label') },
+            { step: 4, label: t('step4Label') }
           ].map((item) => (
             <div key={item.step} className="flex flex-col items-center">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
@@ -266,16 +268,16 @@ const CustomerFlow = () => {
         </div>
       </div>
 
-      {/* STEP 5: GOOGLE OAUTH LOGIN */}
+      {/* STEP 1: GOOGLE OAUTH LOGIN */}
       {currentStep === 1 && (
         <div className="glass-panel border-gold-400/20 rounded-2xl p-6 md:p-8 max-w-md mx-auto text-center shadow-lg">
           <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-gold-400/40">
             <Lock className="w-7 h-7 text-gold-400" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-2">Step 1: Authenticate with Google</h2>
+          <h2 className="text-xl font-bold text-white mb-2">{t('step1Title')}</h2>
           <p className="text-xs text-slate-300 mb-6">
-            Only verified Google users are eligible to submit reviews and claim luxury rewards.
+            {t('step1Desc')}
           </p>
 
           <button
@@ -288,21 +290,21 @@ const CustomerFlow = () => {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
             </svg>
-            Continue with Google OAuth
+            {t('googleLoginBtn')}
           </button>
         </div>
       )}
 
-      {/* STEP 6: INVOICE VERIFICATION */}
+      {/* STEP 2: INVOICE VERIFICATION */}
       {currentStep === 2 && (
         <div className="glass-panel border-gold-400/20 rounded-2xl p-6 md:p-8 max-w-md mx-auto text-center shadow-lg">
           <div className="w-14 h-14 bg-emerald-950 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-600">
             <Receipt className="w-7 h-7 text-emerald-400" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-1">Step 2: Enter 4-Digit Invoice Number</h2>
+          <h2 className="text-xl font-bold text-white mb-1">{t('step2Title')}</h2>
           <p className="text-xs text-slate-300 mb-6">
-            Enter the 4-digit invoice number printed on your receipt from <span className="text-gold-400 font-semibold">{detectedBranch?.name}</span>.
+            {t('step2Desc')} <span className="text-gold-400 font-semibold">{detectedBranch?.name}</span>.
           </p>
 
           <form onSubmit={handleValidateInvoice} className="space-y-4">
@@ -310,7 +312,7 @@ const CustomerFlow = () => {
               <input
                 type="text"
                 maxLength={4}
-                placeholder="e.g. 5879"
+                placeholder={t('invoicePlaceholder')}
                 value={invoiceNumber}
                 onChange={(e) => setInvoiceNumber(e.target.value.replace(/\D/g, ''))}
                 className="w-full text-center tracking-widest font-mono text-2xl py-3 px-4 rounded-xl bg-slate-900/90 border border-gold-400/40 text-white focus:outline-none focus:border-gold-400 placeholder-slate-600"
@@ -330,24 +332,22 @@ const CustomerFlow = () => {
               disabled={validating || !invoiceNumber.trim()}
               className="w-full btn-gold py-3 rounded-xl font-bold text-sm shadow-gold flex items-center justify-center gap-2"
             >
-              {validating ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Validate Invoice & Continue'}
+              {validating ? <RefreshCw className="w-4 h-4 animate-spin" /> : t('validateBtn')}
             </button>
           </form>
-
-
         </div>
       )}
 
-      {/* STEP 7: GOOGLE REVIEW REDIRECT */}
+      {/* STEP 3: GOOGLE REVIEW REDIRECT */}
       {currentStep === 3 && (
         <div className="glass-panel border-gold-400/20 rounded-2xl p-6 md:p-8 max-w-md mx-auto text-center shadow-lg">
           <div className="w-14 h-14 bg-gold-400/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-gold-400/40">
             <Star className="w-7 h-7 text-gold-400 fill-gold-400" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-1">Step 3: Submit Google Review</h2>
+          <h2 className="text-xl font-bold text-white mb-1">{t('step3Title')}</h2>
           <p className="text-xs text-slate-300 mb-6">
-            Share your store experience on Google Business Profile for <span className="text-gold-400 font-semibold">{detectedBranch?.name}</span> to unlock your reward spin.
+            {t('step3Desc', { branch: detectedBranch?.name })}
           </p>
 
           <div className="space-y-4">
@@ -355,13 +355,13 @@ const CustomerFlow = () => {
               onClick={handleOpenGoogleReview}
               className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-md transition-all"
             >
-              <Star className="w-4 h-4 fill-white" /> Open {detectedBranch?.name} Google Review Page
+              <Star className="w-4 h-4 fill-white" /> {t('openReviewBtn', { branch: detectedBranch?.name })}
             </button>
 
             {reviewOpened && (
               <div className="p-3 bg-emerald-950/80 border border-emerald-600/50 rounded-xl text-xs text-emerald-300 text-left flex items-start gap-2 animate-fadeIn">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span>Google Business Review link opened! Once posted, click below to spin the wheel.</span>
+                <span>{t('reviewOpenedMsg')}</span>
               </div>
             )}
 
@@ -372,25 +372,25 @@ const CustomerFlow = () => {
                 reviewOpened ? 'btn-gold shadow-gold' : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
               }`}
             >
-              I Have Submitted My Review & Spin Now!
+              {t('proceedToSpinBtn')}
             </button>
           </div>
         </div>
       )}
 
-      {/* STEP 8: LUXURY ANIMATED SPIN WHEEL */}
+      {/* STEP 4: LUXURY ANIMATED SPIN WHEEL */}
       {currentStep === 4 && (
         <div className="glass-panel border-gold-400/30 rounded-2xl p-6 md:p-8 text-center shadow-gold-lg max-w-2xl mx-auto">
           
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-400/10 border border-gold-400/30 text-gold-300 text-xs font-semibold uppercase mb-4">
-            <Sparkles className="w-3.5 h-3.5" /> Ready to Spin
+            <Sparkles className="w-3.5 h-3.5" /> {t('spinReadyBadge')}
           </div>
 
           <h2 className="text-2xl font-serif font-bold text-white mb-1">
-            Spin the Luxury Oud Wheel
+            {t('spinTitle')}
           </h2>
           <p className="text-xs text-slate-300 mb-6">
-            Invoice <span className="font-mono text-gold-400">{validatedInvoice?.invoice_number}</span> verified for <span className="text-emerald-400">{customerUser?.name}</span>.
+            {t('spinSubtitle', { invoice: validatedInvoice?.invoice_number, name: customerUser?.name })}
           </p>
 
           {spinError && (
@@ -417,7 +417,7 @@ const CustomerFlow = () => {
                   : 'btn-gold hover:scale-105 active:scale-95'
               }`}
             >
-              {spinning ? 'SPINNING THE WHEEL...' : winningIndex !== null ? 'WINNER CLAIMED' : 'SPIN THE WHEEL NOW!'}
+              {spinning ? t('spinningMsg') : winningIndex !== null ? '✓' : t('spinActionBtn')}
             </button>
           </div>
         </div>

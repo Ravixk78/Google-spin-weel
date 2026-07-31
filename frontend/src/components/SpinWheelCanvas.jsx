@@ -1,13 +1,27 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Sparkles, Trophy, Gift, Award, Crown, Flame, Package } from 'lucide-react';
 
+import { useLanguage } from '../context/LanguageContext';
+
+const prizeTranslations = {
+  'Exclusive Oud Perfume 50ml': 'عطر عود فاخر 50مل',
+  'Luxury Oud Wood Chip 25g': 'رقائق عود فاخر 25غ',
+  'Royal Bakhoor Incense Box': 'صندوق بخور ملكي',
+  '15% Store Discount Voucher': 'قسيمة خصم 15%',
+  'Majlis Fragrance Sample Set': 'مجموعة عينات عطور',
+  'Golden Oud Oil Concentrated': 'دهن عود ذهبي مركز',
+  'Better Luck Next Time': 'حظاً أوفر المرة القادمة',
+  'Free Oud Incense': 'بخور عود مجاني'
+};
+
 const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) => {
   const canvasRef = useRef(null);
   const [currentAngle, setCurrentAngle] = useState(0);
+  const { lang } = useLanguage();
 
   useEffect(() => {
     drawWheel(currentAngle);
-  }, [prizes, currentAngle]);
+  }, [prizes, currentAngle, lang]);
 
   useEffect(() => {
     if (isSpinning && winningIndex !== null && winningIndex !== undefined) {
@@ -83,9 +97,9 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
       ctx.shadowBlur = 4;
 
       // Truncate name if too long
-      let label = prize.name;
-      if (label.length > 20) {
-        label = label.substring(0, 18) + '...';
+      let label = lang === 'ar' && prizeTranslations[prize.name] ? prizeTranslations[prize.name] : prize.name;
+      if (label.length > 22) {
+        label = label.substring(0, 20) + '...';
       }
 
       ctx.fillText(label, outerRadius - 30, 4);
@@ -113,8 +127,8 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
     ctx.fillStyle = '#D4AF37';
     ctx.font = 'bold 11px Playfair Display, serif';
     ctx.textAlign = 'center';
-    ctx.fillText('MAJLIS', centerX, centerY - 6);
-    ctx.fillText('AL OUD', centerX, centerY + 8);
+    ctx.fillText(lang === 'ar' ? 'مجلس' : 'MAJLIS', centerX, centerY - 6);
+    ctx.fillText(lang === 'ar' ? 'العود' : 'AL OUD', centerX, centerY + 8);
     ctx.restore();
   };
 
@@ -125,24 +139,22 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
     const arcSize = (2 * Math.PI) / numSegments;
 
     // Target angle calculation: Pointer is at 12 o'clock (-Math.PI/2)
-    // To land segment targetIndex under pointer:
-    // angleOffset + targetIndex * arcSize + arcSize/2 = -Math.PI/2
     const targetSegmentAngle = -(targetIndex * arcSize + arcSize / 2) - Math.PI / 2;
 
-    // Add 6 full 360-degree rotations (6 * 2 * Math.PI)
-    const extraRotations = 6 * 2 * Math.PI;
+    // Add 12 full 360-degree rotations for high-suspense 10-second spin
+    const extraRotations = 12 * 2 * Math.PI;
     const finalAngle = targetSegmentAngle - extraRotations;
 
-    const duration = 5000; // 5 seconds
+    const duration = 10000; // 10 full seconds spin
     const startTime = performance.now();
     const startAngle = currentAngle;
 
-    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+    const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
 
     const step = (now) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easeOutCubic(progress);
+      const easedProgress = easeOutQuart(progress);
 
       const angle = startAngle + (finalAngle - startAngle) * easedProgress;
       setCurrentAngle(angle);

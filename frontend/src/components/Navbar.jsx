@@ -1,15 +1,16 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Sparkles, MapPin, Sun, Moon, ShieldCheck, LogOut } from 'lucide-react';
+import { Globe, Sparkles, MapPin, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBranch } from '../context/BranchContext';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const Navbar = () => {
-  const { adminUser, logoutAdmin } = useAuth();
+  const { adminUser } = useAuth();
   const { detectedBranch } = useBranch();
   const { theme, toggleTheme } = useTheme();
-  const navigate = useNavigate();
+  const { lang, toggleLanguage, t } = useLanguage();
   const location = useLocation();
 
   const isAdminPage = location.pathname.startsWith('/admin');
@@ -27,16 +28,16 @@ const Navbar = () => {
           </div>
           <div>
             <span className="font-serif font-bold text-lg text-white tracking-wider block leading-tight">
-              MAJLIS AL OUD
+              {t('brandName')}
             </span>
             <span className="text-[10px] text-gold-400 uppercase tracking-widest block">
-              {isAdminPage ? 'Super Admin Portal' : 'Google Review Rewards'}
+              {isAdminPage ? 'Super Admin Portal' : t('brandSubtitle')}
             </span>
           </div>
         </Link>
 
         {/* Branch Indicator & Controls */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           
           {/* Detected Branch Badge (Only on Customer Pages) */}
           {!isAdminPage && detectedBranch && (
@@ -44,6 +45,18 @@ const Navbar = () => {
               <MapPin className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
               <span>{detectedBranch.name}</span>
             </div>
+          )}
+
+          {/* Language Switcher Toggle Button */}
+          {!isAdminPage && (
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gold-400/10 hover:bg-gold-400/20 border border-gold-400/40 text-gold-300 text-xs font-bold transition-all shadow-md active:scale-95"
+              title="Switch Language / تغيير اللغة"
+            >
+              <Globe className="w-4 h-4 text-gold-400" />
+              <span>{t('languageBtn')}</span>
+            </button>
           )}
 
           {/* Theme Toggle */}
@@ -54,8 +67,6 @@ const Navbar = () => {
           >
             {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
-
-
 
         </div>
 
