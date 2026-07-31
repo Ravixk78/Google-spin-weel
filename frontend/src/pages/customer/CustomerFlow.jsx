@@ -123,9 +123,21 @@ const CustomerFlow = () => {
     if (detectedBranch?.google_review_url) {
       let url = detectedBranch.google_review_url.trim();
 
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      if (isMobile && url.includes('#lrd=') && !url.includes(',3,1')) {
-        url = url.replace(/,3,$/, ',3,1').replace(/,3,,,,$/, ',3,1');
+      // Ensure lrd is present in query parameters as well as hash fragment for Mobile Google Search
+      const lrdMatch = url.match(/#lrd=([^&#]+)/) || url.match(/[?&]lrd=([^&#]+)/);
+      if (lrdMatch && lrdMatch[1]) {
+        let lrdVal = lrdMatch[1];
+        if (!lrdVal.endsWith(',1') && !lrdVal.endsWith(',3,1')) {
+          lrdVal = lrdVal.replace(/,3,$/, ',3,1').replace(/,3,,,,$/, ',3,1');
+        }
+        
+        if (!url.includes('?lrd=') && !url.includes('&lrd=')) {
+          const parts = url.split('#');
+          const sep = parts[0].includes('?') ? '&' : '?';
+          parts[0] = `${parts[0]}${sep}lrd=${lrdVal}`;
+          parts[1] = `lrd=${lrdVal}`;
+          url = parts.join('#');
+        }
       }
 
       const newWin = window.open(url, '_blank');
