@@ -121,25 +121,7 @@ const CustomerFlow = () => {
   // Step 7: Open Google Business Review Page & Auto Proceed to Spin Wheel
   const handleOpenGoogleReview = () => {
     if (detectedBranch?.google_review_url) {
-      let url = detectedBranch.google_review_url.trim();
-
-      // Ensure lrd is present in query parameters as well as hash fragment for Mobile Google Search
-      const lrdMatch = url.match(/#lrd=([^&#]+)/) || url.match(/[?&]lrd=([^&#]+)/);
-      if (lrdMatch && lrdMatch[1]) {
-        let lrdVal = lrdMatch[1];
-        if (!lrdVal.endsWith(',1') && !lrdVal.endsWith(',3,1')) {
-          lrdVal = lrdVal.replace(/,3,$/, ',3,1').replace(/,3,,,,$/, ',3,1');
-        }
-        
-        if (!url.includes('?lrd=') && !url.includes('&lrd=')) {
-          const parts = url.split('#');
-          const sep = parts[0].includes('?') ? '&' : '?';
-          parts[0] = `${parts[0]}${sep}lrd=${lrdVal}`;
-          parts[1] = `lrd=${lrdVal}`;
-          url = parts.join('#');
-        }
-      }
-
+      const url = detectedBranch.google_review_url.trim();
       const newWin = window.open(url, '_blank');
       if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
         window.location.href = url;
@@ -375,11 +357,6 @@ const CustomerFlow = () => {
             >
               <Star className="w-4 h-4 fill-white" /> Open {detectedBranch?.name} Google Review Page
             </button>
-
-            <div className="p-3 bg-slate-900/90 border border-gold-400/20 rounded-xl text-left text-[11px] text-slate-300 space-y-1">
-              <span className="font-semibold text-gold-400 block">💡 Mobile Device Tip:</span>
-              <p>On mobile phones, tap the <span className="text-amber-400 font-bold">"Write a review"</span> button or <span className="text-amber-400 font-bold">⭐⭐⭐⭐⭐ Stars</span> on the Google business listing to leave your review.</p>
-            </div>
 
             {reviewOpened && (
               <div className="p-3 bg-emerald-950/80 border border-emerald-600/50 rounded-xl text-xs text-emerald-300 text-left flex items-start gap-2 animate-fadeIn">
