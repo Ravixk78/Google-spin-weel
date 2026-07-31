@@ -55,6 +55,16 @@ export const translations = {
     modalInstructions: "التقط صورة لشاشة هاتفك الآن أو احفظ التذكرة لإبرازها لموظف المحل واستلام جائزتك الفاخرة!",
     spinAgainBtn: "إدخال فاتورة جديدة لتدوير العجلة",
 
+    // Admin Portal
+    adminDashboard: "لوحة التحكم الرئيسية",
+    branchManagement: "إدارة الفروع",
+    invoiceManagement: "إدارة الفواتير",
+    prizeManagement: "إدارة الجوائز والنسب",
+    reports: "التقارير والإحصائيات",
+    customerHistory: "سجل العملاء والجوائز",
+    superAdminPortal: "بوابة الإدارة العليا",
+    logout: "تسجيل الخروج",
+
     // Footer
     footerText: "عطور مجلس العود الإمارات العربية المتحدة © 2026. جميع الحقوق محفوظة. نظام جوائز تقييم جوجل."
   },
@@ -110,6 +120,16 @@ export const translations = {
     modalInstructions: "Screenshot this claim ticket now and present it at the counter to redeem your luxury reward!",
     spinAgainBtn: "Enter Next Invoice to Spin Again",
 
+    // Admin Portal
+    adminDashboard: "Executive Dashboard",
+    branchManagement: "Branch Management",
+    invoiceManagement: "Invoice Management",
+    prizeManagement: "Spin Prize Management",
+    reports: "Reports & Analytics",
+    customerHistory: "Customer History",
+    superAdminPortal: "Super Admin Portal",
+    logout: "Logout",
+
     // Footer
     footerText: "Majlis Al Oud Perfumes UAE © 2026. All Rights Reserved. Google Review Reward System."
   }
@@ -124,7 +144,14 @@ export const LanguageProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem('appLanguage', lang);
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    
+    // If user is inside /admin, keep direction in LTR to maintain standard admin dashboard layout unless in Arabic
+    const isAdmin = window.location.pathname.startsWith('/admin');
+    if (isAdmin && lang !== 'ar') {
+      document.documentElement.dir = 'ltr';
+    } else {
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    }
     document.documentElement.lang = lang;
   }, [lang]);
 
