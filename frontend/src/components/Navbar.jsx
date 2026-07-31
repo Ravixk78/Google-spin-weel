@@ -47,17 +47,15 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Language Switcher Toggle Button (Only on Customer Pages) */}
-          {!isAdminPage && (
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gold-400/10 hover:bg-gold-400/20 border border-gold-400/40 text-gold-300 text-xs font-bold transition-all shadow-md active:scale-95"
-              title="Switch Language / تغيير اللغة"
-            >
-              <Globe className="w-4 h-4 text-gold-400" />
-              <span>{t('languageBtn')}</span>
-            </button>
-          )}
+          {/* Language Switcher Toggle Button (Available on all pages) */}
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gold-400/10 hover:bg-gold-400/20 border border-gold-400/40 text-gold-300 text-xs font-bold transition-all shadow-md active:scale-95"
+            title="Switch Language / تغيير اللغة"
+          >
+            <Globe className="w-4 h-4 text-gold-400" />
+            <span>{t('languageBtn')}</span>
+          </button>
 
           {/* Theme Toggle */}
           <button

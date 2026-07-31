@@ -55,7 +55,33 @@ export const translations = {
     modalInstructions: "التقط صورة لشاشة هاتفك الآن أو احفظ التذكرة لإبرازها لموظف المحل واستلام جائزتك الفاخرة!",
     spinAgainBtn: "إدخال فاتورة جديدة لتدوير العجلة",
 
-    // Admin Portal
+    // Admin Dashboard KPI & Headings
+    dashTitle: "لوحة التحليلات التنفيذية",
+    dashSubtitle: "نظرة عامة تشغيلية مباشرة لفروع عطور مجلس العود بالإمارات",
+    refreshMetricsBtn: "تحديث البيانات المباشرة",
+    todaysReviews: "تقييمات اليوم",
+    todaysSpins: "تدويرات اليوم",
+    todaysWinners: "فائزو اليوم",
+    todayInvoices: "فواتير اليوم",
+    filteredReviews: "التقييمات المحددة",
+    filteredSpins: "التدويرات المحددة",
+    filteredWinners: "الفائزون المحددون",
+    filteredInvoices: "الفواتير المحددة",
+    activeBranchesCount: "فروع المتاجر النشطة",
+    rewardStock: "إجمالي مخزون الجوائز",
+    branchSpinDist: "توزيع التدويرات حسب الفروع",
+    recentWinnersFeed: "أحدث الفائزين بالجوائز",
+    noSpinsToday: "لم يتم تسجيل أي تدويرات حتى الآن اليوم.",
+    fromLabel: "من:",
+    toLabel: "إلى:",
+    todayBtn: "اليوم",
+    yesterdayBtn: "الأمس",
+    last7DaysBtn: "7 أيام",
+    resetBtn: "إعادة ضبط",
+    liveStatusToday: "مؤشرات تشغيلية مباشرة لليوم",
+    liveStatusRange: "الفترة المحددة: {start} إلى {end}",
+
+    // Admin Sidebar & Portal Header
     adminDashboard: "لوحة التحكم الرئيسية",
     branchManagement: "إدارة الفروع",
     invoiceManagement: "إدارة الفواتير",
@@ -120,7 +146,33 @@ export const translations = {
     modalInstructions: "Screenshot this claim ticket now and present it at the counter to redeem your luxury reward!",
     spinAgainBtn: "Enter Next Invoice to Spin Again",
 
-    // Admin Portal
+    // Admin Dashboard KPI & Headings
+    dashTitle: "Executive Analytics Dashboard",
+    dashSubtitle: "Live operational overview for Majlis Al Oud UAE branches",
+    refreshMetricsBtn: "Refresh Live Metrics",
+    todaysReviews: "Today's Reviews",
+    todaysSpins: "Today's Spins",
+    todaysWinners: "Today Winners",
+    todayInvoices: "Today Invoices",
+    filteredReviews: "Filtered Reviews",
+    filteredSpins: "Filtered Spins",
+    filteredWinners: "Filtered Winners",
+    filteredInvoices: "Filtered Invoices",
+    activeBranchesCount: "Active Store Branches",
+    rewardStock: "Total Reward Stock",
+    branchSpinDist: "Branch Spin Distribution",
+    recentWinnersFeed: "Recent Winners",
+    noSpinsToday: "No spins recorded yet today.",
+    fromLabel: "From:",
+    toLabel: "To:",
+    todayBtn: "Today",
+    yesterdayBtn: "Yesterday",
+    last7DaysBtn: "7 Days",
+    resetBtn: "Reset",
+    liveStatusToday: "Real-time Live Today's Operational Metrics",
+    liveStatusRange: "Filtered Range: {start} to {end}",
+
+    // Admin Sidebar & Portal Header
     adminDashboard: "Executive Dashboard",
     branchManagement: "Branch Management",
     invoiceManagement: "Invoice Management",
@@ -136,7 +188,6 @@ export const translations = {
 };
 
 export const LanguageProvider = ({ children }) => {
-  // Default language for Customer Flow is 'ar' (Arabic)
   const [lang, setLangState] = useState(() => {
     const saved = localStorage.getItem('appLanguage');
     return saved || 'ar';
@@ -144,16 +195,8 @@ export const LanguageProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem('appLanguage', lang);
-    
-    // Check if current page is Admin Portal
-    const isAdmin = window.location.pathname.startsWith('/admin');
-    if (isAdmin) {
-      document.documentElement.dir = 'ltr';
-      document.documentElement.lang = 'en';
-    } else {
-      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-      document.documentElement.lang = lang;
-    }
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
   }, [lang]);
 
   const toggleLanguage = () => {
@@ -161,11 +204,7 @@ export const LanguageProvider = ({ children }) => {
   };
 
   const t = (key, params = {}) => {
-    // If inside admin portal, always return English translation for clean unified Admin UI
-    const isAdmin = window.location.pathname.startsWith('/admin');
-    const effectiveLang = isAdmin ? 'en' : lang;
-
-    let text = translations[effectiveLang]?.[key] || translations['en']?.[key] || key;
+    let text = translations[lang]?.[key] || translations['en']?.[key] || key;
     Object.keys(params).forEach(pKey => {
       text = text.replace(new RegExp(`{${pKey}}`, 'g'), params[pKey]);
     });

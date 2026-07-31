@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Star, Disc, Trophy, FileText, Award, Receipt, Store, TrendingUp, Sparkles } from 'lucide-react';
 
 const Dashboard = () => {
+  const { t, lang } = useLanguage();
   const todayStr = new Date().toISOString().split('T')[0];
 
   const [stats, setStats] = useState(null);
@@ -69,7 +71,7 @@ const Dashboard = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <div className="w-10 h-10 border-4 border-gold-400 border-t-transparent rounded-full animate-spin mb-3" />
-        <p className="text-xs text-slate-400">Loading live dashboard analytics...</p>
+        <p className="text-xs text-slate-400">{lang === 'ar' ? 'جاري تحميل تحليلات البيانات المباشرة...' : 'Loading live dashboard analytics...'}</p>
       </div>
     );
   }
@@ -77,27 +79,27 @@ const Dashboard = () => {
   const isTodayOnly = startDate === todayStr && endDate === todayStr;
 
   const statCards = [
-    { label: isTodayOnly ? "Today's Reviews" : "Filtered Reviews", value: stats?.todaysReviews || 0, icon: Star, color: 'text-amber-400', bg: 'bg-amber-950/40 border-amber-800/40' },
-    { label: isTodayOnly ? "Today's Spins" : "Filtered Spins", value: stats?.todaysSpins || 0, icon: Disc, color: 'text-emerald-400', bg: 'bg-emerald-950/40 border-emerald-800/40' },
-    { label: isTodayOnly ? "Today Winners" : "Filtered Winners", value: stats?.todaysWinners || 0, icon: Trophy, color: 'text-gold-400', bg: 'bg-gold-400/10 border-gold-400/30' },
-    { label: isTodayOnly ? "Today Invoices" : "Filtered Invoices", value: stats?.rangeInvoices || 0, icon: Receipt, color: 'text-cyan-400', bg: 'bg-cyan-950/40 border-cyan-800/40' },
-    { label: 'Active Store Branches', value: stats?.activeBranches || 0, icon: Store, color: 'text-purple-400', bg: 'bg-purple-950/40 border-purple-800/40' },
-    { label: 'Total Reward Stock', value: stats?.prizeStock || 0, icon: Award, color: 'text-rose-400', bg: 'bg-rose-950/40 border-rose-800/40' }
+    { label: isTodayOnly ? t('todaysReviews') : t('filteredReviews'), value: stats?.todaysReviews || 0, icon: Star, color: 'text-amber-400', bg: 'bg-amber-950/40 border-amber-800/40' },
+    { label: isTodayOnly ? t('todaysSpins') : t('filteredSpins'), value: stats?.todaysSpins || 0, icon: Disc, color: 'text-emerald-400', bg: 'bg-emerald-950/40 border-emerald-800/40' },
+    { label: isTodayOnly ? t('todaysWinners') : t('filteredWinners'), value: stats?.todaysWinners || 0, icon: Trophy, color: 'text-gold-400', bg: 'bg-gold-400/10 border-gold-400/30' },
+    { label: isTodayOnly ? t('todayInvoices') : t('filteredInvoices'), value: stats?.rangeInvoices || 0, icon: Receipt, color: 'text-cyan-400', bg: 'bg-cyan-950/40 border-cyan-800/40' },
+    { label: t('activeBranchesCount'), value: stats?.activeBranches || 0, icon: Store, color: 'text-purple-400', bg: 'bg-purple-950/40 border-purple-800/40' },
+    { label: t('rewardStock'), value: stats?.prizeStock || 0, icon: Award, color: 'text-rose-400', bg: 'bg-rose-950/40 border-rose-800/40' }
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       
       {/* Header & Date Range Filter Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-gold-400/20">
         <div>
           <h1 className="text-2xl font-serif font-bold text-white flex items-center gap-2">
-            Executive Analytics Dashboard <Sparkles className="w-5 h-5 text-gold-400" />
+            {t('dashTitle')} <Sparkles className="w-5 h-5 text-gold-400" />
           </h1>
           <div className="flex items-center gap-2 mt-1">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <p className="text-xs text-slate-400">
-              {isTodayOnly ? "Real-time Live Today's Operational Metrics" : `Filtered Range: ${startDate} to ${endDate}`}
+              {isTodayOnly ? t('liveStatusToday') : t('liveStatusRange', { start: startDate, end: endDate })}
             </p>
           </div>
         </div>
@@ -105,14 +107,14 @@ const Dashboard = () => {
         {/* Date Filter Controls */}
         <div className="flex flex-wrap items-center gap-3 bg-slate-900/90 p-2.5 rounded-xl border border-gold-400/20 shadow-md">
           <div className="flex items-center gap-2 text-xs text-slate-300 font-medium">
-            <span>From:</span>
+            <span>{t('fromLabel')}</span>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="bg-slate-800 text-white px-2.5 py-1 rounded-lg border border-slate-700 focus:outline-none focus:border-gold-400 text-xs"
             />
-            <span>To:</span>
+            <span>{t('toLabel')}</span>
             <input
               type="date"
               value={endDate}
@@ -128,25 +130,25 @@ const Dashboard = () => {
                 isTodayOnly ? 'bg-gold-gradient text-black' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
               }`}
             >
-              Today
+              {t('todayBtn')}
             </button>
             <button
               onClick={() => handleQuickPreset('yesterday')}
               className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] font-semibold"
             >
-              Yesterday
+              {t('yesterdayBtn')}
             </button>
             <button
               onClick={() => handleQuickPreset('7days')}
               className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] font-semibold"
             >
-              7 Days
+              {t('last7DaysBtn')}
             </button>
             <button
               onClick={() => handleQuickPreset('reset')}
               className="px-2 py-1 text-gold-400 hover:underline text-[11px] font-semibold"
             >
-              Reset
+              {t('resetBtn')}
             </button>
           </div>
         </div>
@@ -176,7 +178,7 @@ const Dashboard = () => {
         {/* Chart */}
         <div className="lg:col-span-2 glass-panel border-gold-400/20 rounded-xl p-5 shadow-lg">
           <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-gold-400" /> Branch Spin Distribution
+            <TrendingUp className="w-4 h-4 text-gold-400" /> {t('branchSpinDist')}
           </h3>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -199,12 +201,12 @@ const Dashboard = () => {
         {/* Recent Winners Feed */}
         <div className="glass-panel border-gold-400/20 rounded-xl p-5 shadow-lg">
           <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-gold-400" /> Recent Winners
+            <Trophy className="w-4 h-4 text-gold-400" /> {t('recentWinnersFeed')}
           </h3>
 
           <div className="space-y-3">
             {recentWinners.length === 0 ? (
-              <p className="text-xs text-slate-500 italic">No spins recorded yet today.</p>
+              <p className="text-xs text-slate-500 italic">{t('noSpinsToday')}</p>
             ) : (
               recentWinners.map((w) => (
                 <div key={w.id} className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg flex items-center justify-between text-xs">
