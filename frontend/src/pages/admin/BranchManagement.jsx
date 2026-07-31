@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import QRCodeModal from '../../components/QRCodeModal';
+import { useLanguage } from '../../context/LanguageContext';
 import { Store, Plus, QrCode, Edit2, Trash2, CheckCircle, XCircle, MapPin, ExternalLink, RefreshCw } from 'lucide-react';
 
 const BranchManagement = () => {
+  const { t } = useLanguage();
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -76,22 +78,22 @@ const BranchManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gold-400/20">
         <div>
           <h1 className="text-2xl font-serif font-bold text-white flex items-center gap-2">
-            Branch Management <Store className="w-5 h-5 text-gold-400" />
+            {t('branchTitle')} <Store className="w-5 h-5 text-gold-400" />
           </h1>
-          <p className="text-xs text-slate-400">Manage store branches, Google Business Review links, and QR Code Standees</p>
+          <p className="text-xs text-slate-400">{t('branchSubtitle')}</p>
         </div>
 
         <button
           onClick={handleOpenCreate}
           className="btn-gold px-4 py-2 rounded-xl text-xs font-bold shadow-gold flex items-center gap-2 self-start sm:self-auto"
         >
-          <Plus className="w-4 h-4" /> Add New Branch
+          <Plus className="w-4 h-4" /> {t('addBranchBtn')}
         </button>
       </div>
 
@@ -108,7 +110,7 @@ const BranchManagement = () => {
                   <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                     branch.status === 'ACTIVE' ? 'bg-emerald-950 text-emerald-400 border border-emerald-700/50' : 'bg-rose-950 text-rose-400 border border-rose-700/50'
                   }`}>
-                    {branch.status}
+                    {branch.status === 'ACTIVE' ? t('branchActive') : branch.status}
                   </span>
                   <span className="text-xs font-mono text-gold-400">ID: {branch.code}</span>
                 </div>

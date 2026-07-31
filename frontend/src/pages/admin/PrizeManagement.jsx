@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 import { Gift, Plus, Edit2, Trash2, CheckCircle2, XCircle, Percent, Package, Palette, ArrowUpDown } from 'lucide-react';
 
 const PrizeManagement = () => {
+  const { t } = useLanguage();
   const [prizes, setPrizes] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -97,22 +99,22 @@ const PrizeManagement = () => {
   const totalWeightSum = activePrizes.reduce((sum, p) => sum + Number(p.weight), 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gold-400/20">
         <div>
           <h1 className="text-2xl font-serif font-bold text-white flex items-center gap-2">
-            Spin Prize Management <Gift className="w-5 h-5 text-gold-400" />
+            {t('prizeTitle')} <Gift className="w-5 h-5 text-gold-400" />
           </h1>
-          <p className="text-xs text-slate-400">Configure 10 spin wheel segments, weighted probabilities, display orders, and stock levels</p>
+          <p className="text-xs text-slate-400">{t('prizeSubtitle')}</p>
         </div>
 
         <button
           onClick={handleOpenCreate}
           className="btn-gold px-4 py-2 rounded-xl text-xs font-bold shadow-gold flex items-center gap-2 self-start sm:self-auto"
         >
-          <Plus className="w-4 h-4" /> Add New Prize
+          <Plus className="w-4 h-4" /> {t('addPrizeBtn')}
         </button>
       </div>
 

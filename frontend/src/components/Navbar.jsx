@@ -28,10 +28,10 @@ const Navbar = () => {
           </div>
           <div>
             <span className="font-serif font-bold text-lg text-white tracking-wider block leading-tight">
-              {isAdminPage ? 'MAJLIS AL OUD' : t('brandName')}
+              {t('brandName')}
             </span>
             <span className="text-[10px] text-gold-400 uppercase tracking-widest block">
-              {isAdminPage ? 'SUPER ADMIN PORTAL' : t('brandSubtitle')}
+              {isAdminPage ? t('superAdminPortal') : t('brandSubtitle')}
             </span>
           </div>
         </Link>

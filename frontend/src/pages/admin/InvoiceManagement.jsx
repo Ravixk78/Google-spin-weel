@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 import { Receipt, Plus, Upload, Search, Filter, CheckCircle, XCircle, Trash2, Edit2, ToggleLeft, ToggleRight, FileSpreadsheet } from 'lucide-react';
 
 const InvoiceManagement = () => {
+  const { t } = useLanguage();
   const [invoices, setInvoices] = useState([]);
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -140,15 +142,15 @@ const InvoiceManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gold-400/20">
         <div>
           <h1 className="text-2xl font-serif font-bold text-white flex items-center gap-2">
-            Invoice Management <Receipt className="w-5 h-5 text-gold-400" />
+            {t('invoiceTitle')} <Receipt className="w-5 h-5 text-gold-400" />
           </h1>
-          <p className="text-xs text-slate-400">Manage 4-digit store sales invoices, bulk CSV uploads, and double-spin eligibility</p>
+          <p className="text-xs text-slate-400">{t('invoiceSubtitle')}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -163,14 +165,14 @@ const InvoiceManagement = () => {
             onClick={() => setShowImportModal(true)}
             className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-gold-300 rounded-xl text-xs font-semibold border border-slate-700 flex items-center gap-2"
           >
-            <Upload className="w-4 h-4" /> Import CSV / Bulk
+            <Upload className="w-4 h-4" /> {t('bulkUploadBtn')}
           </button>
 
           <button
             onClick={() => setShowCreateModal(true)}
             className="btn-gold px-4 py-2 rounded-xl text-xs font-bold shadow-gold flex items-center gap-2"
           >
-            <Plus className="w-4 h-4" /> Create Single Invoice
+            <Plus className="w-4 h-4" /> {t('addInvoiceBtn')}
           </button>
         </div>
       </div>

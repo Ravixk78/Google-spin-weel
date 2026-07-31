@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 import { Users, Search, ShieldAlert, Globe, MapPin, Receipt, Gift, Calendar, QrCode } from 'lucide-react';
 
 const CustomerHistory = () => {
+  const { t } = useLanguage();
   const [history, setHistory] = useState([]);
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,15 +46,15 @@ const CustomerHistory = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gold-400/20">
         <div>
           <h1 className="text-2xl font-serif font-bold text-white flex items-center gap-2">
-            Customer History Audit Log <Users className="w-5 h-5 text-gold-400" />
+            {t('customerHistoryTitle')} <Users className="w-5 h-5 text-gold-400" />
           </h1>
-          <p className="text-xs text-slate-400">Complete historical audit trail of customer Google accounts, scanned QR codes, and prize allocations</p>
+          <p className="text-xs text-slate-400">{t('customerHistorySubtitle')}</p>
         </div>
       </div>
 
@@ -63,14 +65,14 @@ const CustomerHistory = () => {
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
             <input
               type="text"
-              placeholder="Search customer name, email, Google ID, or invoice number..."
+              placeholder={t('searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-gold-400"
             />
           </div>
           <button type="submit" className="px-4 py-2 bg-slate-800 text-gold-300 text-xs font-bold rounded-xl border border-slate-700">
-            Search
+            {t('searchBtn')}
           </button>
         </form>
 
@@ -79,7 +81,7 @@ const CustomerHistory = () => {
           onChange={(e) => setSelectedBranch(e.target.value)}
           className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-gold-400"
         >
-          <option value="">All Branches</option>
+          <option value="">{t('allBranches')}</option>
           {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
         </select>
       </div>
@@ -90,23 +92,23 @@ const CustomerHistory = () => {
           <table className="w-full text-left text-xs text-slate-300">
             <thead className="bg-slate-900/90 text-gold-400 uppercase font-bold text-[11px] border-b border-gold-400/20">
               <tr>
-                <th className="p-3.5">Customer Name</th>
-                <th className="p-3.5">Google Email</th>
-                <th className="p-3.5">Google Account ID</th>
-                <th className="p-3.5">Branch</th>
-                <th className="p-3.5">Invoice Ref</th>
-                <th className="p-3.5">Prize Won</th>
-                <th className="p-3.5">Review Date</th>
-                <th className="p-3.5">Spin Date</th>
-                <th className="p-3.5">QR Code Used</th>
-                <th className="p-3.5">IP Address</th>
+                <th className="p-3.5">{t('thCustomerName')}</th>
+                <th className="p-3.5">{t('thGoogleEmail')}</th>
+                <th className="p-3.5">{t('thGoogleId')}</th>
+                <th className="p-3.5">{t('thBranch')}</th>
+                <th className="p-3.5">{t('thInvoiceRef')}</th>
+                <th className="p-3.5">{t('thPrizeWon')}</th>
+                <th className="p-3.5">{t('thReviewDate')}</th>
+                <th className="p-3.5">{t('thSpinDate')}</th>
+                <th className="p-3.5">{t('thQrCode')}</th>
+                <th className="p-3.5">{t('thIpAddress')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
               {loading ? (
-                <tr><td colSpan={10} className="p-8 text-center text-slate-500 font-sans">Loading customer audit logs...</td></tr>
+                <tr><td colSpan={10} className="p-8 text-center text-slate-500 font-sans">{t('loadingAuditLogs')}</td></tr>
               ) : history.length === 0 ? (
-                <tr><td colSpan={10} className="p-8 text-center text-slate-500 italic font-sans">No customer history records found.</td></tr>
+                <tr><td colSpan={10} className="p-8 text-center text-slate-500 italic font-sans">{t('noCustomerHistory')}</td></tr>
               ) : (
                 history.map((row, idx) => (
                   <tr key={idx} className="hover:bg-slate-900/40 transition-colors">

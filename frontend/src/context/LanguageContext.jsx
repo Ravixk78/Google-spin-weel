@@ -91,6 +91,55 @@ export const translations = {
     superAdminPortal: "بوابة الإدارة العليا",
     logout: "تسجيل الخروج",
 
+    // Customer History Audit Log Page
+    customerHistoryTitle: "سجل تدقيق العملاء والجوائز",
+    customerHistorySubtitle: "سجل تدقيق كامل لحسابات جوجل للعملاء ورموز QR والجوائز الممنوحة",
+    searchPlaceholder: "البحث عن اسم العميل، البريد، معرّف جوجل، أو رقم الفاتورة...",
+    searchBtn: "بحث",
+    allBranches: "جميع الفروع",
+    thCustomerName: "اسم العميل",
+    thGoogleEmail: "بريد جوجل",
+    thGoogleId: "معرّف حساب جوجل",
+    thBranch: "الفرع",
+    thInvoiceRef: "رقم الفاتورة",
+    thPrizeWon: "الجائزة المكسوبة",
+    thReviewDate: "تاريخ التقييم",
+    thSpinDate: "تاريخ التدوير",
+    thQrCode: "رمز QR المستخدم",
+    thIpAddress: "عنوان IP",
+    loadingAuditLogs: "جاري تحميل سجلات التدقيق...",
+    noCustomerHistory: "لم يتم العثور على سجلات عملاء.",
+
+    // Branch Management Page
+    branchTitle: "إدارة فروع المتاجر",
+    branchSubtitle: "إدارة فروع المتاجر وروابط تقييم جوجل ورموز QR",
+    addBranchBtn: "إضافة فرع جديد",
+    qrPdfBtn: "رمز QR والملف",
+    branchActive: "نشط",
+
+    // Invoice Management Page
+    invoiceTitle: "إدارة الفواتير والإيصالات",
+    invoiceSubtitle: "إدارة والتحقق من أرقام الفواتير المكونة من 4 أرقام",
+    addInvoiceBtn: "إضافة فاتورة واحدة",
+    bulkUploadBtn: "رفع ملف CSV",
+    thStatus: "الحالة",
+    statusUnused: "غير مستخدمة / متاحة",
+    statusUsed: "مستخدمة ومطالب بها",
+
+    // Prize Management Page
+    prizeTitle: "إدارة الجوائز ونسب الفوز",
+    prizeSubtitle: "إدارة جوائز العجلة والكميات ونسب الاحتمالات",
+    addPrizeBtn: "إضافة جائزة جديدة",
+    thPrizeName: "اسم الجائزة",
+    thStockQty: "كمية المخزون",
+    thProbability: "نسبة الاحتمال",
+
+    // Reports Page
+    reportsTitle: "التقارير والتحليلات الشاملة",
+    reportsSubtitle: "تصدير تقارير الأداء والتحليلات التشغيلية",
+    exportPdf: "تصدير تقرير PDF",
+    exportExcel: "تصدير ملف Excel",
+
     // Footer
     footerText: "عطور مجلس العود الإمارات العربية المتحدة © 2026. جميع الحقوق محفوظة. نظام جوائز تقييم جوجل."
   },
@@ -181,6 +230,55 @@ export const translations = {
     customerHistory: "Customer History",
     superAdminPortal: "Super Admin Portal",
     logout: "Logout",
+
+    // Customer History Audit Log Page
+    customerHistoryTitle: "Customer History Audit Log",
+    customerHistorySubtitle: "Complete historical audit trail of customer Google accounts, scanned QR codes, and prize allocations",
+    searchPlaceholder: "Search customer name, email, Google ID, or invoice number...",
+    searchBtn: "Search",
+    allBranches: "All Branches",
+    thCustomerName: "Customer Name",
+    thGoogleEmail: "Google Email",
+    thGoogleId: "Google Account ID",
+    thBranch: "Branch",
+    thInvoiceRef: "Invoice Ref",
+    thPrizeWon: "Prize Won",
+    thReviewDate: "Review Date",
+    thSpinDate: "Spin Date",
+    thQrCode: "QR Code Used",
+    thIpAddress: "IP Address",
+    loadingAuditLogs: "Loading customer audit logs...",
+    noCustomerHistory: "No customer history records found.",
+
+    // Branch Management Page
+    branchTitle: "Branch Management",
+    branchSubtitle: "Manage store branches, Google Business Review links, and QR Code Standees",
+    addBranchBtn: "Add New Branch",
+    qrPdfBtn: "QR Code & PDF",
+    branchActive: "ACTIVE",
+
+    // Invoice Management Page
+    invoiceTitle: "Invoice Management",
+    invoiceSubtitle: "Manage and audit 4-digit branch invoice numbers",
+    addInvoiceBtn: "Add Single Invoice",
+    bulkUploadBtn: "Upload CSV / Bulk",
+    thStatus: "Status",
+    statusUnused: "Unused / Available",
+    statusUsed: "Used & Claimed",
+
+    // Prize Management Page
+    prizeTitle: "Spin Prize Management",
+    prizeSubtitle: "Manage wheel prizes, quantities, and winning probability odds",
+    addPrizeBtn: "Add New Prize",
+    thPrizeName: "Prize Name",
+    thStockQty: "Stock Qty",
+    thProbability: "Probability Odds",
+
+    // Reports Page
+    reportsTitle: "Analytics & Reports",
+    reportsSubtitle: "Export performance reports and operational analytics",
+    exportPdf: "Export PDF Report",
+    exportExcel: "Export Excel / CSV",
 
     // Footer
     footerText: "Majlis Al Oud Perfumes UAE © 2026. All Rights Reserved. Google Review Reward System."

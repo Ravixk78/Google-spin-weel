@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 import { exportToExcel, exportToPDF, exportToCSV } from '../../services/exportUtils';
 import { FileBarChart, Filter, Search, RotateCcw, Download, Calendar, Receipt, Store, Gift, PieChart } from 'lucide-react';
 
 const Reports = () => {
+  const { t } = useLanguage();
   const [reports, setReports] = useState([]);
   const [prizeDistribution, setPrizeDistribution] = useState([]);
   const [branches, setBranches] = useState([]);
@@ -115,16 +117,16 @@ const Reports = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       
       {/* Header & Export Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gold-400/20">
         <div>
           <h1 className="text-2xl font-serif font-bold text-white flex items-center gap-2">
-            System Reports <FileBarChart className="w-5 h-5 text-gold-400" />
+            {t('reportsTitle')} <FileBarChart className="w-5 h-5 text-gold-400" />
           </h1>
           <p className="text-xs text-slate-400">
-            {filters.is_today_only ? "Showing ONLY today's records by default." : "Filtered reports overview."}
+            {t('reportsSubtitle')}
           </p>
         </div>
 
