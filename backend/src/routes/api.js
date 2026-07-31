@@ -4,7 +4,7 @@ const router = express.Router();
 const { verifyAdminToken } = require('../middleware/authMiddleware');
 const { adminLogin, getAdminProfile, customerGoogleAuth } = require('../controllers/authController');
 const { getBranches, detectBranch, createBranch, updateBranch, regenerateQR, deleteBranch } = require('../controllers/branchController');
-const { validateInvoiceForCustomer, listInvoices, createInvoice, updateInvoice, toggleInvoiceStatus, deleteInvoice, importInvoicesCSV } = require('../controllers/invoiceController');
+const { validateInvoiceForCustomer, listInvoices, createInvoice, updateInvoice, toggleInvoiceStatus, deleteInvoice, clearAllInvoices, importInvoicesCSV } = require('../controllers/invoiceController');
 const { executeCustomerSpin: spinAction } = require('../controllers/spinController');
 const { getPrizes, createPrize, updatePrize, deletePrize } = require('../controllers/prizeController');
 const { getReports } = require('../controllers/reportController');
@@ -45,6 +45,7 @@ router.get('/admin/invoices', verifyAdminToken, listInvoices);
 router.post('/admin/invoices', verifyAdminToken, createInvoice);
 router.put('/admin/invoices/:id', verifyAdminToken, updateInvoice);
 router.patch('/admin/invoices/:id/toggle-status', verifyAdminToken, toggleInvoiceStatus);
+router.delete('/admin/invoices/clear-all', verifyAdminToken, clearAllInvoices);
 router.delete('/admin/invoices/:id', verifyAdminToken, deleteInvoice);
 router.post('/admin/invoices/import-csv', verifyAdminToken, importInvoicesCSV);
 

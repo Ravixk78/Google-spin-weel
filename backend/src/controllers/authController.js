@@ -90,6 +90,9 @@ const customerGoogleAuth = async (req, res) => {
       { expiresIn: '12h' }
     );
 
+    const reviewRecord = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE customer_id = ?`, [customer.id]);
+    const hasSubmittedReview = (reviewRecord?.cnt || 0) > 0;
+
     return res.json({
       message: 'Google authentication successful',
       token: customerToken,
@@ -98,7 +101,8 @@ const customerGoogleAuth = async (req, res) => {
         google_id: customer.google_id,
         email: customer.email,
         name: customer.name,
-        avatar_url: customer.avatar_url
+        avatar_url: customer.avatar_url,
+        has_submitted_review: hasSubmittedReview
       }
     });
   } catch (err) {

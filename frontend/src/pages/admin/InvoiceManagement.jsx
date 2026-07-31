@@ -127,6 +127,18 @@ const InvoiceManagement = () => {
     }
   };
 
+  const handleClearAll = async () => {
+    if (window.confirm('Are you sure you want to CLEAR ALL INVOICES? This will delete all current invoice records from the system.')) {
+      try {
+        const res = await api.delete('/admin/invoices/clear-all');
+        alert(res.data.message || 'All invoices cleared successfully.');
+        fetchInvoices();
+      } catch (err) {
+        alert(err.response?.data?.error || 'Failed to clear invoices.');
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       
@@ -136,10 +148,17 @@ const InvoiceManagement = () => {
           <h1 className="text-2xl font-serif font-bold text-white flex items-center gap-2">
             Invoice Management <Receipt className="w-5 h-5 text-gold-400" />
           </h1>
-          <p className="text-xs text-slate-400">Manage store sales invoices, bulk CSV uploads, and double-spin eligibility status</p>
+          <p className="text-xs text-slate-400">Manage 4-digit store sales invoices, bulk CSV uploads, and double-spin eligibility</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={handleClearAll}
+            className="px-3.5 py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-300 rounded-xl text-xs font-semibold border border-rose-700/50 flex items-center gap-2"
+          >
+            <Trash2 className="w-4 h-4 text-rose-400" /> Clear All Invoices
+          </button>
+
           <button
             onClick={() => setShowImportModal(true)}
             className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-gold-300 rounded-xl text-xs font-semibold border border-slate-700 flex items-center gap-2"
@@ -263,12 +282,13 @@ const InvoiceManagement = () => {
 
             <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Invoice Number</label>
+                <label className="block text-slate-300 font-semibold mb-1">Invoice Number (4 Digits)</label>
                 <input
                   type="text"
-                  placeholder="e.g. INV-KALBA-5001"
+                  maxLength={4}
+                  placeholder="e.g. 5879"
                   value={formData.invoice_number}
-                  onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value.replace(/\D/g, '') })}
                   className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 font-mono text-xs"
                   required
                 />
@@ -326,7 +346,7 @@ const InvoiceManagement = () => {
               <FileSpreadsheet className="w-5 h-5 text-gold-400" /> Bulk CSV Invoice Import
             </h2>
             <p className="text-xs text-slate-400 mb-4">
-              Paste CSV rows below. Format: <span className="font-mono text-gold-300">INVOICE_NUMBER, BRANCH_ID, AMOUNT</span>
+              Paste CSV rows below. Format: <span className="font-mono text-gold-300">4_DIGIT_INVOICE, BRANCH_ID, AMOUNT</span>
             </p>
 
             <form onSubmit={handleBulkImportSubmit} className="space-y-4 text-xs">
@@ -334,7 +354,7 @@ const InvoiceManagement = () => {
                 rows={8}
                 value={csvRawText}
                 onChange={(e) => setCsvRawText(e.target.value)}
-                placeholder="INV-KALBA-9001, 1, 450&#10;INV-RAK-9002, 2, 720&#10;INV-SHJ-9003, 3, 310"
+                placeholder="5879, 1, 450&#10;5880, 2, 720&#10;5881, 3, 310"
                 className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 font-mono text-xs"
                 required
               />

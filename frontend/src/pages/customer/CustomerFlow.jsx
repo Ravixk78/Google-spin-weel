@@ -77,20 +77,33 @@ const CustomerFlow = () => {
   // Step 6: Validate Invoice Number
   const handleValidateInvoice = async (e) => {
     e.preventDefault();
-    if (!invoiceNumber.trim()) return;
+    const cleanNum = invoiceNumber.trim();
+    if (!cleanNum) return;
+
+    if (!/^\d{4}$/.test(cleanNum)) {
+      setInvoiceError('Invoice number must be exactly 4 digits (e.g. 5879).');
+      return;
+    }
 
     setValidating(true);
     setInvoiceError(null);
 
     try {
       const res = await api.post('/customer/invoice/validate', {
-        invoice_number: invoiceNumber.trim(),
-        branch_id: detectedBranch?.id || 1
+        invoice_number: cleanNum,
+        branch_id: detectedBranch?.id || 1,
+        customer_id: customerUser?.id
       });
 
       if (res.data?.valid) {
         setValidatedInvoice(res.data.invoice);
-        setCurrentStep(3); // Proceed to Google Review step
+        
+        // If customer has already submitted a review previously, skip straight to Spin Wheel (Step 4)
+        if (customerUser?.has_submitted_review || res.data?.has_submitted_review) {
+          setCurrentStep(4);
+        } else {
+          setCurrentStep(3); // Proceed to Google Review step
+        }
       } else {
         setInvoiceError(res.data?.error || 'Invoice validation failed.');
       }
@@ -254,19 +267,20 @@ const CustomerFlow = () => {
             <Receipt className="w-7 h-7 text-emerald-400" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-1">Step 2: Enter Invoice Receipt</h2>
+          <h2 className="text-xl font-bold text-white mb-1">Step 2: Enter 4-Digit Invoice Number</h2>
           <p className="text-xs text-slate-300 mb-6">
-            Enter the invoice number printed on your receipt from <span className="text-gold-400 font-semibold">{detectedBranch?.name}</span>.
+            Enter the 4-digit invoice number printed on your receipt from <span className="text-gold-400 font-semibold">{detectedBranch?.name}</span>.
           </p>
 
           <form onSubmit={handleValidateInvoice} className="space-y-4">
             <div>
               <input
                 type="text"
-                placeholder="e.g. INV-KALBA-1001"
+                maxLength={4}
+                placeholder="e.g. 5879"
                 value={invoiceNumber}
-                onChange={(e) => setInvoiceNumber(e.target.value)}
-                className="w-full text-center tracking-wider font-mono text-lg py-3 px-4 rounded-xl bg-slate-900/90 border border-gold-400/40 text-white focus:outline-none focus:border-gold-400 uppercase placeholder-slate-600"
+                onChange={(e) => setInvoiceNumber(e.target.value.replace(/\D/g, ''))}
+                className="w-full text-center tracking-widest font-mono text-2xl py-3 px-4 rounded-xl bg-slate-900/90 border border-gold-400/40 text-white focus:outline-none focus:border-gold-400 placeholder-slate-600"
                 required
               />
             </div>

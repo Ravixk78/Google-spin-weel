@@ -4,13 +4,18 @@ const { logAudit } = require('../middleware/authMiddleware');
 // Customer: Validate Invoice for scanned branch
 const validateInvoiceForCustomer = async (req, res) => {
   try {
-    const { invoice_number, branch_id } = req.body;
+    const { invoice_number, branch_id, customer_id } = req.body;
 
     if (!invoice_number || !invoice_number.trim()) {
       return res.status(400).json({ error: 'Invoice number is required.' });
     }
 
-    const cleanInvoice = invoice_number.trim().toUpperCase();
+    const cleanInvoice = invoice_number.trim();
+
+    // Enforce 4-digit requirement
+    if (!/^\d{4}$/.test(cleanInvoice)) {
+      return res.status(400).json({ error: 'Invoice number must be exactly 4 digits (e.g. 5879).' });
+    }
 
     // Fetch branch info or fallback to first active branch
     let branch = null;
@@ -26,28 +31,28 @@ const validateInvoiceForCustomer = async (req, res) => {
 
     const activeBranchId = branch.id;
 
-    // 1. Check if invoice exists in DB
+    // 1. Check if invoice exists in DB for THIS branch
     let invoice = await getQuery(`
       SELECT i.*, b.name as branch_name, b.code as branch_code
       FROM invoices i
       JOIN branches b ON i.branch_id = b.id
-      WHERE UPPER(i.invoice_number) = ?
-    `, [cleanInvoice]);
+      WHERE UPPER(i.invoice_number) = ? AND i.branch_id = ?
+    `, [cleanInvoice, activeBranchId]);
 
-    // 2. Check if invoice has already been used in spin_history
+    // 2. Check if invoice has already been used in spin_history for THIS branch
     const alreadySpun = await getQuery(`
       SELECT id FROM spin_history 
-      WHERE invoice_id IN (SELECT id FROM invoices WHERE UPPER(invoice_number) = ?)
-    `, [cleanInvoice]);
+      WHERE branch_id = ? AND invoice_id IN (SELECT id FROM invoices WHERE UPPER(invoice_number) = ? AND branch_id = ?)
+    `, [activeBranchId, cleanInvoice, activeBranchId]);
 
     if (alreadySpun || (invoice && invoice.is_used === 1)) {
       return res.status(400).json({
         valid: false,
-        error: 'This invoice receipt has already been used for a review reward spin.'
+        error: `Invoice #${cleanInvoice} has already been used for a spin at ${branch.name}.`
       });
     }
 
-    // 3. If invoice not pre-uploaded, auto-create it on-the-fly
+    // 3. If invoice not pre-uploaded, auto-create it on-the-fly for THIS branch
     if (!invoice) {
       try {
         await runQuery(`
@@ -62,8 +67,8 @@ const validateInvoiceForCustomer = async (req, res) => {
         SELECT i.*, b.name as branch_name, b.code as branch_code
         FROM invoices i
         JOIN branches b ON i.branch_id = b.id
-        WHERE UPPER(i.invoice_number) = ?
-      `, [cleanInvoice]);
+        WHERE UPPER(i.invoice_number) = ? AND i.branch_id = ?
+      `, [cleanInvoice, activeBranchId]);
     }
 
     if (!invoice) {
@@ -76,9 +81,17 @@ const validateInvoiceForCustomer = async (req, res) => {
       };
     }
 
+    // Check if customer has previously submitted a Google Review
+    let hasSubmittedReview = false;
+    if (customer_id) {
+      const revCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE customer_id = ?`, [customer_id]);
+      hasSubmittedReview = (revCheck?.cnt || 0) > 0;
+    }
+
     return res.json({
       valid: true,
       message: 'Invoice validated successfully.',
+      has_submitted_review: hasSubmittedReview,
       invoice: {
         id: invoice.id,
         invoice_number: invoice.invoice_number,
@@ -146,11 +159,15 @@ const createInvoice = async (req, res) => {
       return res.status(400).json({ error: 'Invoice number and branch ID are required.' });
     }
 
-    const cleanNum = invoice_number.trim().toUpperCase();
+    const cleanNum = String(invoice_number).trim();
 
-    const existing = await getQuery(`SELECT * FROM invoices WHERE UPPER(invoice_number) = ?`, [cleanNum]);
+    if (!/^\d{4}$/.test(cleanNum)) {
+      return res.status(400).json({ error: 'Invoice number must be exactly 4 digits (e.g. 5879).' });
+    }
+
+    const existing = await getQuery(`SELECT * FROM invoices WHERE UPPER(invoice_number) = ? AND branch_id = ?`, [cleanNum, branch_id]);
     if (existing) {
-      return res.status(400).json({ error: 'Invoice number already exists.' });
+      return res.status(400).json({ error: 'Invoice number already exists for this branch.' });
     }
 
     const result = await runQuery(`
@@ -247,6 +264,18 @@ const deleteInvoice = async (req, res) => {
   }
 };
 
+// Admin: Clear All Invoices
+const clearAllInvoices = async (req, res) => {
+  try {
+    await runQuery(`DELETE FROM invoices`);
+    await logAudit(req.admin.id, 'CLEAR_ALL_INVOICES', 'INVOICE', null, {}, req.ip);
+    return res.json({ message: 'All invoices cleared successfully.' });
+  } catch (err) {
+    console.error('Clear invoices error:', err);
+    res.status(500).json({ error: 'Failed to clear invoices.' });
+  }
+};
+
 // Admin: Bulk CSV Import
 const importInvoicesCSV = async (req, res) => {
   try {
@@ -265,8 +294,14 @@ const importInvoicesCSV = async (req, res) => {
         continue;
       }
 
-      const cleanNum = String(item.invoice_number).trim().toUpperCase();
-      const existing = await getQuery(`SELECT id FROM invoices WHERE UPPER(invoice_number) = ?`, [cleanNum]);
+      const cleanNum = String(item.invoice_number).trim();
+
+      if (!/^\d{4}$/.test(cleanNum)) {
+        skippedCount++;
+        continue;
+      }
+
+      const existing = await getQuery(`SELECT id FROM invoices WHERE UPPER(invoice_number) = ? AND branch_id = ?`, [cleanNum, item.branch_id]);
 
       if (existing) {
         skippedCount++;
@@ -301,5 +336,6 @@ module.exports = {
   updateInvoice,
   toggleInvoiceStatus,
   deleteInvoice,
+  clearAllInvoices,
   importInvoicesCSV
 };

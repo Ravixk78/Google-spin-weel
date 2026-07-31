@@ -83,7 +83,7 @@ const initDB = async () => {
         await runQuery(`
           CREATE TABLE IF NOT EXISTS invoices (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            invoice_number TEXT UNIQUE NOT NULL,
+            invoice_number TEXT NOT NULL,
             branch_id INTEGER NOT NULL,
             amount REAL DEFAULT 0,
             is_used INTEGER DEFAULT 0,
@@ -93,7 +93,8 @@ const initDB = async () => {
             status TEXT DEFAULT 'ELIGIBLE',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (branch_id) REFERENCES branches(id),
-            FOREIGN KEY (used_by_customer_id) REFERENCES customers(id)
+            FOREIGN KEY (used_by_customer_id) REFERENCES customers(id),
+            UNIQUE(invoice_number, branch_id)
           )
         `);
 
