@@ -6,12 +6,12 @@ const getCustomerHistory = async (req, res) => {
 
     let query = `
       SELECT
-        c.id as customer_id,
-        c.name as customer_name,
-        c.email as google_email,
-        c.google_id as google_account_id,
-        b.name as branch_name,
-        b.code as branch_code,
+        sh.id as spin_id,
+        COALESCE(c.name, 'Google Customer') as customer_name,
+        COALESCE(c.email, 'N/A') as google_email,
+        COALESCE(c.google_id, 'N/A') as google_account_id,
+        COALESCE(b.name, 'Main Branch') as branch_name,
+        COALESCE(b.code, 'main') as branch_code,
         i.invoice_number,
         sh.prize_name_snapshot as prize_won,
         sp.color_code as prize_color,
@@ -20,10 +20,10 @@ const getCustomerHistory = async (req, res) => {
         sh.qr_code_used,
         sh.ip_address
       FROM spin_history sh
-      JOIN customers c ON sh.customer_id = c.id
-      JOIN branches b ON sh.branch_id = b.id
-      JOIN invoices i ON sh.invoice_id = i.id
-      JOIN spin_prizes sp ON sh.prize_id = sp.id
+      LEFT JOIN customers c ON sh.customer_id = c.id
+      LEFT JOIN branches b ON sh.branch_id = b.id
+      LEFT JOIN invoices i ON sh.invoice_id = i.id
+      LEFT JOIN spin_prizes sp ON sh.prize_id = sp.id
       WHERE 1=1
     `;
 
