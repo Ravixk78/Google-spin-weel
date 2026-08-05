@@ -56,17 +56,27 @@ const updatePrize = async (req, res) => {
 
     await runQuery(`
       UPDATE spin_prizes
-      SET name = COALESCE(?, name),
-          description = COALESCE(?, description),
-          weight = COALESCE(?, weight),
-          stock_quantity = COALESCE(?, stock_quantity),
-          display_order = COALESCE(?, display_order),
-          color_code = COALESCE(?, color_code),
-          is_active = COALESCE(?, is_active),
-          image_url = COALESCE(?, image_url),
+      SET name = ?,
+          description = ?,
+          weight = ?,
+          stock_quantity = ?,
+          display_order = ?,
+          color_code = ?,
+          is_active = ?,
+          image_url = ?,
           updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `, [name, description, weight, stock_quantity, display_order, color_code, is_active, image_url, id]);
+    `, [
+      name !== undefined ? name : prize.name,
+      description !== undefined ? description : prize.description,
+      weight !== undefined ? Number(weight) : prize.weight,
+      stock_quantity !== undefined ? Number(stock_quantity) : prize.stock_quantity,
+      display_order !== undefined ? Number(display_order) : prize.display_order,
+      color_code !== undefined ? color_code : prize.color_code,
+      is_active !== undefined ? (is_active ? 1 : 0) : prize.is_active,
+      image_url !== undefined ? image_url : prize.image_url,
+      id
+    ]);
 
     // Record stock change if stock updated
     if (stock_quantity !== undefined && Number(stock_quantity) !== Number(prize.stock_quantity)) {

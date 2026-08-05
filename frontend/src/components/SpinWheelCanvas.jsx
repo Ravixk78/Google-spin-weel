@@ -28,16 +28,24 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
     prizes.forEach((prize) => {
       if (prize.image_url && prize.image_url.trim()) {
         const url = prize.image_url.trim();
-        if (!loadedImages[prize.id]) {
-          const img = new Image();
+        const img = new Image();
+        
+        // ONLY set crossOrigin for remote HTTP/HTTPS URLs (Data URLs fail if crossOrigin is set!)
+        if (url.startsWith('http://') || url.startsWith('https://')) {
           img.crossOrigin = 'Anonymous';
-          img.src = url;
-          img.onload = () => {
-            if (isMounted) {
-              setLoadedImages(prev => ({ ...prev, [prize.id]: img }));
-            }
-          };
         }
+
+        img.onload = () => {
+          if (isMounted) {
+            setLoadedImages(prev => ({ ...prev, [prize.id]: img }));
+          }
+        };
+
+        img.onerror = (e) => {
+          console.warn(`Failed to load prize image for prize ID ${prize.id}`, e);
+        };
+
+        img.src = url;
       }
     });
 

@@ -181,6 +181,7 @@ const PrizeManagement = () => {
               <tr>
                 <th className="p-3.5">Order</th>
                 <th className="p-3.5">Color</th>
+                <th className="p-3.5">Segment Image</th>
                 <th className="p-3.5">Prize Name & Description</th>
                 <th className="p-3.5">Weight</th>
                 <th className="p-3.5">Probability %</th>
@@ -191,9 +192,9 @@ const PrizeManagement = () => {
             </thead>
             <tbody className="divide-y divide-slate-800/60">
               {loading ? (
-                <tr><td colSpan={8} className="p-8 text-center text-slate-500">Loading spin prizes...</td></tr>
+                <tr><td colSpan={9} className="p-8 text-center text-slate-500">Loading spin prizes...</td></tr>
               ) : prizes.length === 0 ? (
-                <tr><td colSpan={8} className="p-8 text-center text-slate-500 italic">No prizes configured.</td></tr>
+                <tr><td colSpan={9} className="p-8 text-center text-slate-500 italic">No prizes configured.</td></tr>
               ) : (
                 prizes.map((p) => {
                   const probPct = totalWeightSum > 0 && p.is_active && p.stock_quantity > 0
@@ -205,6 +206,13 @@ const PrizeManagement = () => {
                       <td className="p-3.5 font-mono font-bold text-white">{p.display_order}</td>
                       <td className="p-3.5">
                         <div className="w-6 h-6 rounded-full border-2 border-white/20 shadow-md" style={{ backgroundColor: p.color_code || '#D4AF37' }} />
+                      </td>
+                      <td className="p-3.5">
+                        {p.image_url ? (
+                          <img src={p.image_url} alt={p.name} className="w-9 h-9 object-contain rounded-lg border border-gold-400/30 bg-slate-950 p-0.5 shadow" />
+                        ) : (
+                          <span className="text-[10px] text-slate-500 italic">No image</span>
+                        )}
                       </td>
                       <td className="p-3.5">
                         <p className="font-bold text-white text-xs">{p.name}</p>
