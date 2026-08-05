@@ -117,7 +117,7 @@ const CustomerFlow = () => {
     }
   };
 
-  // Step 2: Open Google Business Review Page & Auto Redirect to Spin Wheel when returning
+  // Step 2: Open Google Business Review Page & INSTANTLY load Spin Wheel page
   const handleOpenGoogleReview = () => {
     if (detectedBranch?.google_review_url) {
       const url = detectedBranch.google_review_url.trim();
@@ -127,31 +127,10 @@ const CustomerFlow = () => {
       }
     }
     setReviewOpened(true);
-
-    // Auto-advance listener when customer finishes review on Google and returns to our page
-    const onReturnToApp = () => {
-      window.removeEventListener('focus', onReturnToApp);
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-      setCurrentStep(3);
-    };
-
-    const onVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        window.removeEventListener('focus', onReturnToApp);
-        document.removeEventListener('visibilitychange', onVisibilityChange);
-        setCurrentStep(3);
-      }
-    };
-
-    window.addEventListener('focus', onReturnToApp);
-    document.addEventListener('visibilitychange', onVisibilityChange);
-
-    // Fallback auto-redirect after 3.5s so user is never stuck
-    setTimeout(() => {
-      window.removeEventListener('focus', onReturnToApp);
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-      setCurrentStep(3);
-    }, 3500);
+    
+    // Instantly transition app to Step 3 (Spin Wheel)
+    // So when the customer finishes review on Google Maps and taps "Done", our Spin Wheel page is ALREADY loaded!
+    setCurrentStep(3);
   };
 
   const handleCompleteReviewAndProceed = () => {
