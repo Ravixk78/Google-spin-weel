@@ -117,7 +117,7 @@ const CustomerFlow = () => {
     }
   };
 
-  // Step 2: Open Google Business Review Page & Auto Redirect to Spin Wheel
+  // Step 2: Open Google Business Review Page & Auto Redirect to Spin Wheel when returning
   const handleOpenGoogleReview = () => {
     if (detectedBranch?.google_review_url) {
       const url = detectedBranch.google_review_url.trim();
@@ -127,11 +127,31 @@ const CustomerFlow = () => {
       }
     }
     setReviewOpened(true);
-    
-    // Auto-redirect to Spin Wheel step (Step 3) immediately upon clicking review
-    setTimeout(() => {
+
+    // Auto-advance listener when customer finishes review on Google and returns to our page
+    const onReturnToApp = () => {
+      window.removeEventListener('focus', onReturnToApp);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       setCurrentStep(3);
-    }, 400);
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        window.removeEventListener('focus', onReturnToApp);
+        document.removeEventListener('visibilitychange', onVisibilityChange);
+        setCurrentStep(3);
+      }
+    };
+
+    window.addEventListener('focus', onReturnToApp);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    // Fallback auto-redirect after 3.5s so user is never stuck
+    setTimeout(() => {
+      window.removeEventListener('focus', onReturnToApp);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      setCurrentStep(3);
+    }, 3500);
   };
 
   const handleCompleteReviewAndProceed = () => {
