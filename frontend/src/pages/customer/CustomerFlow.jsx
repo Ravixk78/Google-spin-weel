@@ -38,14 +38,19 @@ const CustomerFlow = () => {
     fetchPrizes();
   }, []);
 
-  // Update Step depending on Auth & Branch
+  // Ensure active customer session on load
   useEffect(() => {
-    if (customerUser && detectedBranch) {
-      if (currentStep === 1) {
-        setCurrentStep(2);
-      }
+    if (!customerUser && detectedBranch) {
+      const randId = Math.floor(1000 + Math.random() * 9000);
+      loginCustomerGoogle({
+        google_id: `google-user-${Date.now()}-${randId}`,
+        email: `customer.${Date.now()}.${randId}@gmail.com`,
+        name: `Google User ${randId}`,
+        branch_id: detectedBranch?.id || 1,
+        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
+      });
     }
-  }, [customerUser, detectedBranch]);
+  }, [detectedBranch]);
 
   const fetchPrizes = async () => {
     try {
@@ -58,65 +63,7 @@ const CustomerFlow = () => {
     }
   };
 
-  // Direct Google Auth Handler (Dynamic session per new login, ZERO prompt popups)
-  const handleGoogleLogin = async (e) => {
-    if (e) e.preventDefault();
-
-    let userEmail = null;
-    let userName = null;
-    let googleId = null;
-
-    try {
-      if (window.google?.accounts?.id) {
-        window.google.accounts.id.initialize({
-          client_id: '1092837498234-google-client.apps.googleusercontent.com',
-          callback: async (response) => {
-            try {
-              if (response.credential) {
-                const base64Url = response.credential.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-                const decoded = JSON.parse(jsonPayload);
-
-                if (decoded.email) {
-                  userEmail = decoded.email.trim().toLowerCase();
-                  userName = decoded.name || userEmail.split('@')[0];
-                  googleId = decoded.sub || `google-id-${userEmail.replace(/[^a-z0-9]/gi, '')}`;
-                }
-              }
-            } catch (jwtErr) {
-              console.warn('JWT Decode error:', jwtErr);
-            }
-          }
-        });
-      }
-    } catch (err) {
-      console.warn('GSI Auth error:', err);
-    }
-
-    if (!userEmail) {
-      const randId = Math.floor(1000 + Math.random() * 9000);
-      userEmail = `customer.${Date.now()}.${randId}@gmail.com`;
-      userName = `Google User ${randId}`;
-      googleId = `google-user-${Date.now()}-${randId}`;
-    }
-
-    try {
-      const googleAccount = {
-        google_id: googleId,
-        email: userEmail,
-        name: userName,
-        branch_id: detectedBranch?.id || 1,
-        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
-      };
-      await loginCustomerGoogle(googleAccount);
-      setCurrentStep(2);
-    } catch (err) {
-      alert('Google Auth failed. Please try again.');
-    }
-  };
-
-  // Step 6: Validate Invoice Number (Strict 4-digit rule)
+  // Step 1: Validate Invoice Number (Strict 4-digit rule)
   const handleValidateInvoice = async (e) => {
     e.preventDefault();
     const cleanNum = invoiceNumber.trim();
@@ -131,21 +78,33 @@ const CustomerFlow = () => {
     setValidating(true);
     setInvoiceError(null);
 
+    let activeCustomer = customerUser;
+    if (!activeCustomer) {
+      const randId = Math.floor(1000 + Math.random() * 9000);
+      activeCustomer = await loginCustomerGoogle({
+        google_id: `google-user-${Date.now()}-${randId}`,
+        email: `customer.${Date.now()}.${randId}@gmail.com`,
+        name: `Google User ${randId}`,
+        branch_id: detectedBranch?.id || 1,
+        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
+      });
+    }
+
     try {
       const res = await api.post('/customer/invoice/validate', {
         invoice_number: cleanNum,
         branch_id: detectedBranch?.id || 1,
-        customer_id: customerUser?.id
+        customer_id: activeCustomer?.id
       });
 
       if (res.data?.valid) {
         setValidatedInvoice(res.data.invoice);
         
-        // If customer has already submitted a review for THIS SPECIFIC BRANCH, skip straight to Spin Wheel (Step 4)
+        // If customer has already submitted a review for THIS SPECIFIC BRANCH, skip straight to Spin Wheel (Step 3)
         if (res.data?.has_submitted_review) {
-          setCurrentStep(4);
+          setCurrentStep(3);
         } else {
-          setCurrentStep(3); // Proceed to Google Review step for this branch
+          setCurrentStep(2); // Proceed to Google Review step for this branch
         }
       } else {
         setInvoiceError(res.data?.error || 'Invoice validation failed.');
@@ -158,7 +117,7 @@ const CustomerFlow = () => {
     }
   };
 
-  // Step 7: Open Google Business Review Page & Auto Proceed to Spin Wheel
+  // Step 2: Open Google Business Review Page & Auto Redirect to Spin Wheel
   const handleOpenGoogleReview = () => {
     if (detectedBranch?.google_review_url) {
       const url = detectedBranch.google_review_url.trim();
@@ -169,17 +128,17 @@ const CustomerFlow = () => {
     }
     setReviewOpened(true);
     
-    // Auto-advance to Spin Wheel step immediately
+    // Auto-redirect to Spin Wheel step (Step 3) immediately upon clicking review
     setTimeout(() => {
-      setCurrentStep(4);
-    }, 500);
+      setCurrentStep(3);
+    }, 400);
   };
 
   const handleCompleteReviewAndProceed = () => {
-    setCurrentStep(4); // Proceed to Spin Wheel!
+    setCurrentStep(3); // Proceed to Spin Wheel!
   };
 
-  // Reset flow after win modal is closed to allow next 4-digit invoice entry without full page reload
+  // Reset flow after win modal is closed to allow next 4-digit invoice entry
   const resetFlowForNextSpin = () => {
     setShowWinModal(false);
     setInvoiceNumber('');
@@ -190,19 +149,31 @@ const CustomerFlow = () => {
     setSpinError(null);
     setReviewOpened(false);
 
-    setCurrentStep(2); // Go directly to Step 2 (Invoice Input) for next spin
+    setCurrentStep(1); // Go back to Step 1 (Invoice Input) for next spin
   };
 
-  // Step 8: Trigger Server-side Weighted Spin
+  // Step 3: Trigger Server-side Weighted Spin
   const handleExecuteSpin = async () => {
-    if (spinning || !validatedInvoice || !customerUser || !detectedBranch) return;
+    if (spinning || !validatedInvoice || !detectedBranch) return;
+
+    let activeUser = customerUser;
+    if (!activeUser) {
+      const randId = Math.floor(1000 + Math.random() * 9000);
+      activeUser = await loginCustomerGoogle({
+        google_id: `google-user-${Date.now()}-${randId}`,
+        email: `customer.${Date.now()}.${randId}@gmail.com`,
+        name: `Google User ${randId}`,
+        branch_id: detectedBranch?.id || 1,
+        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
+      });
+    }
 
     setSpinning(true);
     setSpinError(null);
 
     try {
       const res = await api.post('/customer/spin', {
-        customer_id: customerUser.id,
+        customer_id: activeUser.id,
         invoice_number: validatedInvoice.invoice_number,
         branch_id: validatedInvoice.branch_id || detectedBranch.id,
         qr_code: detectedBranch.qr_code_token
@@ -213,7 +184,6 @@ const CustomerFlow = () => {
         setWonPrize(res.data.prize);
         setClaimTicket(res.data.ticket);
 
-        // Update local customer user state to remember review has been submitted
         if (customerUser) {
           customerUser.has_submitted_review = true;
           localStorage.setItem('customerUser', JSON.stringify({ ...customerUser, has_submitted_review: true }));
@@ -266,7 +236,7 @@ const CustomerFlow = () => {
           <MapPin className="w-3.5 h-3.5 text-emerald-400" /> {t('scannedBranch')} {detectedBranch?.name}
         </div>
 
-        <h1 className="text-2xl md:text-4xl font-serif font-bold text-white mb-2">
+        <h1 className="text-2xl md:text-4xl font-serif font-bold text-white mb-2 uppercase tracking-wide">
           {t('title')}
         </h1>
 
@@ -275,12 +245,11 @@ const CustomerFlow = () => {
         </p>
 
         {/* Progress Stepper */}
-        <div className="grid grid-cols-4 gap-2 max-w-xl mx-auto mt-6 pt-4 border-t border-gold-400/20">
+        <div className="grid grid-cols-3 gap-2 max-w-md mx-auto mt-6 pt-4 border-t border-gold-400/20">
           {[
             { step: 1, label: t('step1Label') },
             { step: 2, label: t('step2Label') },
-            { step: 3, label: t('step3Label') },
-            { step: 4, label: t('step4Label') }
+            { step: 3, label: t('step3Label') }
           ].map((item) => (
             <div key={item.step} className="flex flex-col items-center">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
@@ -298,55 +267,18 @@ const CustomerFlow = () => {
             </div>
           ))}
         </div>
-        {/* Logged in Customer Account Badge */}
-        {customerUser && (
-          <div className="mt-4 pt-3 border-t border-gold-400/20 flex items-center justify-center px-3 py-1.5 bg-slate-900/60 rounded-xl text-xs text-slate-300 max-w-xl mx-auto">
-            <div className="flex items-center gap-2 truncate">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
-              <span className="text-slate-400">{lang === 'ar' ? 'مسجل كـ:' : 'Logged in as:'}</span>
-              <span className="font-semibold text-gold-300 truncate">{customerUser.email}</span>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* STEP 1: GOOGLE OAUTH LOGIN */}
+      {/* STEP 1: INVOICE VERIFICATION */}
       {currentStep === 1 && (
-        <div className="glass-panel border-gold-400/20 rounded-2xl p-6 md:p-8 max-w-md mx-auto text-center shadow-lg">
-          <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-gold-400/40">
-            <Lock className="w-7 h-7 text-gold-400" />
-          </div>
-
-          <h2 className="text-xl font-bold text-white mb-2">{t('step1Title')}</h2>
-          <p className="text-xs text-slate-300 mb-6">
-            {t('step1Desc')}
-          </p>
-
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-semibold text-sm transition-all shadow-lg transform active:scale-95"
-          >
-            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-            </svg>
-            {t('googleLoginBtn')}
-          </button>
-        </div>
-      )}
-
-      {/* STEP 2: INVOICE VERIFICATION */}
-      {currentStep === 2 && (
         <div className="glass-panel border-gold-400/20 rounded-2xl p-6 md:p-8 max-w-md mx-auto text-center shadow-lg">
           <div className="w-14 h-14 bg-emerald-950 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-600">
             <Receipt className="w-7 h-7 text-emerald-400" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-1">{t('step2Title')}</h2>
+          <h2 className="text-xl font-bold text-white mb-1">{t('step1Title')}</h2>
           <p className="text-xs text-slate-300 mb-6">
-            {t('step2Desc')} <span className="text-gold-400 font-semibold">{detectedBranch?.name}</span>.
+            {t('step1Desc')} <span className="text-gold-400 font-semibold">{detectedBranch?.name}</span>.
           </p>
 
           <form onSubmit={handleValidateInvoice} className="space-y-4">
@@ -380,22 +312,22 @@ const CustomerFlow = () => {
         </div>
       )}
 
-      {/* STEP 3: GOOGLE REVIEW REDIRECT */}
-      {currentStep === 3 && (
+      {/* STEP 2: GOOGLE REVIEW REDIRECT */}
+      {currentStep === 2 && (
         <div className="glass-panel border-gold-400/20 rounded-2xl p-6 md:p-8 max-w-md mx-auto text-center shadow-lg">
           <div className="w-14 h-14 bg-gold-400/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-gold-400/40">
             <Star className="w-7 h-7 text-gold-400 fill-gold-400" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-1">{t('step3Title')}</h2>
+          <h2 className="text-xl font-bold text-white mb-1">{t('step2Title')}</h2>
           <p className="text-xs text-slate-300 mb-6">
-            {t('step3Desc', { branch: detectedBranch?.name })}
+            {t('step2Desc', { branch: detectedBranch?.name })}
           </p>
 
           <div className="space-y-4">
             <button
               onClick={handleOpenGoogleReview}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-md transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-md transition-all transform active:scale-95"
             >
               <Star className="w-4 h-4 fill-white" /> {t('openReviewBtn', { branch: detectedBranch?.name })}
             </button>
@@ -420,8 +352,8 @@ const CustomerFlow = () => {
         </div>
       )}
 
-      {/* STEP 4: LUXURY ANIMATED SPIN WHEEL */}
-      {currentStep === 4 && (
+      {/* STEP 3: LUXURY ANIMATED SPIN WHEEL */}
+      {currentStep === 3 && (
         <div className="glass-panel border-gold-400/30 rounded-2xl p-6 md:p-8 text-center shadow-gold-lg max-w-2xl mx-auto">
           
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-400/10 border border-gold-400/30 text-gold-300 text-xs font-semibold uppercase mb-4">
@@ -432,7 +364,7 @@ const CustomerFlow = () => {
             {t('spinTitle')}
           </h2>
           <p className="text-xs text-slate-300 mb-6">
-            {t('spinSubtitle', { invoice: validatedInvoice?.invoice_number, name: customerUser?.name })}
+            {t('spinSubtitle', { invoice: validatedInvoice?.invoice_number })}
           </p>
 
           {spinError && (

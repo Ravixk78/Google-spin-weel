@@ -11,37 +11,31 @@ export const translations = {
 
     // Banner & Stepper
     scannedBranch: "الفرع المحدد:",
-    title: "قيم عطور مجلس العود واكسب جوائز فاخرة",
-    subtitle: "شكراً لتسوقك في عطور مجلس العود. اتبع الخطوات البسيطة أدناه لتدوير عجلة الجوائز الفاخرة!",
-    step1Label: "تسجيل الدخول",
-    step2Label: "الفاتورة",
-    step3Label: "التقييم",
-    step4Label: "عجلة الفوز",
+    title: "جوائز مجلس العود الفاخرة",
+    subtitle: "شكراً لتسوقك في عطور مجلس العود. أدخل رقم الفاتورة لتدوير عجلة الجوائز الفاخرة!",
+    step1Label: "الفاتورة",
+    step2Label: "التقييم",
+    step3Label: "عجلة الفوز",
 
-    // Step 1: Google Login
-    step1Title: "الخطوة 1: تسجيل الدخول عبر حساب جوجل",
-    step1Desc: "سجّل الدخول باستخدام حساب جوجل للبدء في تدوير عجلة الجوائز مع حفظ تجربتك.",
-    googleLoginBtn: "المتابعة باستخدام حساب جوجل",
-
-    // Step 2: Invoice Validation
-    step2Title: "الخطوة 2: أدخل رقم الفاتورة المكون من 4 أرقام",
-    step2Desc: "أدخل رقم الفاتورة المطبوع على إيصال الشراء المكون من 4 أرقام من فرع",
+    // Step 1: Invoice Validation
+    step1Title: "الخطوة 1: أدخل رقم الفاتورة المكون من 4 أرقام",
+    step1Desc: "أدخل رقم الفاتورة المطبوع على إيصال الشراء المكون من 4 أرقام من فرع",
     invoicePlaceholder: "مثال: 5879",
     invoiceFormatError: "يجب أن يتكون رقم الفاتورة من 4 أرقام فقط (مثال: 5879).",
     validateBtn: "التحقق من الفاتورة والمتابعة",
     validating: "جاري التحقق...",
 
-    // Step 3: Google Review
-    step3Title: "الخطوة 3: أضف تقييمك على جوجل",
-    step3Desc: "شارك تجربتك وملاحظاتك حول فرع {branch} على خرائط جوجل لتفعيل عجلة الجوائز.",
+    // Step 2: Google Review
+    step2Title: "الخطوة 2: أضف تقييمك على جوجل",
+    step2Desc: "شارك تجربتك وملاحظاتك حول فرع {branch} على خرائط جوجل لتفعيل عجلة الجوائز.",
     openReviewBtn: "فتح صفحة تقييم فرع {branch} على جوجل",
-    reviewOpenedMsg: "تم فتح رابط التقييم! بعد نشر تقييمك، اضغط أدناه لتدوير العجلة.",
-    proceedToSpinBtn: "لقد أضفت التقييم، ادر العجلة الآن!",
+    reviewOpenedMsg: "تم فتح رابط التقييم! جارٍ توجيهك إلى عجلة الجوائز تلقائياً...",
+    proceedToSpinBtn: "الانتقال إلى عجلة الجوائز",
 
-    // Step 4: Spin Wheel
+    // Step 3: Spin Wheel
     spinReadyBadge: "جاهز لتدوير العجلة",
     spinTitle: "ادر عجلة مجلس العود الفاخرة",
-    spinSubtitle: "تم التحقق من الفاتورة رقم {invoice} للعميل {name}.",
+    spinSubtitle: "تم التحقق من الفاتورة رقم {invoice}.",
     spinActionBtn: "🎯 ادر العجلة الآن للفوز!",
     spinningMsg: "جاري تدوير العجلة بكل تشويق...",
 
@@ -151,37 +145,31 @@ export const translations = {
 
     // Banner & Stepper
     scannedBranch: "Scanned Branch:",
-    title: "Review & Win Exclusive Oud Rewards",
-    subtitle: "Thank you for shopping at Majlis Al Oud. Follow the simple steps below to spin our luxury reward wheel!",
-    step1Label: "Google Auth",
-    step2Label: "Invoice Check",
-    step3Label: "Google Review",
-    step4Label: "Spin & Win",
+    title: "WIN EXCLUSIVE OUD REWARDS",
+    subtitle: "Thank you for shopping at Majlis Al Oud. Enter your invoice number to spin our luxury reward wheel!",
+    step1Label: "Invoice Check",
+    step2Label: "Google Review",
+    step3Label: "Spin & Win",
 
-    // Step 1: Google Login
-    step1Title: "Step 1: Google Account Verification",
-    step1Desc: "Sign in with your Google account to start your review reward session and securely claim your gift.",
-    googleLoginBtn: "Continue with Google Account",
-
-    // Step 2: Invoice Validation
-    step2Title: "Step 2: Enter 4-Digit Invoice Number",
-    step2Desc: "Enter the 4-digit invoice number printed on your receipt from",
+    // Step 1: Invoice Validation
+    step1Title: "Step 1: Enter 4-Digit Invoice Number",
+    step1Desc: "Enter the 4-digit invoice number printed on your receipt from",
     invoicePlaceholder: "e.g. 5879",
     invoiceFormatError: "Invoice number must be exactly 4 digits (e.g. 5879).",
     validateBtn: "Validate Invoice & Continue",
     validating: "Validating...",
 
-    // Step 3: Google Review
-    step3Title: "Step 3: Submit Google Review",
-    step3Desc: "Share your store experience on Google Business Profile for {branch} to unlock your reward spin.",
+    // Step 2: Google Review
+    step2Title: "Step 2: Submit Google Review",
+    step2Desc: "Share your store experience on Google Business Profile for {branch} to unlock your reward spin.",
     openReviewBtn: "Open {branch} Google Review Page",
-    reviewOpenedMsg: "Google Business Review link opened! Once posted, click below to spin the wheel.",
-    proceedToSpinBtn: "I Have Submitted My Review & Spin Now!",
+    reviewOpenedMsg: "Google Business Review link opened! Redirecting to spin wheel...",
+    proceedToSpinBtn: "Proceed to Spin Wheel",
 
-    // Step 4: Spin Wheel
+    // Step 3: Spin Wheel
     spinReadyBadge: "Ready to Spin",
     spinTitle: "Spin the Luxury Oud Wheel",
-    spinSubtitle: "Invoice {invoice} verified for {name}.",
+    spinSubtitle: "Invoice {invoice} verified.",
     spinActionBtn: "🎯 SPIN THE WHEEL NOW!",
     spinningMsg: "Spinning the luxury wheel...",
 

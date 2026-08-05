@@ -49,7 +49,6 @@ const CustomerHistory = () => {
   const handleExportExcel = () => {
     const dataToExport = history.map(h => ({
       'Customer Name': h.customer_name,
-      'Google Email': h.google_email,
       'Google Account ID': h.google_account_id,
       'Branch': h.branch_name,
       'Invoice Number': h.invoice_number,
@@ -64,7 +63,6 @@ const CustomerHistory = () => {
   const handleExportCSV = () => {
     const dataToExport = history.map(h => ({
       'Customer Name': h.customer_name,
-      'Google Email': h.google_email,
       'Branch': h.branch_name,
       'Invoice Number': h.invoice_number,
       'Prize Won': h.prize_won,
@@ -136,7 +134,6 @@ const CustomerHistory = () => {
             <thead className="bg-slate-900/90 text-gold-400 uppercase font-bold text-[11px] border-b border-gold-400/20">
               <tr>
                 <th className="p-3.5">{t('thCustomerName')}</th>
-                <th className="p-3.5">{t('thGoogleEmail')}</th>
                 <th className="p-3.5">{t('thGoogleId')}</th>
                 <th className="p-3.5">{t('thBranch')}</th>
                 <th className="p-3.5">{t('thInvoiceRef')}</th>
@@ -149,14 +146,13 @@ const CustomerHistory = () => {
             </thead>
             <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
               {loading ? (
-                <tr><td colSpan={10} className="p-8 text-center text-slate-500 font-sans">{t('loadingAuditLogs')}</td></tr>
+                <tr><td colSpan={9} className="p-8 text-center text-slate-500 font-sans">{t('loadingAuditLogs')}</td></tr>
               ) : history.length === 0 ? (
-                <tr><td colSpan={10} className="p-8 text-center text-slate-500 italic font-sans">{t('noCustomerHistory')}</td></tr>
+                <tr><td colSpan={9} className="p-8 text-center text-slate-500 italic font-sans">{t('noCustomerHistory')}</td></tr>
               ) : (
                 history.map((row, idx) => (
                   <tr key={idx} className="hover:bg-slate-900/40 transition-colors">
                     <td className="p-3.5 font-sans font-bold text-white">{row.customer_name}</td>
-                    <td className="p-3.5 text-slate-300">{row.google_email}</td>
                     <td className="p-3.5 text-slate-400 text-[10px]">{row.google_account_id}</td>
                     <td className="p-3.5 font-sans text-emerald-400">{row.branch_name}</td>
                     <td className="p-3.5 font-bold text-gold-300">{row.invoice_number}</td>
