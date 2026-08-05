@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
-import { Users, Search, ShieldAlert, Globe, MapPin, Receipt, Gift, Calendar, QrCode } from 'lucide-react';
+import { exportToExcel, exportToPDF, exportToCSV } from '../../services/exportUtils';
+import { Users, Search, ShieldAlert, Globe, MapPin, Receipt, Gift, Calendar, QrCode, Download } from 'lucide-react';
 
 const CustomerHistory = () => {
   const { t } = useLanguage();
@@ -45,6 +46,33 @@ const CustomerHistory = () => {
     fetchHistory();
   };
 
+  const handleExportExcel = () => {
+    const dataToExport = history.map(h => ({
+      'Customer Name': h.customer_name,
+      'Google Email': h.google_email,
+      'Google Account ID': h.google_account_id,
+      'Branch': h.branch_name,
+      'Invoice Number': h.invoice_number,
+      'Prize Won': h.prize_won,
+      'Review Date': new Date(h.review_date).toLocaleString(),
+      'Spin Date': new Date(h.spin_date).toLocaleString(),
+      'IP Address': h.ip_address || '127.0.0.1'
+    }));
+    exportToExcel(dataToExport, 'Customer_Google_Review_History');
+  };
+
+  const handleExportCSV = () => {
+    const dataToExport = history.map(h => ({
+      'Customer Name': h.customer_name,
+      'Google Email': h.google_email,
+      'Branch': h.branch_name,
+      'Invoice Number': h.invoice_number,
+      'Prize Won': h.prize_won,
+      'Spin Date': new Date(h.spin_date).toLocaleString()
+    }));
+    exportToCSV(dataToExport, 'Customer_Google_Review_History');
+  };
+
   return (
     <div className="space-y-6 font-sans">
       
@@ -55,6 +83,21 @@ const CustomerHistory = () => {
             {t('customerHistoryTitle')} <Users className="w-5 h-5 text-gold-400" />
           </h1>
           <p className="text-xs text-slate-400">{t('customerHistorySubtitle')}</p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportExcel}
+            className="px-3 py-2 bg-emerald-950 hover:bg-emerald-900 border border-emerald-700/50 text-emerald-300 rounded-xl text-xs font-semibold flex items-center gap-1.5"
+          >
+            <Download className="w-3.5 h-3.5" /> Excel (.xlsx)
+          </button>
+          <button
+            onClick={handleExportCSV}
+            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-gold-300 rounded-xl text-xs font-semibold flex items-center gap-1.5"
+          >
+            <Download className="w-3.5 h-3.5" /> CSV
+          </button>
         </div>
       </div>
 

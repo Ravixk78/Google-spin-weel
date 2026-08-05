@@ -60,28 +60,32 @@ const getAdminProfile = async (req, res) => {
 // Customer Google Auth Callback & Dev Simulator
 const customerGoogleAuth = async (req, res) => {
   try {
-    const { google_id, email, name, avatar_url } = req.body;
+    const { google_id, email, name, avatar_url, branch_id } = req.body;
 
-    if (!email || !name) {
-      return res.status(400).json({ error: 'Google account details missing.' });
+    if (!email) {
+      return res.status(400).json({ error: 'Google email address is required.' });
     }
 
-    const gId = google_id || `google-dev-${Date.now()}`;
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanName = (name && name.trim()) ? name.trim() : cleanEmail.split('@')[0];
+    const gId = google_id || `google-user-${cleanEmail.replace(/[^a-z0-9]/gi, '')}`;
     const userIp = req.ip || '127.0.0.1';
 
-    let customer = await getQuery(`SELECT * FROM customers WHERE google_id = ? OR email = ?`, [gId, email]);
+    let customer = await getQuery(`SELECT * FROM customers WHERE email = ? OR google_id = ?`, [cleanEmail, gId]);
 
     if (!customer) {
       const result = await runQuery(`
         INSERT INTO customers (google_id, email, name, avatar_url, last_ip_address)
         VALUES (?, ?, ?, ?, ?)
-      `, [gId, email, name, avatar_url || null, userIp]);
+      `, [gId, cleanEmail, cleanName, avatar_url || null, userIp]);
       customer = await getQuery(`SELECT * FROM customers WHERE id = ?`, [result.id]);
     } else {
       await runQuery(`
-        UPDATE customers SET last_ip_address = ?, avatar_url = COALESCE(?, avatar_url), updated_at = CURRENT_TIMESTAMP
+        UPDATE customers 
+        SET email = ?, name = COALESCE(?, name), last_ip_address = ?, avatar_url = COALESCE(?, avatar_url), updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
-      `, [userIp, avatar_url, customer.id]);
+      `, [cleanEmail, cleanName, userIp, avatar_url, customer.id]);
+      customer = await getQuery(`SELECT * FROM customers WHERE id = ?`, [customer.id]);
     }
 
     const customerToken = jwt.sign(
@@ -90,9 +94,12 @@ const customerGoogleAuth = async (req, res) => {
       { expiresIn: '12h' }
     );
 
-    const reviewRecord = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE customer_id = ?`, [customer.id]);
-    const spinRecord = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE customer_id = ?`, [customer.id]);
-    const hasSubmittedReview = (reviewRecord?.cnt || 0) > 0 || (spinRecord?.cnt || 0) > 0;
+    let hasSubmittedReview = false;
+    if (branch_id) {
+      const reviewRecord = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE customer_id = ? AND branch_id = ?`, [customer.id, branch_id]);
+      const spinRecord = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE customer_id = ? AND branch_id = ?`, [customer.id, branch_id]);
+      hasSubmittedReview = (reviewRecord?.cnt || 0) > 0 || (spinRecord?.cnt || 0) > 0;
+    }
 
     return res.json({
       message: 'Google authentication successful',
