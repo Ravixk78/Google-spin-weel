@@ -25,9 +25,24 @@ const executeCustomerSpin = async (req, res) => {
     }
 
     // 3. Verify Invoice Integrity
-    const invoice = await getQuery(`
+    let invoice = await getQuery(`
       SELECT * FROM invoices WHERE UPPER(invoice_number) = ? AND branch_id = ?
     `, [cleanInvoice, branch_id]);
+
+    if (!invoice) {
+      try {
+        await runQuery(`
+          INSERT INTO invoices (invoice_number, branch_id, amount, is_used, status)
+          VALUES (?, ?, 0, 0, 'ELIGIBLE')
+        `, [cleanInvoice, branch_id]);
+      } catch (insertErr) {
+        // Ignore duplicate insert errors if created concurrently
+      }
+
+      invoice = await getQuery(`
+        SELECT * FROM invoices WHERE UPPER(invoice_number) = ? AND branch_id = ?
+      `, [cleanInvoice, branch_id]);
+    }
 
     if (!invoice) {
       return res.status(404).json({ error: 'Invoice not found or does not belong to this branch.' });

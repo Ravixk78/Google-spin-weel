@@ -204,7 +204,7 @@ const CustomerFlow = () => {
       const res = await api.post('/customer/spin', {
         customer_id: customerUser.id,
         invoice_number: validatedInvoice.invoice_number,
-        branch_id: detectedBranch.id,
+        branch_id: validatedInvoice.branch_id || detectedBranch.id,
         qr_code: detectedBranch.qr_code_token
       });
 
