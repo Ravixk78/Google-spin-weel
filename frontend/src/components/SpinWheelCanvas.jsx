@@ -17,11 +17,38 @@ const prizeTranslations = {
 const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) => {
   const canvasRef = useRef(null);
   const [currentAngle, setCurrentAngle] = useState(0);
+  const [loadedImages, setLoadedImages] = useState({});
   const { lang } = useLanguage();
+
+  // Load prize segment images
+  useEffect(() => {
+    if (!prizes || prizes.length === 0) return;
+    let isMounted = true;
+
+    prizes.forEach((prize) => {
+      if (prize.image_url && prize.image_url.trim()) {
+        const url = prize.image_url.trim();
+        if (!loadedImages[prize.id]) {
+          const img = new Image();
+          img.crossOrigin = 'Anonymous';
+          img.src = url;
+          img.onload = () => {
+            if (isMounted) {
+              setLoadedImages(prev => ({ ...prev, [prize.id]: img }));
+            }
+          };
+        }
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [prizes]);
 
   useEffect(() => {
     drawWheel(currentAngle);
-  }, [prizes, currentAngle, lang]);
+  }, [prizes, currentAngle, lang, loadedImages]);
 
   useEffect(() => {
     if (isSpinning && winningIndex !== null && winningIndex !== undefined) {
@@ -83,26 +110,37 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
       ctx.stroke();
       ctx.restore();
 
-      // Text & Labels
+      // Text & Segment Prize Image
       ctx.save();
       ctx.translate(centerX, centerY);
       const textAngle = startAngle + arcSize / 2;
       ctx.rotate(textAngle);
 
-      // Label Positioning
-      ctx.textAlign = 'right';
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = '600 12px Outfit, sans-serif';
-      ctx.shadowColor = 'rgba(0,0,0,0.8)';
-      ctx.shadowBlur = 4;
-
-      // Truncate name if too long
-      let label = lang === 'ar' && prizeTranslations[prize.name] ? prizeTranslations[prize.name] : prize.name;
-      if (label.length > 22) {
-        label = label.substring(0, 20) + '...';
+      const prizeImg = loadedImages[prize.id];
+      
+      // Draw Prize Image inside segment slice if available (fits inside boundary without crop)
+      if (prizeImg) {
+        ctx.save();
+        const imgSize = 26;
+        const imgRadius = outerRadius - 58;
+        ctx.drawImage(prizeImg, imgRadius - imgSize / 2, -imgSize / 2, imgSize, imgSize);
+        ctx.restore();
       }
 
-      ctx.fillText(label, outerRadius - 30, 4);
+      // Prize Label Text
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '600 11px Outfit, sans-serif';
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 4;
+
+      let label = lang === 'ar' && prizeTranslations[prize.name] ? prizeTranslations[prize.name] : prize.name;
+      if (label.length > 20) {
+        label = label.substring(0, 18) + '...';
+      }
+
+      const textRadius = prizeImg ? outerRadius - 18 : outerRadius - 30;
+      ctx.fillText(label, textRadius, 4);
 
       ctx.restore();
     });

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
-import { Gift, Plus, Edit2, Trash2, CheckCircle2, XCircle, Percent, Package, Palette, ArrowUpDown } from 'lucide-react';
+import { Gift, Plus, Edit2, Trash2, CheckCircle2, XCircle, Percent, Package, Palette, ArrowUpDown, Sparkles } from 'lucide-react';
 
 const PrizeManagement = () => {
   const { t } = useLanguage();
@@ -280,6 +280,35 @@ const PrizeManagement = () => {
                     onChange={(e) => setFormData({ ...formData, color_code: e.target.value })}
                     className="w-full h-9 p-1 bg-slate-900 border border-slate-700 rounded-xl cursor-pointer"
                   />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">Prize Segment Image URL</label>
+                <input
+                  type="text"
+                  placeholder="e.g. https://images.unsplash.com/photo-1547887537-6158d64c35b3?w=200"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 font-mono text-xs"
+                />
+                {/* Image Specs & Fit Hint Box */}
+                <div className="mt-2 p-3 bg-slate-950/80 border border-gold-400/30 rounded-xl text-[11px] text-slate-300 space-y-1">
+                  <div className="flex items-center gap-1.5 font-bold text-gold-400">
+                    <Sparkles className="w-3.5 h-3.5 text-gold-400 shrink-0" />
+                    <span>💡 Recommended Image Specification (Image Hint):</span>
+                  </div>
+                  <p className="text-slate-300 leading-normal pl-5">
+                    • <strong>Dimensions:</strong> <span className="text-emerald-400 font-mono font-bold">120 x 120 px</span> or <span className="text-emerald-400 font-mono font-bold">200 x 200 px</span> (Square ratio)<br />
+                    • <strong>Format:</strong> Transparent PNG background (No crop, fits cleanly inside wheel slice edges)<br />
+                    • <strong>Fit:</strong> Scaled proportionally inside segment boundary without edge clipping.
+                  </p>
+                  {formData.image_url && (
+                    <div className="pt-2 flex items-center gap-2 pl-5">
+                      <span className="text-slate-400 text-[10px]">Preview:</span>
+                      <img src={formData.image_url} alt="Prize Preview" className="w-8 h-8 object-contain rounded border border-slate-700 bg-slate-900" />
+                    </div>
+                  )}
                 </div>
               </div>
 
