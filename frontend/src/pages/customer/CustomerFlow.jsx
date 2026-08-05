@@ -118,19 +118,23 @@ const CustomerFlow = () => {
   };
 
   // Step 2: Open Google Business Review Page & INSTANTLY load Spin Wheel page
-  const handleOpenGoogleReview = () => {
+  const handleOpenGoogleReview = (e) => {
+    if (e) e.preventDefault();
+
+    // 1. Immediately switch our website to Step 3 (Spin Wheel page)
+    setCurrentStep(3);
+    setReviewOpened(true);
+
+    // 2. Open Google Review URL in new tab/window
     if (detectedBranch?.google_review_url) {
       const url = detectedBranch.google_review_url.trim();
-      const newWin = window.open(url, '_blank');
-      if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
-        window.location.href = url;
-      }
+      setTimeout(() => {
+        const newWin = window.open(url, '_blank');
+        if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
+          window.location.href = url;
+        }
+      }, 50);
     }
-    setReviewOpened(true);
-    
-    // Instantly transition app to Step 3 (Spin Wheel)
-    // So when the customer finishes review on Google Maps and taps "Done", our Spin Wheel page is ALREADY loaded!
-    setCurrentStep(3);
   };
 
   const handleCompleteReviewAndProceed = () => {
