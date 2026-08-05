@@ -81,12 +81,30 @@ const validateInvoiceForCustomer = async (req, res) => {
       };
     }
 
-    // Check if customer has previously submitted a Google Review or spun before for THIS SPECIFIC BRANCH
+    // Check if customer or device has previously submitted a Google Review or spun before for THIS SPECIFIC BRANCH
     let hasSubmittedReview = false;
-    if (customer_id && activeBranchId) {
-      const revCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE customer_id = ? AND branch_id = ?`, [customer_id, activeBranchId]);
-      const spinCheck = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE customer_id = ? AND branch_id = ?`, [customer_id, activeBranchId]);
-      hasSubmittedReview = (revCheck?.cnt || 0) > 0 || (spinCheck?.cnt || 0) > 0;
+    const userIp = req.ip || '127.0.0.1';
+
+    if (activeBranchId) {
+      let revCnt = 0;
+      let spinCnt = 0;
+
+      if (customer_id) {
+        const revCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE customer_id = ? AND branch_id = ?`, [customer_id, activeBranchId]);
+        const spinCheck = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE customer_id = ? AND branch_id = ?`, [customer_id, activeBranchId]);
+        revCnt = revCheck?.cnt || 0;
+        spinCnt = spinCheck?.cnt || 0;
+      }
+
+      // Check IP/Device history for this branch if customer_id is new
+      if (revCnt === 0 && spinCnt === 0 && userIp && userIp !== '127.0.0.1') {
+        const ipRevCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE ip_address = ? AND branch_id = ?`, [userIp, activeBranchId]);
+        const ipSpinCheck = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE ip_address = ? AND branch_id = ?`, [userIp, activeBranchId]);
+        revCnt = ipRevCheck?.cnt || 0;
+        spinCnt = ipSpinCheck?.cnt || 0;
+      }
+
+      hasSubmittedReview = (revCnt > 0 || spinCnt > 0);
     }
 
     return res.json({

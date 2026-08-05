@@ -38,19 +38,24 @@ const CustomerFlow = () => {
     fetchPrizes();
   }, []);
 
-  // Ensure active customer session on load
+  // Ensure active persistent customer session on load per device
   useEffect(() => {
     if (!customerUser && detectedBranch) {
-      const randId = Math.floor(1000 + Math.random() * 9000);
+      let deviceId = localStorage.getItem('deviceGoogleId');
+      if (!deviceId) {
+        deviceId = `google-user-device-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+        localStorage.setItem('deviceGoogleId', deviceId);
+      }
+
       loginCustomerGoogle({
-        google_id: `google-user-${Date.now()}-${randId}`,
-        email: `customer.${Date.now()}.${randId}@gmail.com`,
-        name: `Google User ${randId}`,
+        google_id: deviceId,
+        email: `${deviceId.toLowerCase()}@gmail.com`,
+        name: `Google Customer`,
         branch_id: detectedBranch?.id || 1,
         avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
       });
     }
-  }, [detectedBranch]);
+  }, [detectedBranch, customerUser]);
 
   const fetchPrizes = async () => {
     try {
@@ -80,11 +85,16 @@ const CustomerFlow = () => {
 
     let activeCustomer = customerUser;
     if (!activeCustomer) {
-      const randId = Math.floor(1000 + Math.random() * 9000);
+      let deviceId = localStorage.getItem('deviceGoogleId');
+      if (!deviceId) {
+        deviceId = `google-user-device-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+        localStorage.setItem('deviceGoogleId', deviceId);
+      }
+
       activeCustomer = await loginCustomerGoogle({
-        google_id: `google-user-${Date.now()}-${randId}`,
-        email: `customer.${Date.now()}.${randId}@gmail.com`,
-        name: `Google User ${randId}`,
+        google_id: deviceId,
+        email: `${deviceId.toLowerCase()}@gmail.com`,
+        name: `Google Customer`,
         branch_id: detectedBranch?.id || 1,
         avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
       });
