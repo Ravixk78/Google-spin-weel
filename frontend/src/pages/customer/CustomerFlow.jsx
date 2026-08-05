@@ -58,9 +58,13 @@ const CustomerFlow = () => {
     }
   };
 
-  // Direct Google Auth Handler (Instant 1-click login, ZERO prompt popups)
+  // Direct Google Auth Handler (Dynamic session per new login, ZERO prompt popups)
   const handleGoogleLogin = async (e) => {
     if (e) e.preventDefault();
+
+    let userEmail = null;
+    let userName = null;
+    let googleId = null;
 
     try {
       if (window.google?.accounts?.id) {
@@ -75,15 +79,9 @@ const CustomerFlow = () => {
                 const decoded = JSON.parse(jsonPayload);
 
                 if (decoded.email) {
-                  await loginCustomerGoogle({
-                    google_id: decoded.sub || `google-user-${decoded.email.replace(/[^a-z0-9]/gi, '')}`,
-                    email: decoded.email.trim().toLowerCase(),
-                    name: decoded.name || decoded.email.split('@')[0],
-                    avatar_url: decoded.picture || null,
-                    branch_id: detectedBranch?.id || 1
-                  });
-                  setCurrentStep(2);
-                  return;
+                  userEmail = decoded.email.trim().toLowerCase();
+                  userName = decoded.name || userEmail.split('@')[0];
+                  googleId = decoded.sub || `google-id-${userEmail.replace(/[^a-z0-9]/gi, '')}`;
                 }
               }
             } catch (jwtErr) {
@@ -96,12 +94,18 @@ const CustomerFlow = () => {
       console.warn('GSI Auth error:', err);
     }
 
-    // Direct seamless login to Step 2 without showing any popup or input prompt
+    if (!userEmail) {
+      const randId = Math.floor(1000 + Math.random() * 9000);
+      userEmail = `customer.${Date.now()}.${randId}@gmail.com`;
+      userName = `Google User ${randId}`;
+      googleId = `google-user-${Date.now()}-${randId}`;
+    }
+
     try {
       const googleAccount = {
-        google_id: 'google-customer-auth-verified',
-        email: 'customer.google@gmail.com',
-        name: 'Google Customer',
+        google_id: googleId,
+        email: userEmail,
+        name: userName,
         branch_id: detectedBranch?.id || 1,
         avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
       };
@@ -296,21 +300,12 @@ const CustomerFlow = () => {
         </div>
         {/* Logged in Customer Account Badge */}
         {customerUser && (
-          <div className="mt-4 pt-3 border-t border-gold-400/20 flex items-center justify-between px-3 py-1.5 bg-slate-900/60 rounded-xl text-xs text-slate-300 max-w-xl mx-auto">
+          <div className="mt-4 pt-3 border-t border-gold-400/20 flex items-center justify-center px-3 py-1.5 bg-slate-900/60 rounded-xl text-xs text-slate-300 max-w-xl mx-auto">
             <div className="flex items-center gap-2 truncate">
               <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
               <span className="text-slate-400">{lang === 'ar' ? 'مسجل كـ:' : 'Logged in as:'}</span>
               <span className="font-semibold text-gold-300 truncate">{customerUser.email}</span>
             </div>
-            <button
-              onClick={() => {
-                logoutCustomer();
-                setCurrentStep(1);
-              }}
-              className="text-gold-400 hover:text-gold-200 underline text-[11px] font-bold shrink-0 ml-2"
-            >
-              {lang === 'ar' ? 'تغيير الحساب' : 'Switch Mail'}
-            </button>
           </div>
         )}
       </div>
