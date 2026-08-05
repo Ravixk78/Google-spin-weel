@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
-import { Gift, Plus, Edit2, Trash2, CheckCircle2, XCircle, Percent, Package, Palette, ArrowUpDown, Sparkles } from 'lucide-react';
+import { Gift, Plus, Edit2, Trash2, CheckCircle2, XCircle, Percent, Package, Palette, ArrowUpDown, Sparkles, Upload } from 'lucide-react';
 
 const PrizeManagement = () => {
   const { t } = useLanguage();
@@ -66,6 +66,48 @@ const PrizeManagement = () => {
       image_url: p.image_url || ''
     });
     setShowModal(true);
+  };
+
+  const handleImageFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (PNG, JPG, WebP).');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 240;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL('image/png');
+        setFormData((prev) => ({ ...prev, image_url: dataUrl }));
+      };
+    };
   };
 
   const handleSubmit = async (e) => {
@@ -284,14 +326,41 @@ const PrizeManagement = () => {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Prize Segment Image URL</label>
+                <label className="block text-slate-300 font-semibold mb-1">Prize Segment Image (Upload Pure File from Local Device)</label>
+                
+                <div className="flex items-center gap-2 mb-2">
+                  <label className="flex-1 cursor-pointer bg-slate-900 border border-slate-700 hover:border-gold-400 p-2.5 rounded-xl text-white flex items-center justify-center gap-2 text-xs font-bold transition-all shadow-md">
+                    <Upload className="w-4 h-4 text-gold-400" />
+                    <span>Upload Image File from Phone/PC</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  {formData.image_url && (
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, image_url: '' })}
+                      className="p-2.5 bg-rose-950/60 border border-rose-800 text-rose-300 rounded-xl text-xs flex items-center gap-1 font-semibold"
+                      title="Clear Uploaded Image"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Clear
+                    </button>
+                  )}
+                </div>
+
+                {/* Optional Manual URL Fallback */}
                 <input
                   type="text"
-                  placeholder="e.g. https://images.unsplash.com/photo-1547887537-6158d64c35b3?w=200"
-                  value={formData.image_url}
+                  placeholder="Or paste optional Image URL (Optional)"
+                  value={formData.image_url.startsWith('data:') ? '[Pure Image Uploaded from Local Device]' : formData.image_url}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 font-mono text-xs"
+                  className="w-full p-2 bg-slate-900/60 border border-slate-800 rounded-lg text-slate-400 text-[11px] font-mono"
+                  readOnly={formData.image_url.startsWith('data:')}
                 />
+
                 {/* Image Specs & Fit Hint Box */}
                 <div className="mt-2 p-3 bg-slate-950/80 border border-gold-400/30 rounded-xl text-[11px] text-slate-300 space-y-1">
                   <div className="flex items-center gap-1.5 font-bold text-gold-400">
@@ -305,8 +374,8 @@ const PrizeManagement = () => {
                   </p>
                   {formData.image_url && (
                     <div className="pt-2 flex items-center gap-2 pl-5">
-                      <span className="text-slate-400 text-[10px]">Preview:</span>
-                      <img src={formData.image_url} alt="Prize Preview" className="w-8 h-8 object-contain rounded border border-slate-700 bg-slate-900" />
+                      <span className="text-slate-400 text-[10px]">Uploaded Preview:</span>
+                      <img src={formData.image_url} alt="Prize Preview" className="w-10 h-10 object-contain rounded border border-slate-700 bg-slate-900 shadow-md" />
                     </div>
                   )}
                 </div>
