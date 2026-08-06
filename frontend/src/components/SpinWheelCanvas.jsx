@@ -126,29 +126,40 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 
       const prizeImg = loadedImages[prize.id];
       
-      // Draw Prize Image inside segment slice if available (fits inside boundary without crop)
+      // Draw Prize Image on outer slice radius without touching text
       if (prizeImg) {
         ctx.save();
-        const imgSize = 32;
-        const imgRadius = outerRadius - 55;
+        const imgSize = 28;
+        const imgRadius = outerRadius - 32;
+
+        // Subtle dark contrast disc behind image
+        ctx.beginPath();
+        ctx.arc(imgRadius, 0, imgSize / 2 + 2, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.fill();
+
         ctx.drawImage(prizeImg, imgRadius - imgSize / 2, -imgSize / 2, imgSize, imgSize);
         ctx.restore();
       }
 
-      // Prize Label Text
+      // Prize Label Text (positioned safely inside textRadius so it NEVER overlaps with image)
       ctx.textAlign = 'right';
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '600 11px Outfit, sans-serif';
-      ctx.shadowColor = 'rgba(0,0,0,0.9)';
-      ctx.shadowBlur = 4;
+      ctx.font = '600 10.5px Outfit, sans-serif';
+      ctx.shadowColor = 'rgba(0,0,0,0.95)';
+      ctx.shadowBlur = 5;
 
       let label = lang === 'ar' && prizeTranslations[prize.name] ? prizeTranslations[prize.name] : prize.name;
-      if (label.length > 20) {
-        label = label.substring(0, 18) + '...';
+      
+      // Strict character limit when image is present to prevent leftward text overflow
+      const maxChars = prizeImg ? 14 : 20;
+      if (label.length > maxChars) {
+        label = label.substring(0, maxChars - 2) + '..';
       }
 
-      const textRadius = prizeImg ? outerRadius - 18 : outerRadius - 30;
-      ctx.fillText(label, textRadius, 4);
+      // Text ends at textRadius (safely before image starts at outerRadius - 46)
+      const textRadius = prizeImg ? outerRadius - 54 : outerRadius - 22;
+      ctx.fillText(label, textRadius, 3.5);
 
       ctx.restore();
     });
