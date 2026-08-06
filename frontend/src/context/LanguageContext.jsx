@@ -18,6 +18,8 @@ export const translations = {
     step3Label: "عجلة الفوز",
 
     // Step 1: Invoice Validation
+    qrErrorTitle: "خطأ في التعرف على رمز QR",
+    tryAgainBtn: "إعادة المحاولة",
     step1Title: "الخطوة 1: أدخل رقم الفاتورة المكون من 4 أرقام",
     step1Desc: "أدخل رقم الفاتورة المطبوع على إيصال الشراء المكون من 4 أرقام من فرع",
     invoicePlaceholder: "مثال: 5879",
@@ -154,6 +156,8 @@ export const translations = {
     step3Label: "Spin & Win",
 
     // Step 1: Invoice Validation
+    qrErrorTitle: "Branch Detection Error",
+    tryAgainBtn: "Try Again",
     step1Title: "Step 1: Enter 4-Digit Invoice Number",
     step1Desc: "Enter the 4-digit invoice number printed on your receipt from",
     invoicePlaceholder: "e.g. 5879",

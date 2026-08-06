@@ -223,22 +223,22 @@ const CustomerFlow = () => {
 
   if (loadingBranch) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-4">
-        <div className="w-12 h-12 border-4 border-gold-400 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-gold-300 font-medium animate-pulse">{lang === 'ar' ? 'جاري التعرف على فرع المحل...' : 'Detecting physical store branch from QR code...'}</p>
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-4 text-center">
+        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-amber-800 font-medium animate-pulse">{lang === 'ar' ? 'جاري التعرف على فرع المحل...' : 'Detecting physical store branch from QR code...'}</p>
       </div>
     );
   }
 
   if (branchError) {
     return (
-      <div className="max-w-md mx-auto my-12 p-6 glass-panel border-rose-500/40 rounded-2xl text-center">
-        <AlertCircle className="w-12 h-12 text-rose-400 mx-auto mb-3" />
-        <h3 className="text-lg font-bold text-white mb-2">{t('qrErrorTitle')}</h3>
-        <p className="text-xs text-slate-300 mb-6">{branchError}</p>
+      <div className="max-w-md mx-auto my-12 p-6 bg-white border border-rose-300 rounded-2xl text-center shadow-lg">
+        <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
+        <h3 className="text-lg font-bold text-slate-900 mb-2">{t('qrErrorTitle')}</h3>
+        <p className="text-xs text-slate-600 mb-6">{branchError}</p>
         <button
           onClick={() => window.location.href = '/?branch=kalba'}
-          className="btn-gold px-4 py-2 rounded-lg text-xs font-bold"
+          className="bg-gradient-to-r from-[#F9E498] via-[#E6C687] to-[#C5A059] text-slate-950 px-6 py-2.5 rounded-full text-xs font-bold shadow-md"
         >
           {t('tryAgainBtn')}
         </button>
