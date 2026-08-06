@@ -205,7 +205,9 @@ const CustomerFlow = () => {
 
         if (customerUser) {
           customerUser.has_submitted_review = true;
-          localStorage.setItem('customerUser', JSON.stringify({ ...customerUser, has_submitted_review: true }));
+          try {
+            localStorage.setItem('customerUser', JSON.stringify({ ...customerUser, has_submitted_review: true }));
+          } catch (e) {}
         }
       }
     } catch (err) {

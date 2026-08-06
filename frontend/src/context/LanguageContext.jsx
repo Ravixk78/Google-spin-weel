@@ -279,14 +279,22 @@ export const translations = {
 
 export const LanguageProvider = ({ children }) => {
   const [lang, setLangState] = useState(() => {
-    const saved = localStorage.getItem('appLanguage');
-    return saved || 'ar';
+    try {
+      const saved = localStorage.getItem('appLanguage');
+      return saved || 'ar';
+    } catch (e) {
+      return 'ar';
+    }
   });
 
   useEffect(() => {
-    localStorage.setItem('appLanguage', lang);
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
+    try {
+      localStorage.setItem('appLanguage', lang);
+    } catch (e) {}
+    try {
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = lang;
+    } catch (e) {}
   }, [lang]);
 
   const toggleLanguage = () => {
