@@ -206,31 +206,35 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         }
 
         // Prize Label Text
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#1E293B'; // Dark Slate/Charcoal for pastel contrast
-        ctx.font = lang === 'ar' ? 'bold 11.5px Amiri, serif' : '600 11px Outfit, sans-serif';
+        try {
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#1E293B'; // Dark Slate/Charcoal for pastel contrast
+          ctx.font = lang === 'ar' ? 'bold 11px serif' : 'bold 11px sans-serif';
 
-        const pName = prize.name || '';
-        let label = pName;
-        if (lang === 'ar') {
-          label = prizeTranslations[pName] || pName;
-        } else {
-          label = prizeTranslations[pName] && !/[a-zA-Z]/.test(pName) ? prizeTranslations[pName] : pName;
+          const pName = prize.name || '';
+          let label = pName;
+          if (lang === 'ar') {
+            label = prizeTranslations[pName] || pName;
+          } else {
+            label = prizeTranslations[pName] && !/[a-zA-Z]/.test(pName) ? prizeTranslations[pName] : pName;
+          }
+
+          const maxChars = prizeImg ? 16 : 22;
+          if (label.length > maxChars) {
+            label = label.substring(0, maxChars - 2) + '..';
+          }
+
+          // Position text nicely inside segment
+          const textRadius = prizeImg ? outerRadius - 82 : outerRadius - 55;
+          
+          // Rotate text to read outwards cleanly
+          ctx.save();
+          ctx.translate(textRadius, 0);
+          ctx.fillText(String(label), 0, 4);
+          ctx.restore();
+        } catch (textErr) {
+          console.warn('Text draw warning:', textErr);
         }
-
-        const maxChars = prizeImg ? 16 : 22;
-        if (label.length > maxChars) {
-          label = label.substring(0, maxChars - 2) + '..';
-        }
-
-        // Position text nicely inside segment
-        const textRadius = prizeImg ? outerRadius - 82 : outerRadius - 55;
-        
-        // Rotate text to read outwards cleanly
-        ctx.save();
-        ctx.translate(textRadius, 0);
-        ctx.fillText(String(label), 0, 4);
-        ctx.restore();
 
         ctx.restore();
       });
@@ -276,7 +280,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
       } else {
         // Fallback Gold Text
         ctx.fillStyle = '#996515';
-        ctx.font = 'bold 12px Playfair Display, serif';
+        ctx.font = 'bold 12px serif';
         ctx.textAlign = 'center';
         ctx.fillText(lang === 'ar' ? 'مجلس' : 'MAJLIS', centerX, centerY - 6);
         ctx.fillText(lang === 'ar' ? 'العود' : 'AL OUD', centerX, centerY + 10);

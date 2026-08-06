@@ -12,6 +12,7 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error("Uncaught Error Boundary Catch:", error, errorInfo);
+    try { localStorage.clear(); } catch (e) {}
   }
 
   render() {
