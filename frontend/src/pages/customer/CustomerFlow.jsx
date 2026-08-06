@@ -5,7 +5,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import api from '../../services/api';
 import SpinWheelCanvas from '../../components/SpinWheelCanvas';
 import WinModal from '../../components/WinModal';
-import { MapPin, ShieldCheck, CheckCircle2, Star, ArrowRight, RefreshCw, AlertCircle, Sparkles, Receipt, Lock } from 'lucide-react';
+import { MapPin, ShieldCheck, CheckCircle2, Star, ArrowRight, RefreshCw, AlertCircle, Sparkles, Receipt, Lock, Trophy } from 'lucide-react';
 
 const CustomerFlow = () => {
   const { detectedBranch, loadingBranch, branchError } = useBranch();
