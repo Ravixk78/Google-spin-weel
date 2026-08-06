@@ -145,25 +145,25 @@ const InvoiceManagement = () => {
     <div className="space-y-6 font-sans">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gold-400/20">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-amber-300/40 dark:border-gold-400/20">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-white flex items-center gap-2">
-            {t('invoiceTitle')} <Receipt className="w-5 h-5 text-gold-400" />
+          <h1 className="text-2xl font-serif font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            {t('invoiceTitle')} <Receipt className="w-5 h-5 text-amber-600 dark:text-gold-400" />
           </h1>
-          <p className="text-xs text-slate-400">{t('invoiceSubtitle')}</p>
+          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">{t('invoiceSubtitle')}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={handleClearAll}
-            className="px-3.5 py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-300 rounded-xl text-xs font-semibold border border-rose-700/50 flex items-center gap-2"
+            className="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/80 dark:hover:bg-rose-900 text-rose-700 dark:text-rose-300 rounded-xl text-xs font-semibold border border-rose-200 dark:border-rose-700/50 flex items-center gap-2"
           >
-            <Trash2 className="w-4 h-4 text-rose-400" /> Clear All Invoices
+            <Trash2 className="w-4 h-4 text-rose-600 dark:text-rose-400" /> Clear All Invoices
           </button>
 
           <button
             onClick={() => setShowImportModal(true)}
-            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-gold-300 rounded-xl text-xs font-semibold border border-slate-700 flex items-center gap-2"
+            className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-amber-900 dark:text-gold-300 rounded-xl text-xs font-bold border border-amber-300 dark:border-slate-700 flex items-center gap-2 shadow-xs"
           >
             <Upload className="w-4 h-4" /> {t('bulkUploadBtn')}
           </button>
@@ -178,7 +178,7 @@ const InvoiceManagement = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="glass-panel border-gold-400/20 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="glass-panel bg-white/90 dark:bg-slate-900/60 border border-amber-200/80 dark:border-gold-400/20 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between shadow-sm">
         <form onSubmit={handleSearchSubmit} className="flex-1 w-full flex items-center gap-2">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -187,10 +187,10 @@ const InvoiceManagement = () => {
               placeholder="Search invoice number or customer email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-gold-400"
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 dark:focus:border-gold-400 font-medium"
             />
           </div>
-          <button type="submit" className="px-4 py-2 bg-slate-800 text-gold-300 text-xs font-bold rounded-xl border border-slate-700">
+          <button type="submit" className="px-4 py-2 bg-amber-100 dark:bg-slate-800 text-amber-900 dark:text-gold-300 text-xs font-bold rounded-xl border border-amber-300 dark:border-slate-700 hover:bg-amber-200">
             Search
           </button>
         </form>
@@ -199,7 +199,7 @@ const InvoiceManagement = () => {
           <select
             value={selectedBranch}
             onChange={(e) => setSelectedBranch(e.target.value)}
-            className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-gold-400"
+            className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-medium"
           >
             <option value="">All Branches</option>
             {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
@@ -208,7 +208,7 @@ const InvoiceManagement = () => {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-gold-400"
+            className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-medium"
           >
             <option value="">All Statuses</option>
             <option value="ELIGIBLE">ELIGIBLE</option>
@@ -218,10 +218,10 @@ const InvoiceManagement = () => {
       </div>
 
       {/* Invoice Table */}
-      <div className="glass-panel border-gold-400/20 rounded-2xl overflow-hidden shadow-lg">
+      <div className="glass-panel bg-white/90 dark:bg-slate-900/60 border border-amber-200/80 dark:border-gold-400/20 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-900/90 text-gold-400 uppercase font-bold text-[11px] border-b border-gold-400/20">
+          <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+            <thead className="bg-amber-50/80 dark:bg-slate-900/90 text-amber-900 dark:text-gold-400 uppercase font-bold text-[11px] border-b border-amber-200 dark:border-gold-400/20">
               <tr>
                 <th className="p-3.5">Invoice Number</th>
                 <th className="p-3.5">Branch</th>
@@ -232,37 +232,37 @@ const InvoiceManagement = () => {
                 <th className="p-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-amber-100 dark:divide-slate-800/60">
               {loading ? (
                 <tr><td colSpan={7} className="p-8 text-center text-slate-500">Loading invoices...</td></tr>
               ) : invoices.length === 0 ? (
                 <tr><td colSpan={7} className="p-8 text-center text-slate-500 italic">No invoices found matching criteria.</td></tr>
               ) : (
                 invoices.map((inv) => (
-                  <tr key={inv.id} className="hover:bg-slate-900/40 transition-colors">
-                    <td className="p-3.5 font-mono font-bold text-white">{inv.invoice_number}</td>
-                    <td className="p-3.5 text-slate-300">{inv.branch_name}</td>
-                    <td className="p-3.5 font-mono text-gold-300">AED {inv.amount}</td>
+                  <tr key={inv.id} className="hover:bg-amber-50/40 dark:hover:bg-slate-900/40 transition-colors">
+                    <td className="p-3.5 font-mono font-bold text-slate-900 dark:text-white">{inv.invoice_number}</td>
+                    <td className="p-3.5 text-slate-800 dark:text-slate-300 font-medium">{inv.branch_name}</td>
+                    <td className="p-3.5 font-mono font-bold text-amber-800 dark:text-gold-300">AED {inv.amount}</td>
                     <td className="p-3.5">
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                        inv.is_used === 1 ? 'bg-rose-950 text-rose-400 border border-rose-800/40' : 'bg-emerald-950 text-emerald-400 border border-emerald-800/40'
+                        inv.is_used === 1 ? 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-400 border border-rose-300 dark:border-rose-800/40' : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800/40'
                       }`}>
                         {inv.is_used === 1 ? 'USED' : 'UNUSED'}
                       </span>
                     </td>
-                    <td className="p-3.5 text-slate-300">{inv.used_by_name ? `${inv.used_by_name} (${inv.used_by_email})` : '—'}</td>
-                    <td className="p-3.5 font-mono text-slate-400">{inv.used_at ? new Date(inv.used_at).toLocaleString() : '—'}</td>
+                    <td className="p-3.5 text-slate-800 dark:text-slate-300 font-medium">{inv.used_by_name ? `${inv.used_by_name} (${inv.used_by_email})` : '—'}</td>
+                    <td className="p-3.5 font-mono text-slate-500 dark:text-slate-400">{inv.used_at ? new Date(inv.used_at).toLocaleString() : '—'}</td>
                     <td className="p-3.5 text-right flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleToggleUsed(inv)}
-                        className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded text-[11px] font-semibold text-gold-300 border border-slate-700"
+                        className="px-2.5 py-1 bg-amber-100 dark:bg-slate-800 hover:bg-amber-200 dark:hover:bg-slate-700 rounded text-[11px] font-bold text-amber-900 dark:text-gold-300 border border-amber-300 dark:border-slate-700"
                         title="Toggle Used / Unused"
                       >
                         {inv.is_used === 1 ? 'Mark Unused' : 'Mark Used'}
                       </button>
                       <button
                         onClick={() => handleDelete(inv.id)}
-                        className="p-1.5 text-slate-400 hover:text-rose-400 bg-slate-800 rounded"
+                        className="p-1.5 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 bg-slate-100 dark:bg-slate-800 rounded"
                         title="Delete Invoice"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -278,30 +278,30 @@ const InvoiceManagement = () => {
 
       {/* Create Single Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-md glass-panel bg-luxury-card border-gold-400/40 rounded-2xl p-6 shadow-gold-lg">
-            <h2 className="text-xl font-bold text-white mb-4">Create Single Invoice</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+          <div className="w-full max-w-md glass-panel bg-white dark:bg-luxury-card border border-amber-300/80 dark:border-gold-400/40 rounded-2xl p-6 shadow-2xl">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Create Single Invoice</h2>
 
             <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Invoice Number (4 Digits)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Invoice Number (4 Digits)</label>
                 <input
                   type="text"
                   maxLength={4}
                   placeholder="e.g. 5879"
                   value={formData.invoice_number}
                   onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value.replace(/\D/g, '') })}
-                  className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 font-mono text-xs"
+                  className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-mono text-xs font-bold"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Store Branch</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Store Branch</label>
                 <select
                   value={formData.branch_id}
                   onChange={(e) => setFormData({ ...formData, branch_id: e.target.value })}
-                  className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 text-xs"
+                  className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 text-xs font-medium"
                   required
                 >
                   <option value="">Select Branch</option>
@@ -310,13 +310,13 @@ const InvoiceManagement = () => {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Amount (AED)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Amount (AED)</label>
                 <input
                   type="number"
                   placeholder="0.00"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
-                  className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 font-mono text-xs"
+                  className="w-full p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-mono text-xs font-bold"
                 />
               </div>
 
@@ -324,7 +324,7 @@ const InvoiceManagement = () => {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="flex-1 py-2.5 bg-slate-800 text-slate-300 rounded-xl font-medium"
+                  className="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200"
                 >
                   Cancel
                 </button>
@@ -342,13 +342,13 @@ const InvoiceManagement = () => {
 
       {/* CSV Bulk Import Modal */}
       {showImportModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-lg glass-panel bg-luxury-card border-gold-400/40 rounded-2xl p-6 shadow-gold-lg">
-            <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-              <FileSpreadsheet className="w-5 h-5 text-gold-400" /> Bulk CSV Invoice Import
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+          <div className="w-full max-w-lg glass-panel bg-white dark:bg-luxury-card border border-amber-300/80 dark:border-gold-400/40 rounded-2xl p-6 shadow-2xl">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+              <FileSpreadsheet className="w-5 h-5 text-amber-600 dark:text-gold-400" /> Bulk CSV Invoice Import
             </h2>
-            <p className="text-xs text-slate-400 mb-4">
-              Paste CSV rows below. Format: <span className="font-mono text-gold-300">4_DIGIT_INVOICE, BRANCH_ID, AMOUNT</span>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
+              Paste CSV rows below. Format: <span className="font-mono font-bold text-amber-800 dark:text-gold-300">4_DIGIT_INVOICE, BRANCH_ID, AMOUNT</span>
             </p>
 
             <form onSubmit={handleBulkImportSubmit} className="space-y-4 text-xs">
@@ -357,19 +357,19 @@ const InvoiceManagement = () => {
                 value={csvRawText}
                 onChange={(e) => setCsvRawText(e.target.value)}
                 placeholder="5879, 1, 450&#10;5880, 2, 720&#10;5881, 3, 310"
-                className="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 font-mono text-xs"
+                className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-mono text-xs font-medium"
                 required
               />
 
-              <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-[11px] text-slate-400">
-                <span className="font-bold text-gold-400">Branch IDs:</span> {branches.map(b => `${b.name} = ${b.id}`).join(' | ')}
+              <div className="p-3 bg-amber-50 dark:bg-slate-900/60 rounded-xl border border-amber-200 dark:border-slate-800 text-[11px] text-slate-700 dark:text-slate-400">
+                <span className="font-bold text-amber-800 dark:text-gold-400">Branch IDs:</span> {branches.map(b => `${b.name} = ${b.id}`).join(' | ')}
               </div>
 
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowImportModal(false)}
-                  className="flex-1 py-2.5 bg-slate-800 text-slate-300 rounded-xl font-medium"
+                  className="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200"
                 >
                   Cancel
                 </button>

@@ -229,11 +229,11 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
           }
         }
 
-        // Multi-line Prize Label Text - Crisp, readable, no truncation
+        // Multi-line Prize Label Text - Crisp, readable modern sans-serif font
         try {
           ctx.textAlign = 'center';
-          ctx.fillStyle = '#1E293B'; // Dark Charcoal for pastel contrast
-          ctx.font = lang === 'ar' ? 'bold 11px serif' : 'bold 11px sans-serif';
+          ctx.fillStyle = '#1E293B'; // Dark Charcoal for crisp pastel contrast
+          ctx.font = "bold 12px 'Outfit', 'Inter', system-ui, -apple-system, sans-serif";
 
           const pName = prize.name || '';
           let label = pName;
@@ -244,7 +244,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
           }
 
           const lines = wrapTextLines(String(label), prizeImg ? 12 : 14);
-          const textRadius = prizeImg ? outerRadius - 88 : outerRadius - 62;
+          const textRadius = prizeImg ? outerRadius - 92 : outerRadius - 66;
           
           ctx.save();
           ctx.translate(textRadius, 0);
@@ -253,7 +253,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
             ctx.fillText(lines[0], 0, 4);
           } else if (lines.length >= 2) {
             ctx.fillText(lines[0], 0, -3);
-            ctx.fillText(lines[1], 0, 9);
+            ctx.fillText(lines[1], 0, 10);
           }
 
           ctx.restore();
@@ -267,20 +267,20 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
       // 4. Draw Inner Gold Ring around Center Cap
       ctx.save();
       ctx.beginPath();
-      ctx.arc(centerX, centerY, 52, 0, 2 * Math.PI);
-      ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+      ctx.arc(centerX, centerY, 56, 0, 2 * Math.PI);
+      ctx.strokeStyle = 'rgba(212, 175, 55, 0.45)';
       ctx.lineWidth = 2;
       ctx.stroke();
       ctx.restore();
 
       // 5. Draw Center Cap (Pure White Disc with Dual Gold Border)
-      const centerRadius = 46;
+      const centerRadius = 50;
       ctx.save();
       ctx.beginPath();
       ctx.arc(centerX, centerY, centerRadius, 0, 2 * Math.PI);
       ctx.fillStyle = '#FFFFFF';
       ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 12;
       ctx.fill();
 
       // Dual Gold Border on Center Circle
@@ -294,10 +294,10 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // 6. Draw Center Logo (from Image 2)
+      // 6. Draw Center Logo
       if (centerLogo) {
         try {
-          const logoSize = 64;
+          const logoSize = 72;
           ctx.drawImage(centerLogo, centerX - logoSize / 2, centerY - logoSize / 2, logoSize, logoSize);
         } catch (e) {
           console.warn('Logo draw warning:', e);
@@ -305,7 +305,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
       } else {
         // Fallback Gold Text
         ctx.fillStyle = '#996515';
-        ctx.font = 'bold 12px serif';
+        ctx.font = "bold 13px 'Outfit', 'Inter', sans-serif";
         ctx.textAlign = 'center';
         ctx.fillText(lang === 'ar' ? 'مجلس' : 'MAJLIS', centerX, centerY - 6);
         ctx.fillText(lang === 'ar' ? 'العود' : 'AL OUD', centerX, centerY + 10);
@@ -323,13 +323,11 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
     const numSegments = activePrizes.length;
     const arcSize = (2 * Math.PI) / numSegments;
 
-    // Pointer is at 12 o'clock (-Math.PI/2)
     const targetSegmentAngle = -(targetIndex * arcSize + arcSize / 2) - Math.PI / 2;
-
     const extraRotations = 12 * 2 * Math.PI;
     const finalAngle = targetSegmentAngle - extraRotations;
 
-    const duration = 10000; // 10 seconds spin
+    const duration = 10000;
     const startTime = performance.now();
     const startAngle = currentAngle;
 
@@ -354,24 +352,22 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center p-4">
-      {/* Top Gold Pointer Arrow with Ring Loop Ornament (Matching Image 1) */}
+    <div className="relative flex flex-col items-center justify-center p-2 md:p-4 my-2">
+      {/* Top Gold Pointer Arrow with Ring Loop Ornament */}
       <div className="absolute top-0 z-20 transform -translate-y-1 flex flex-col items-center">
-        {/* Ring Loop at Top */}
         <div className="w-6 h-6 rounded-full border-2 border-amber-500 bg-amber-100 shadow-md flex items-center justify-center -mb-2 z-10">
           <div className="w-2.5 h-2.5 rounded-full border border-amber-600 bg-amber-300" />
         </div>
-        {/* Downward Pointer Triangle */}
-        <div className="w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[24px] border-t-amber-500 filter drop-shadow-[0_4px_8px_rgba(212,175,55,0.6)]" />
+        <div className="w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[26px] border-t-amber-500 filter drop-shadow-[0_4px_8px_rgba(212,175,55,0.6)]" />
       </div>
 
-      {/* Outer Subtle Shadow Ring */}
-      <div className="relative rounded-full p-2 bg-gradient-to-b from-amber-200/40 via-amber-100/20 to-amber-300/30 shadow-xl">
+      {/* Outer Wheel Container - Enlarged Size */}
+      <div className="relative rounded-full p-2 md:p-3 bg-gradient-to-b from-amber-200/50 via-amber-100/30 to-amber-300/40 shadow-2xl max-w-[500px] w-full">
         <canvas
           ref={canvasRef}
-          width={460}
-          height={460}
-          className="max-w-full h-auto rounded-full cursor-pointer"
+          width={540}
+          height={540}
+          className="w-full h-auto rounded-full cursor-pointer"
         />
       </div>
     </div>

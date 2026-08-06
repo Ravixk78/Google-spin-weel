@@ -152,12 +152,12 @@ const PrizeManagement = () => {
     <div className="space-y-6 font-sans">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gold-400/20">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-amber-300/40 dark:border-gold-400/20">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-white flex items-center gap-2">
-            {t('prizeTitle')} <Gift className="w-5 h-5 text-gold-400" />
+          <h1 className="text-2xl font-serif font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            {t('prizeTitle')} <Gift className="w-5 h-5 text-amber-600 dark:text-gold-400" />
           </h1>
-          <p className="text-xs text-slate-400">{t('prizeSubtitle')}</p>
+          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">{t('prizeSubtitle')}</p>
         </div>
 
         <button
@@ -169,23 +169,23 @@ const PrizeManagement = () => {
       </div>
 
       {/* Normalized Weight Banner */}
-      <div className="glass-panel border-gold-400/30 rounded-xl p-4 flex items-center justify-between">
+      <div className="glass-panel bg-white/90 dark:bg-slate-900/60 border border-amber-300/60 dark:border-gold-400/30 rounded-xl p-4 flex items-center justify-between shadow-sm">
         <div>
-          <span className="text-xs text-gold-400 font-bold uppercase tracking-wider block">Weighted Random Selection Engine</span>
-          <p className="text-xs text-slate-300">
-            Total Active Weight Sum: <span className="font-mono font-bold text-white text-sm">{totalWeightSum}</span>. Weights are automatically normalized internally into percentage draw probabilities.
+          <span className="text-xs text-amber-800 dark:text-gold-400 font-bold uppercase tracking-wider block">Weighted Random Selection Engine</span>
+          <p className="text-xs text-slate-700 dark:text-slate-300 font-medium">
+            Total Active Weight Sum: <span className="font-mono font-bold text-slate-900 dark:text-white text-sm">{totalWeightSum}</span>. Weights are automatically normalized internally into percentage draw probabilities.
           </p>
         </div>
         <div className="text-right">
-          <span className="text-xs text-emerald-400 font-bold font-mono">{activePrizes.length} Active Segment Prizes</span>
+          <span className="text-xs text-emerald-700 dark:text-emerald-400 font-bold font-mono">{activePrizes.length} Active Segment Prizes</span>
         </div>
       </div>
 
       {/* Prize Table */}
-      <div className="glass-panel border-gold-400/20 rounded-2xl overflow-hidden shadow-lg">
+      <div className="glass-panel bg-white/90 dark:bg-slate-900/60 border border-amber-200/80 dark:border-gold-400/20 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-900/90 text-gold-400 uppercase font-bold text-[11px] border-b border-gold-400/20">
+          <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+            <thead className="bg-amber-50/80 dark:bg-slate-900/90 text-amber-900 dark:text-gold-400 uppercase font-bold text-[11px] border-b border-amber-200 dark:border-gold-400/20">
               <tr>
                 <th className="p-3.5">Order</th>
                 <th className="p-3.5">Color</th>
@@ -198,7 +198,7 @@ const PrizeManagement = () => {
                 <th className="p-3.5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-amber-100 dark:divide-slate-800/60">
               {loading ? (
                 <tr><td colSpan={9} className="p-8 text-center text-slate-500">Loading spin prizes...</td></tr>
               ) : prizes.length === 0 ? (
@@ -210,28 +210,28 @@ const PrizeManagement = () => {
                     : '0.0';
 
                   return (
-                    <tr key={p.id} className="hover:bg-slate-900/40 transition-colors">
-                      <td className="p-3.5 font-mono font-bold text-white">{p.display_order}</td>
+                    <tr key={p.id} className="hover:bg-amber-50/40 dark:hover:bg-slate-900/40 transition-colors">
+                      <td className="p-3.5 font-mono font-bold text-slate-900 dark:text-white">{p.display_order}</td>
                       <td className="p-3.5">
-                        <div className="w-6 h-6 rounded-full border-2 border-white/20 shadow-md" style={{ backgroundColor: p.color_code || '#D4AF37' }} />
+                        <div className="w-6 h-6 rounded-full border border-slate-300 shadow-xs" style={{ backgroundColor: p.color_code || '#D4AF37' }} />
                       </td>
                       <td className="p-3.5">
                         {p.image_url ? (
-                          <img src={p.image_url} alt={p.name} className="w-9 h-9 object-contain rounded-lg border border-gold-400/30 bg-slate-950 p-0.5 shadow" />
+                          <img src={p.image_url} alt={p.name} className="w-9 h-9 object-contain rounded-lg border border-amber-300 dark:border-gold-400/30 bg-white dark:bg-slate-950 p-0.5 shadow-xs" />
                         ) : (
-                          <span className="text-[10px] text-slate-500 italic">No image</span>
+                          <span className="text-[10px] text-slate-400 italic">No image</span>
                         )}
                       </td>
                       <td className="p-3.5">
-                        <p className="font-bold text-white text-xs">{p.name}</p>
-                        <p className="text-[11px] text-slate-400 line-clamp-1">{p.description || 'No description'}</p>
+                        <p className="font-bold text-slate-900 dark:text-white text-xs">{p.name}</p>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">{p.description || 'No description'}</p>
                       </td>
-                      <td className="p-3.5 font-mono font-bold text-gold-400">{p.weight}</td>
-                      <td className="p-3.5 font-mono font-bold text-emerald-400">{probPct}%</td>
-                      <td className="p-3.5 font-mono text-slate-200">{p.stock_quantity} units</td>
+                      <td className="p-3.5 font-mono font-bold text-amber-800 dark:text-gold-400">{p.weight}</td>
+                      <td className="p-3.5 font-mono font-bold text-emerald-700 dark:text-emerald-400">{probPct}%</td>
+                      <td className="p-3.5 font-mono font-bold text-slate-800 dark:text-slate-200">{p.stock_quantity} units</td>
                       <td className="p-3.5">
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                          p.is_active && p.stock_quantity > 0 ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/40' : 'bg-rose-950 text-rose-400 border border-rose-800/40'
+                          p.is_active && p.stock_quantity > 0 ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800/40' : 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-400 border border-rose-300 dark:border-rose-800/40'
                         }`}>
                           {p.is_active && p.stock_quantity > 0 ? 'ACTIVE' : 'INACTIVE / NO STOCK'}
                         </span>
@@ -239,14 +239,14 @@ const PrizeManagement = () => {
                       <td className="p-3.5 text-right flex items-center justify-end gap-2">
                         <button
                           onClick={() => handleOpenEdit(p)}
-                          className="p-1.5 text-slate-300 hover:text-white bg-slate-800 rounded"
+                          className="p-1.5 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100 dark:bg-slate-800 rounded"
                           title="Edit Prize"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => handleDelete(p.id)}
-                          className="p-1.5 text-slate-400 hover:text-rose-400 bg-slate-800 rounded"
+                          className="p-1.5 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 bg-slate-100 dark:bg-slate-800 rounded"
                           title="Delete Prize"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
