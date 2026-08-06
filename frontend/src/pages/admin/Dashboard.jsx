@@ -91,62 +91,62 @@ const Dashboard = () => {
     <div className="space-y-6 font-sans">
       
       {/* Header & Date Range Filter Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-gold-400/20">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-amber-300/40 dark:border-gold-400/20">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-white flex items-center gap-2">
-            {t('dashTitle')} <Sparkles className="w-5 h-5 text-gold-400" />
+          <h1 className="text-2xl font-serif font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            {t('dashTitle')} <Sparkles className="w-5 h-5 text-amber-600 dark:text-gold-400" />
           </h1>
           <div className="flex items-center gap-2 mt-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <p className="text-xs text-slate-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
               {isTodayOnly ? t('liveStatusToday') : t('liveStatusRange', { start: startDate, end: endDate })}
             </p>
           </div>
         </div>
 
         {/* Date Filter Controls */}
-        <div className="flex flex-wrap items-center gap-3 bg-slate-900/90 p-2.5 rounded-xl border border-gold-400/20 shadow-md">
-          <div className="flex items-center gap-2 text-xs text-slate-300 font-medium">
+        <div className="flex flex-wrap items-center gap-3 bg-white dark:bg-slate-900/90 p-2.5 rounded-xl border border-amber-300/60 dark:border-gold-400/20 shadow-sm">
+          <div className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 font-medium">
             <span>{t('fromLabel')}</span>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="bg-slate-800 text-white px-2.5 py-1 rounded-lg border border-slate-700 focus:outline-none focus:border-gold-400 text-xs"
+              className="bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-amber-500 text-xs font-medium"
             />
             <span>{t('toLabel')}</span>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="bg-slate-800 text-white px-2.5 py-1 rounded-lg border border-slate-700 focus:outline-none focus:border-gold-400 text-xs"
+              className="bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-amber-500 text-xs font-medium"
             />
           </div>
 
-          <div className="flex items-center gap-1.5 border-l border-slate-700 pl-3">
+          <div className="flex items-center gap-1.5 border-l border-slate-300 dark:border-slate-700 pl-3">
             <button
               onClick={() => handleQuickPreset('today')}
               className={`px-2.5 py-1 rounded-lg text-[11px] font-bold ${
-                isTodayOnly ? 'bg-gold-gradient text-black' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                isTodayOnly ? 'bg-gradient-to-r from-[#F9E498] via-[#E6C687] to-[#C5A059] text-slate-950 shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
               }`}
             >
               {t('todayBtn')}
             </button>
             <button
               onClick={() => handleQuickPreset('yesterday')}
-              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] font-semibold"
+              className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-lg text-[11px] font-semibold"
             >
               {t('yesterdayBtn')}
             </button>
             <button
               onClick={() => handleQuickPreset('7days')}
-              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] font-semibold"
+              className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-lg text-[11px] font-semibold"
             >
               {t('last7DaysBtn')}
             </button>
             <button
               onClick={() => handleQuickPreset('reset')}
-              className="px-2 py-1 text-gold-400 hover:underline text-[11px] font-semibold"
+              className="px-2 py-1 text-amber-700 dark:text-gold-400 hover:underline text-[11px] font-semibold"
             >
               {t('resetBtn')}
             </button>
@@ -159,13 +159,13 @@ const Dashboard = () => {
         {statCards.map((card, idx) => {
           const Icon = card.icon;
           return (
-            <div key={idx} className={`glass-panel p-4 rounded-xl border ${card.bg} shadow-md flex items-center gap-4`}>
-              <div className={`p-3 rounded-lg bg-black/40 ${card.color}`}>
+            <div key={idx} className="glass-panel p-4 rounded-xl border border-amber-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/60 shadow-sm flex items-center gap-4">
+              <div className={`p-3 rounded-lg bg-amber-50 dark:bg-black/40 ${card.color}`}>
                 <Icon className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-[11px] font-semibold uppercase text-slate-400 block tracking-wider">{card.label}</span>
-                <span className="text-2xl font-bold text-white font-mono">{card.value}</span>
+                <span className="text-[11px] font-semibold uppercase text-slate-500 dark:text-slate-400 block tracking-wider">{card.label}</span>
+                <span className="text-2xl font-bold text-slate-900 dark:text-white font-mono">{card.value}</span>
               </div>
             </div>
           );
@@ -176,17 +176,17 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Chart */}
-        <div className="lg:col-span-2 glass-panel border-gold-400/20 rounded-xl p-5 shadow-lg">
-          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-gold-400" /> {t('branchSpinDist')}
+        <div className="lg:col-span-2 glass-panel border border-amber-200/80 dark:border-gold-400/20 rounded-xl p-5 shadow-sm bg-white/90 dark:bg-slate-900/60">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-amber-600 dark:text-gold-400" /> {t('branchSpinDist')}
           </h3>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={branchStats}>
-                <XAxis dataKey="branch_name" stroke="#94a3b8" fontSize={11} />
-                <YAxis stroke="#94a3b8" fontSize={11} />
+                <XAxis dataKey="branch_name" stroke="#64748b" fontSize={11} />
+                <YAxis stroke="#64748b" fontSize={11} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#121519', borderColor: '#D4AF37', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
+                  contentStyle={{ backgroundColor: '#ffffff', borderColor: '#D4AF37', borderRadius: '8px', color: '#0f172a', fontSize: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                 />
                 <Bar dataKey="spin_count" radius={[6, 6, 0, 0]}>
                   {branchStats.map((entry, index) => (
@@ -199,9 +199,9 @@ const Dashboard = () => {
         </div>
 
         {/* Recent Winners Feed */}
-        <div className="glass-panel border-gold-400/20 rounded-xl p-5 shadow-lg">
-          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-gold-400" /> {t('recentWinnersFeed')}
+        <div className="glass-panel border border-amber-200/80 dark:border-gold-400/20 rounded-xl p-5 shadow-sm bg-white/90 dark:bg-slate-900/60">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <Trophy className="w-4 h-4 text-amber-600 dark:text-gold-400" /> {t('recentWinnersFeed')}
           </h3>
 
           <div className="space-y-3">
@@ -209,12 +209,12 @@ const Dashboard = () => {
               <p className="text-xs text-slate-500 italic">{t('noSpinsToday')}</p>
             ) : (
               recentWinners.map((w) => (
-                <div key={w.id} className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg flex items-center justify-between text-xs">
+                <div key={w.id} className="p-3 bg-amber-50/70 dark:bg-slate-900/80 border border-amber-200/80 dark:border-slate-800 rounded-lg flex items-center justify-between text-xs shadow-xs">
                   <div>
-                    <p className="font-semibold text-gold-400">{w.prize}</p>
-                    <p className="text-slate-300">{w.customer_name} ({w.branch_name})</p>
+                    <p className="font-bold text-amber-900 dark:text-gold-400">{w.prize}</p>
+                    <p className="text-slate-700 dark:text-slate-300 font-medium">{w.customer_name} ({w.branch_name})</p>
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono">{w.invoice_number}</span>
+                  <span className="text-[10px] text-slate-500 font-mono font-semibold">{w.invoice_number}</span>
                 </div>
               ))
             )}

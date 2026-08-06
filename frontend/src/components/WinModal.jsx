@@ -34,35 +34,35 @@ const WinModal = ({ isOpen, prize, ticket, onClose }) => {
   const prizeDisplayName = lang === 'ar' && prizeTranslations[prize.name] ? prizeTranslations[prize.name] : prize.name;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-lg glass-panel bg-luxury-card border-gold-400/40 rounded-2xl p-6 md:p-8 text-center shadow-gold-lg overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-lg glass-panel bg-white dark:bg-luxury-card border-amber-300/60 dark:border-gold-400/40 rounded-2xl p-6 md:p-8 text-center shadow-2xl overflow-hidden">
         
         {/* Decorative Gold Header Ribbon */}
         <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-40 h-40 bg-gold-400/20 rounded-full blur-2xl pointer-events-none" />
 
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-full transition-colors"
+          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-full transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Trophy & Badge */}
         <div className="mx-auto w-20 h-20 bg-gradient-to-br from-gold-300 via-gold-500 to-gold-700 rounded-full flex items-center justify-center shadow-gold p-1 mb-4">
-          <div className="w-full h-full bg-luxury-dark rounded-full flex items-center justify-center">
+          <div className="w-full h-full bg-slate-900 rounded-full flex items-center justify-center">
             <Trophy className="w-10 h-10 text-gold-400 animate-bounce" />
           </div>
         </div>
 
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-400/10 border border-gold-400/30 text-gold-300 text-xs font-semibold uppercase tracking-wider mb-2">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-gold-400/10 border border-amber-300 dark:border-gold-400/30 text-amber-800 dark:text-gold-300 text-xs font-semibold uppercase tracking-wider mb-2">
           <Sparkles className="w-3.5 h-3.5" /> {t('congratsTitle')}
         </div>
 
-        <h2 className="text-2xl md:text-3xl font-serif font-bold text-white mb-1">
+        <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 dark:text-white mb-1">
           {t('prizeWonMsg')}
         </h2>
         
-        <p className="text-gold-400 font-bold text-xl mb-4">
+        <p className="text-amber-700 dark:text-gold-400 font-bold text-xl mb-4">
           {prizeDisplayName}
         </p>
 
@@ -71,40 +71,40 @@ const WinModal = ({ isOpen, prize, ticket, onClose }) => {
             <img
               src={prize.image_url}
               alt={prizeDisplayName}
-              className="w-24 h-24 object-contain rounded-xl border border-gold-400/40 bg-slate-950/80 p-2 shadow-gold"
+              className="w-24 h-24 object-contain rounded-xl border border-amber-300 dark:border-gold-400/40 bg-white dark:bg-slate-950/80 p-2 shadow-md"
             />
           </div>
         )}
 
         {/* Claim Voucher Box */}
-        <div className="bg-emerald-950/60 border border-emerald-700/40 rounded-xl p-4 text-right mb-6 relative">
-          <div className="flex items-center justify-between border-b border-emerald-800/40 pb-3 mb-3">
+        <div className="bg-amber-50/90 dark:bg-emerald-950/60 border border-amber-300 dark:border-emerald-700/40 rounded-xl p-4 text-right mb-6 relative">
+          <div className="flex items-center justify-between border-b border-amber-200 dark:border-emerald-800/40 pb-3 mb-3">
             <div>
-              <span className="text-xs text-emerald-400 uppercase font-semibold block">{t('branchLabel')}</span>
-              <p className="text-white font-medium text-sm">{ticket?.branch_name || 'Majlis Al Oud'}</p>
+              <span className="text-xs text-amber-800 dark:text-emerald-400 uppercase font-semibold block">{t('branchLabel')}</span>
+              <p className="text-slate-900 dark:text-white font-bold text-sm">{ticket?.branch_name || 'Majlis Al Oud'}</p>
             </div>
             <div className="text-left">
-              <span className="text-xs text-emerald-400 uppercase font-semibold block">{t('invoiceLabel')}</span>
-              <p className="text-white font-mono text-sm">{ticket?.invoice_number || 'N/A'}</p>
+              <span className="text-xs text-amber-800 dark:text-emerald-400 uppercase font-semibold block">{t('invoiceLabel')}</span>
+              <p className="text-slate-900 dark:text-white font-mono font-bold text-sm">{ticket?.invoice_number || 'N/A'}</p>
             </div>
           </div>
 
-          <div className="space-y-1.5 text-xs text-slate-300">
-            <p><span className="text-slate-400">{t('customerLabel')}</span> {ticket?.customer_name}</p>
-            <p><span className="text-slate-400">{t('ticketLabel')}</span> <span className="text-gold-400 font-mono font-bold">{ticket?.ticket_code || 'VERIFIED'}</span></p>
+          <div className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 text-left">
+            <p><span className="text-slate-500 dark:text-slate-400 font-medium">{t('customerLabel')}</span> <span className="font-semibold text-slate-900 dark:text-white">{ticket?.customer_name}</span></p>
+            <p><span className="text-slate-500 dark:text-slate-400 font-medium">{t('ticketLabel')}</span> <span className="text-amber-800 dark:text-gold-400 font-mono font-bold">{ticket?.ticket_code || 'VERIFIED'}</span></p>
           </div>
         </div>
 
-        <p className="text-xs text-slate-300 mb-6">
+        <p className="text-xs text-slate-600 dark:text-slate-300 mb-6">
           {t('modalInstructions')}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={() => window.print()}
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-700 hover:border-slate-500 bg-slate-800/60 text-white font-medium text-sm transition-all"
+            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:border-slate-500 bg-white dark:bg-slate-800/60 text-slate-800 dark:text-white font-semibold text-sm transition-all shadow-sm"
           >
-            <Printer className="w-4 h-4 text-slate-300" /> {lang === 'ar' ? 'طباعة التذكرة' : 'Print Receipt'}
+            <Printer className="w-4 h-4 text-slate-500 dark:text-slate-300" /> {lang === 'ar' ? 'طباعة التذكرة' : 'Print Receipt'}
           </button>
 
           <button

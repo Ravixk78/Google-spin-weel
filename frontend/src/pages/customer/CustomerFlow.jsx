@@ -292,14 +292,14 @@ const CustomerFlow = () => {
 
       {/* STEP 1: INVOICE VERIFICATION */}
       {currentStep === 1 && (
-        <div className="glass-panel border-gold-400/20 rounded-2xl p-6 md:p-8 max-w-md mx-auto text-center shadow-lg">
-          <div className="w-14 h-14 bg-emerald-950 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-600">
-            <Receipt className="w-7 h-7 text-emerald-400" />
+        <div className="glass-panel bg-white/90 dark:bg-slate-900/80 border-amber-300/60 dark:border-gold-400/20 rounded-2xl p-6 md:p-8 max-w-md mx-auto text-center shadow-lg">
+          <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-950 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-300 dark:border-emerald-600">
+            <Receipt className="w-7 h-7 text-emerald-700 dark:text-emerald-400" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-1">{t('step1Title')}</h2>
-          <p className="text-xs text-slate-300 mb-6">
-            {t('step1Desc')} <span className="text-gold-400 font-semibold">{detectedBranch?.name}</span>.
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1">{t('step1Title')}</h2>
+          <p className="text-xs text-slate-600 dark:text-slate-300 mb-6">
+            {t('step1Desc')} <span className="text-amber-700 dark:text-gold-400 font-bold">{detectedBranch?.name}</span>.
           </p>
 
           <form onSubmit={handleValidateInvoice} className="space-y-4">
@@ -310,14 +310,14 @@ const CustomerFlow = () => {
                 placeholder={t('invoicePlaceholder')}
                 value={invoiceNumber}
                 onChange={(e) => setInvoiceNumber(e.target.value.replace(/\D/g, ''))}
-                className="w-full text-center tracking-widest font-mono text-2xl py-3 px-4 rounded-xl bg-slate-900/90 border border-gold-400/40 text-white focus:outline-none focus:border-gold-400 placeholder-slate-600 font-bold"
+                className="w-full text-center tracking-widest font-mono text-2xl py-3 px-4 rounded-xl bg-slate-50 dark:bg-slate-900/90 border-2 border-amber-300 dark:border-gold-400/40 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-bold placeholder-slate-400"
                 required
               />
             </div>
 
             {invoiceError && (
-              <div className="p-3 bg-rose-950/80 border border-rose-600/50 rounded-xl text-xs text-rose-300 text-left flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <div className="p-3 bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-600/50 rounded-xl text-xs text-rose-700 dark:text-rose-300 text-left flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-500 dark:text-rose-400 shrink-0 mt-0.5" />
                 <span>{invoiceError}</span>
               </div>
             )}
@@ -335,13 +335,13 @@ const CustomerFlow = () => {
 
       {/* STEP 2: GOOGLE REVIEW REDIRECT */}
       {currentStep === 2 && (
-        <div className="glass-panel border-gold-400/20 rounded-2xl p-6 md:p-8 max-w-md mx-auto text-center shadow-lg">
-          <div className="w-14 h-14 bg-gold-400/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-gold-400/40">
-            <Star className="w-7 h-7 text-gold-400 fill-gold-400" />
+        <div className="glass-panel bg-white/90 dark:bg-slate-900/80 border-amber-300/60 dark:border-gold-400/20 rounded-2xl p-6 md:p-8 max-w-md mx-auto text-center shadow-lg">
+          <div className="w-14 h-14 bg-amber-100 dark:bg-gold-400/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-amber-300 dark:border-gold-400/40">
+            <Star className="w-7 h-7 text-amber-600 dark:text-gold-400 fill-amber-500 dark:fill-gold-400" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-1">{t('step2Title')}</h2>
-          <p className="text-xs text-slate-300 mb-6">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1">{t('step2Title')}</h2>
+          <p className="text-xs text-slate-600 dark:text-slate-300 mb-6">
             {t('step2Desc', { branch: detectedBranch?.name })}
           </p>
 
@@ -354,8 +354,8 @@ const CustomerFlow = () => {
             </button>
 
             {reviewOpened && (
-              <div className="p-3 bg-emerald-950/80 border border-emerald-600/50 rounded-xl text-xs text-emerald-300 text-left flex items-start gap-2 animate-fadeIn">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="p-3 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-600/50 rounded-xl text-xs text-emerald-800 dark:text-emerald-300 text-left flex items-start gap-2 animate-fadeIn font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                 <span>{t('reviewOpenedMsg')}</span>
               </div>
             )}
@@ -364,7 +364,7 @@ const CustomerFlow = () => {
               onClick={handleCompleteReviewAndProceed}
               disabled={!reviewOpened}
               className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${
-                reviewOpened ? 'btn-gold shadow-gold' : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+                reviewOpened ? 'btn-gold shadow-gold' : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed border border-slate-300 dark:border-slate-700'
               }`}
             >
               {t('proceedToSpinBtn')}
