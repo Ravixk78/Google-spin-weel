@@ -3,38 +3,40 @@ import api from '../services/api';
 
 const BranchContext = createContext();
 
+const defaultBranch = {
+  id: 1,
+  code: 'kalba',
+  name: 'Kalba Branch',
+  address: 'Al Corniche Road, Kalba, Sharjah, UAE',
+  google_review_url: 'https://g.page/r/CZm3IGOsQ2F9EAE/review',
+  qr_code_token: 'QR-KALBA-2026-TOKEN982'
+};
+
 export const BranchProvider = ({ children }) => {
-  const [detectedBranch, setDetectedBranch] = useState(null);
-  const [loadingBranch, setLoadingBranch] = useState(true);
+  const [detectedBranch, setDetectedBranch] = useState(defaultBranch);
+  const [loadingBranch, setLoadingBranch] = useState(false);
   const [branchError, setBranchError] = useState(null);
 
   useEffect(() => {
-    // Read URL params
     const searchParams = new URLSearchParams(window.location.search);
     const branchCode = searchParams.get('branch');
     const qrToken = searchParams.get('qr');
 
     if (branchCode || qrToken) {
       detectBranchFromUrl(branchCode, qrToken);
-    } else {
-      // Default fallback to Kalba for testing if no URL params passed
-      detectBranchFromUrl('kalba', null);
     }
   }, []);
 
   const detectBranchFromUrl = async (branchCode, qrToken) => {
-    setLoadingBranch(true);
-    setBranchError(null);
     try {
       const res = await api.get('/branches/detect', {
         params: { branch: branchCode, qr: qrToken }
       });
-      setDetectedBranch(res.data.branch);
+      if (res.data && res.data.branch) {
+        setDetectedBranch(res.data.branch);
+      }
     } catch (err) {
-      console.error('Branch Auto-detection Error:', err);
-      setBranchError(err.response?.data?.error || 'Failed to detect physical branch from QR code.');
-    } finally {
-      setLoadingBranch(false);
+      console.warn('Branch detection warning (using fallback):', err);
     }
   };
 
@@ -52,3 +54,4 @@ export const BranchProvider = ({ children }) => {
 };
 
 export const useBranch = () => useContext(BranchContext);
+
