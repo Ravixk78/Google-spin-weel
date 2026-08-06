@@ -239,167 +239,126 @@ const CustomerFlow = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="min-h-screen py-6 px-4 bg-gradient-to-b from-[#FAF8F5] via-[#FFFDF9] to-[#F5F0E6] text-slate-900 font-sans flex flex-col items-center justify-center">
       
-      {/* Branch Header Banner */}
-      <div className="glass-panel border-gold-400/30 rounded-2xl p-6 mb-8 text-center relative overflow-hidden shadow-gold">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gold-400/10 rounded-full blur-xl pointer-events-none" />
-
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-600/40 text-emerald-300 text-xs font-semibold uppercase tracking-wider mb-2">
-          <MapPin className="w-3.5 h-3.5 text-emerald-400" /> {t('scannedBranch')} {detectedBranch?.name}
-        </div>
-
-        <h1 className="text-2xl md:text-4xl font-serif font-bold text-white mb-2 uppercase tracking-wide">
-          {t('title')}
-        </h1>
-
-        <p className="text-xs md:text-sm text-slate-300 max-w-xl mx-auto">
-          {t('subtitle')}
-        </p>
-
-        {/* Progress Stepper */}
-        <div className="grid grid-cols-3 gap-2 max-w-md mx-auto mt-6 pt-4 border-t border-gold-400/20">
-          {[
-            { step: 1, label: t('step1Label') },
-            { step: 2, label: t('step2Label') },
-            { step: 3, label: t('step3Label') }
-          ].map((item) => (
-            <div key={item.step} className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                currentStep === item.step
-                  ? 'bg-gold-gradient text-black shadow-gold scale-110'
-                  : currentStep > item.step
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-slate-800 text-slate-500'
-              }`}>
-                {currentStep > item.step ? <CheckCircle2 className="w-4 h-4" /> : item.step}
-              </div>
-              <span className={`text-[10px] mt-1 font-medium ${currentStep === item.step ? 'text-gold-400' : 'text-slate-500'}`}>
-                {item.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* STEP 1: INVOICE VERIFICATION */}
-      {currentStep === 1 && (
-        <div className="glass-panel border-gold-400/20 rounded-2xl p-6 md:p-8 max-w-md mx-auto text-center shadow-lg">
-          <div className="w-14 h-14 bg-emerald-950 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-600">
-            <Receipt className="w-7 h-7 text-emerald-400" />
+      {/* Main Luxury Container matching Image 1 */}
+      <div className="w-full max-w-2xl mx-auto rounded-3xl p-6 md:p-8 text-center shadow-xl bg-white/80 backdrop-blur-md border border-amber-200/60 relative overflow-hidden">
+        
+        {/* Branch Info Pill */}
+        {detectedBranch && (
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-semibold uppercase mb-3">
+            <MapPin className="w-3.5 h-3.5 text-emerald-600" /> {t('scannedBranch')} {detectedBranch.name}
           </div>
+        )}
 
-          <h2 className="text-xl font-bold text-white mb-1">{t('step1Title')}</h2>
-          <p className="text-xs text-slate-300 mb-6">
-            {t('step1Desc')} <span className="text-gold-400 font-semibold">{detectedBranch?.name}</span>.
-          </p>
-
-          <form onSubmit={handleValidateInvoice} className="space-y-4">
-            <div>
-              <input
-                type="text"
-                maxLength={4}
-                placeholder={t('invoicePlaceholder')}
-                value={invoiceNumber}
-                onChange={(e) => setInvoiceNumber(e.target.value.replace(/\D/g, ''))}
-                className="w-full text-center tracking-widest font-mono text-2xl py-3 px-4 rounded-xl bg-slate-900/90 border border-gold-400/40 text-white focus:outline-none focus:border-gold-400 placeholder-slate-600"
-                required
-              />
-            </div>
-
-            {invoiceError && (
-              <div className="p-3 bg-rose-950/80 border border-rose-600/50 rounded-xl text-xs text-rose-300 text-left flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
-                <span>{invoiceError}</span>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={validating || !invoiceNumber.trim()}
-              className="w-full btn-gold py-3 rounded-xl font-bold text-sm shadow-gold flex items-center justify-center gap-2"
-            >
-              {validating ? <RefreshCw className="w-4 h-4 animate-spin" /> : t('validateBtn')}
-            </button>
-          </form>
-        </div>
-      )}
-
-      {/* STEP 2: GOOGLE REVIEW REDIRECT */}
-      {currentStep === 2 && (
-        <div className="glass-panel border-gold-400/20 rounded-2xl p-6 md:p-8 max-w-md mx-auto text-center shadow-lg">
-          <div className="w-14 h-14 bg-gold-400/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-gold-400/40">
-            <Star className="w-7 h-7 text-gold-400 fill-gold-400" />
-          </div>
-
-          <h2 className="text-xl font-bold text-white mb-1">{t('step2Title')}</h2>
-          <p className="text-xs text-slate-300 mb-6">
-            {t('step2Desc', { branch: detectedBranch?.name })}
-          </p>
-
-          <div className="space-y-4">
-            <button
-              onClick={handleOpenGoogleReview}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-md transition-all transform active:scale-95"
-            >
-              <Star className="w-4 h-4 fill-white" /> {t('openReviewBtn', { branch: detectedBranch?.name })}
-            </button>
-
-            {reviewOpened && (
-              <div className="p-3 bg-emerald-950/80 border border-emerald-600/50 rounded-xl text-xs text-emerald-300 text-left flex items-start gap-2 animate-fadeIn">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span>{t('reviewOpenedMsg')}</span>
-              </div>
-            )}
-
-            <button
-              onClick={handleCompleteReviewAndProceed}
-              disabled={!reviewOpened}
-              className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${
-                reviewOpened ? 'btn-gold shadow-gold' : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
-              }`}
-            >
-              {t('proceedToSpinBtn')}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* STEP 3: LUXURY ANIMATED SPIN WHEEL */}
-      {currentStep === 3 && (
-        <div className="rounded-3xl p-6 md:p-8 text-center shadow-xl max-w-2xl mx-auto bg-gradient-to-b from-[#FAF8F5] via-[#FFFDF9] to-[#F5F0E6] border border-amber-200/60 relative overflow-hidden">
-          
-          {/* Top Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-amber-300/80 text-slate-800 text-xs md:text-sm font-semibold shadow-sm mb-4">
+        {/* Top Oval Pill Badge */}
+        <div className="flex justify-center mb-3">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-amber-300/90 text-slate-800 text-xs md:text-sm font-semibold shadow-sm">
             {t('spinReadyBadge')}
           </div>
+        </div>
 
-          {/* Main Heading */}
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 mb-1 tracking-tight">
-            {t('spinTitle')}
-          </h2>
+        {/* Main Heading */}
+        <h1 className="text-2xl md:text-4xl font-serif font-bold text-slate-900 mb-1 tracking-tight">
+          {t('spinTitle')}
+        </h1>
 
-          {/* Subtitle */}
-          <p className="text-xs md:text-sm text-slate-500 mb-6">
-            {t('spinSubtitle', { invoice: validatedInvoice?.invoice_number || '4444' })}
-          </p>
+        {/* Subtitle */}
+        <p className="text-xs md:text-sm text-slate-500 mb-6">
+          {validatedInvoice 
+            ? t('spinSubtitle', { invoice: validatedInvoice.invoice_number }) 
+            : t('subtitle')}
+        </p>
 
-          {spinError && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 mb-6 max-w-md mx-auto">
-              {spinError}
+        {/* Spin Wheel Canvas Component - ALWAYS VISIBLE */}
+        <SpinWheelCanvas
+          prizes={prizes}
+          winningIndex={winningIndex}
+          isSpinning={spinning}
+          onSpinComplete={handleSpinAnimationFinished}
+        />
+
+        {/* STEP 1: 4-DIGIT INVOICE NUMBER INPUT */}
+        {currentStep === 1 && (
+          <div className="mt-6 max-w-md mx-auto space-y-4">
+            <form onSubmit={handleValidateInvoice} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                  {t('step1Title')}
+                </label>
+                <input
+                  type="text"
+                  maxLength={4}
+                  placeholder={t('invoicePlaceholder')}
+                  value={invoiceNumber}
+                  onChange={(e) => setInvoiceNumber(e.target.value.replace(/\D/g, ''))}
+                  className="w-full text-center tracking-widest font-mono text-2xl py-3 px-4 rounded-full bg-white border-2 border-amber-300 text-slate-900 focus:outline-none focus:border-amber-500 shadow-sm placeholder-slate-400 font-bold"
+                  required
+                />
+              </div>
+
+              {invoiceError && (
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 text-center flex items-center justify-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
+                  <span>{invoiceError}</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={validating || !invoiceNumber.trim()}
+                className="w-full py-4 px-8 rounded-full font-bold text-base md:text-lg shadow-lg transition-all transform bg-gradient-to-r from-[#F9E498] via-[#E6C687] to-[#C5A059] hover:from-[#FFF0B8] hover:to-[#B38728] text-slate-950 hover:scale-[1.02] active:scale-95 shadow-amber-500/20 border border-amber-200 flex items-center justify-center gap-2"
+              >
+                {validating ? <RefreshCw className="w-5 h-5 animate-spin" /> : t('validateBtn')}
+              </button>
+            </form>
+          </div>
+        )}
+
+        {/* STEP 2: GOOGLE REVIEW REDIRECT */}
+        {currentStep === 2 && (
+          <div className="mt-6 max-w-md mx-auto space-y-4">
+            <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-center">
+              <Star className="w-7 h-7 text-amber-500 fill-amber-500 mx-auto mb-2" />
+              <h3 className="text-sm font-bold text-slate-800 mb-1">{t('step2Title')}</h3>
+              <p className="text-xs text-slate-600 mb-4">{t('step2Desc', { branch: detectedBranch?.name })}</p>
+
+              <button
+                onClick={handleOpenGoogleReview}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-md transition-all transform active:scale-95 mb-3"
+              >
+                <Star className="w-4 h-4 fill-white" /> {t('openReviewBtn', { branch: detectedBranch?.name })}
+              </button>
+
+              {reviewOpened && (
+                <div className="p-2.5 bg-emerald-100 border border-emerald-300 rounded-xl text-xs text-emerald-800 text-center font-semibold mb-3">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 inline mr-1" /> {t('reviewOpenedMsg')}
+                </div>
+              )}
+
+              <button
+                onClick={handleCompleteReviewAndProceed}
+                disabled={!reviewOpened}
+                className={`w-full py-3.5 rounded-full font-bold text-sm transition-all ${
+                  reviewOpened 
+                    ? 'bg-gradient-to-r from-[#F9E498] via-[#E6C687] to-[#C5A059] text-slate-950 shadow-md hover:scale-105' 
+                    : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
+                }`}
+              >
+                {t('proceedToSpinBtn')}
+              </button>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Canvas Wheel Component */}
-          <SpinWheelCanvas
-            prizes={prizes}
-            winningIndex={winningIndex}
-            isSpinning={spinning}
-            onSpinComplete={handleSpinAnimationFinished}
-          />
-
-          {/* Spin Action Button */}
+        {/* STEP 3: EXECUTE SPIN BUTTON */}
+        {currentStep === 3 && (
           <div className="mt-6 flex justify-center">
+            {spinError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 mb-4 max-w-md w-full">
+                {spinError}
+              </div>
+            )}
             <button
               onClick={handleExecuteSpin}
               disabled={spinning || winningIndex !== null}
@@ -412,24 +371,24 @@ const CustomerFlow = () => {
               {spinning ? t('spinningMsg') : winningIndex !== null ? '✓' : t('spinActionBtn')}
             </button>
           </div>
+        )}
 
-          {/* Bottom Trophy Rewards Card */}
-          <div className="mt-8 p-4 md:p-5 rounded-2xl bg-white/90 border border-amber-200/60 shadow-sm flex items-center justify-between gap-4 text-left rtl:text-right max-w-lg mx-auto">
-            <div className="flex-1">
-              <h4 className="text-xs md:text-sm font-bold text-slate-800 mb-0.5">
-                {t('bottomCardTitle')}
-              </h4>
-              <p className="text-[11px] md:text-xs text-slate-500">
-                {t('bottomCardSub')}
-              </p>
-            </div>
-            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center shrink-0 shadow-sm">
-              <Trophy className="w-5 h-5 text-amber-600" />
-            </div>
+        {/* Bottom Trophy Rewards Card */}
+        <div className="mt-8 p-4 md:p-5 rounded-2xl bg-white border border-amber-200/80 shadow-sm flex items-center justify-between gap-4 text-left rtl:text-right max-w-lg mx-auto">
+          <div className="flex-1">
+            <h4 className="text-xs md:text-sm font-bold text-slate-800 mb-0.5">
+              {t('bottomCardTitle')}
+            </h4>
+            <p className="text-[11px] md:text-xs text-slate-500">
+              {t('bottomCardSub')}
+            </p>
           </div>
-
+          <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center shrink-0 shadow-sm">
+            <Trophy className="w-5 h-5 text-amber-600" />
+          </div>
         </div>
-      )}
+
+      </div>
 
       {/* Victory Modal Popup */}
       <WinModal
