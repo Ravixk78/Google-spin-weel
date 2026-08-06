@@ -33,11 +33,13 @@ export const translations = {
     proceedToSpinBtn: "الانتقال إلى عجلة الجوائز",
 
     // Step 3: Spin Wheel
-    spinReadyBadge: "جاهز لتدوير العجلة",
-    spinTitle: "ادر عجلة مجلس العود الفاخرة",
+    spinReadyBadge: "جاهز لتدوير العجلة؟ ✨",
+    spinTitle: "إدر عجلة مجلس العود الفاخرة",
     spinSubtitle: "تم التحقق من الفاتورة رقم {invoice}.",
-    spinActionBtn: "🎯 ادر العجلة الآن للفوز!",
+    spinActionBtn: "ادِر العجلة الآن للفوز! 🎯",
     spinningMsg: "جاري تدوير العجلة بكل تشويق...",
+    bottomCardTitle: "جوائز مميزة بانتظارك من مجلس العود الفاخر.",
+    bottomCardSub: "كل تجربة فريدة، وكل فوز أقرب إليك!",
 
     // Win Modal
     congratsTitle: "🎉 ألف مبروك للفائز!",
@@ -167,11 +169,13 @@ export const translations = {
     proceedToSpinBtn: "Proceed to Spin Wheel",
 
     // Step 3: Spin Wheel
-    spinReadyBadge: "Ready to Spin",
-    spinTitle: "Spin the Luxury Oud Wheel",
-    spinSubtitle: "Invoice {invoice} verified.",
-    spinActionBtn: "🎯 SPIN THE WHEEL NOW!",
+    spinReadyBadge: "Ready to spin the wheel? ✨",
+    spinTitle: "Spin the Luxury Majlis Al Oud Wheel",
+    spinSubtitle: "Invoice #{invoice} verified.",
+    spinActionBtn: "SPIN THE WHEEL NOW TO WIN! 🎯",
     spinningMsg: "Spinning the luxury wheel...",
+    bottomCardTitle: "Special rewards await you from luxury Majlis Al Oud.",
+    bottomCardSub: "Every experience is unique, and every win is closer to you!",
 
     // Win Modal
     congratsTitle: "🎉 Congratulations Winner!",

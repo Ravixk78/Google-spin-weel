@@ -367,21 +367,25 @@ const CustomerFlow = () => {
 
       {/* STEP 3: LUXURY ANIMATED SPIN WHEEL */}
       {currentStep === 3 && (
-        <div className="glass-panel border-gold-400/30 rounded-2xl p-6 md:p-8 text-center shadow-gold-lg max-w-2xl mx-auto">
+        <div className="rounded-3xl p-6 md:p-8 text-center shadow-xl max-w-2xl mx-auto bg-gradient-to-b from-[#FAF8F5] via-[#FFFDF9] to-[#F5F0E6] border border-amber-200/60 relative overflow-hidden">
           
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-400/10 border border-gold-400/30 text-gold-300 text-xs font-semibold uppercase mb-4">
-            <Sparkles className="w-3.5 h-3.5" /> {t('spinReadyBadge')}
+          {/* Top Pill Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-amber-300/80 text-slate-800 text-xs md:text-sm font-semibold shadow-sm mb-4">
+            {t('spinReadyBadge')}
           </div>
 
-          <h2 className="text-2xl font-serif font-bold text-white mb-1">
+          {/* Main Heading */}
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 mb-1 tracking-tight">
             {t('spinTitle')}
           </h2>
-          <p className="text-xs text-slate-300 mb-6">
-            {t('spinSubtitle', { invoice: validatedInvoice?.invoice_number })}
+
+          {/* Subtitle */}
+          <p className="text-xs md:text-sm text-slate-500 mb-6">
+            {t('spinSubtitle', { invoice: validatedInvoice?.invoice_number || '4444' })}
           </p>
 
           {spinError && (
-            <div className="p-3 bg-rose-950/80 border border-rose-600/50 rounded-xl text-xs text-rose-300 mb-6 max-w-md mx-auto">
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 mb-6 max-w-md mx-auto">
               {spinError}
             </div>
           )}
@@ -394,19 +398,36 @@ const CustomerFlow = () => {
             onSpinComplete={handleSpinAnimationFinished}
           />
 
-          <div className="mt-6">
+          {/* Spin Action Button */}
+          <div className="mt-6 flex justify-center">
             <button
               onClick={handleExecuteSpin}
               disabled={spinning || winningIndex !== null}
-              className={`px-8 py-3.5 rounded-full font-serif font-bold text-base shadow-gold transition-all transform ${
+              className={`w-full max-w-md py-4 px-8 rounded-full font-bold text-base md:text-lg shadow-lg transition-all transform ${
                 spinning || winningIndex !== null
-                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
-                  : 'btn-gold hover:scale-105 active:scale-95'
+                  ? 'bg-slate-300 text-slate-500 cursor-not-allowed border border-slate-300'
+                  : 'bg-gradient-to-r from-[#F9E498] via-[#E6C687] to-[#C5A059] hover:from-[#FFF0B8] hover:to-[#B38728] text-slate-950 hover:scale-[1.02] active:scale-95 shadow-amber-500/20 border border-amber-200'
               }`}
             >
               {spinning ? t('spinningMsg') : winningIndex !== null ? '✓' : t('spinActionBtn')}
             </button>
           </div>
+
+          {/* Bottom Trophy Rewards Card */}
+          <div className="mt-8 p-4 md:p-5 rounded-2xl bg-white/90 border border-amber-200/60 shadow-sm flex items-center justify-between gap-4 text-left rtl:text-right max-w-lg mx-auto">
+            <div className="flex-1">
+              <h4 className="text-xs md:text-sm font-bold text-slate-800 mb-0.5">
+                {t('bottomCardTitle')}
+              </h4>
+              <p className="text-[11px] md:text-xs text-slate-500">
+                {t('bottomCardSub')}
+              </p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center shrink-0 shadow-sm">
+              <Trophy className="w-5 h-5 text-amber-600" />
+            </div>
+          </div>
+
         </div>
       )}
 

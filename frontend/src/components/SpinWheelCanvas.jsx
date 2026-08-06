@@ -1,24 +1,63 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Sparkles, Trophy, Gift, Award, Crown, Flame, Package } from 'lucide-react';
-
 import { useLanguage } from '../context/LanguageContext';
 
 const prizeTranslations = {
-  'Exclusive Oud Perfume 50ml': 'عطر عود فاخر 50مل',
-  'Luxury Oud Wood Chip 25g': 'رقائق عود فاخر 25غ',
-  'Royal Bakhoor Incense Box': 'صندوق بخور ملكي',
-  '15% Store Discount Voucher': 'قسيمة خصم 15%',
-  'Majlis Fragrance Sample Set': 'مجموعة عينات عطور',
-  'Golden Oud Oil Concentrated': 'دهن عود ذهبي مركز',
-  'Better Luck Next Time': 'حظاً أوفر المرة القادمة',
-  'Free Oud Incense': 'بخور عود مجاني'
+  'Luxury Travel Set': 'مجموعة السفر الفاخرة',
+  'Special Edition Kit': 'مجموعة الإصدار الخاص',
+  'Majlis Al Oud Branch': 'فرع مجلس العود',
+  'Luxury Royal Oud Oil': 'دهن العود الملكي الفاخر',
+  'Majlis Signature Set': 'مجموعة توقيع مجلس العود',
+  'Amber & Oud Bukhoor': 'بخور العنبر والعود',
+  'Majlis Al Oud Perfume': 'عطر مجلس العود',
+  'Dehn El Oud Car Oil': 'دهن عود للسيارة',
+  'Exclusive Oud Incense': 'بخور العود الحصري',
+  'Majlis Gift Card': 'بطاقة هدايا مجلس العود',
+
+  // Reverse mapping for Arabic -> English
+  'مجموعة السفر الفاخرة': 'Luxury Travel Set',
+  'مجموعة الإصدار الخاص': 'Special Edition Kit',
+  'فرع مجلس العود': 'Majlis Al Oud Branch',
+  'دهن العود الملكي الفاخر': 'Luxury Royal Oud Oil',
+  'مجموعة توقيع مجلس العود': 'Majlis Signature Set',
+  'بخور العنبر والعود': 'Amber & Oud Bukhoor',
+  'عطر مجلس العود': 'Majlis Al Oud Perfume',
+  'دهن عود للسيارة': 'Dehn El Oud Car Oil',
+  'بخور العود الحصري': 'Exclusive Oud Incense',
+  'بطاقة هدايا مجلس العود': 'Majlis Gift Card',
 };
+
+const defaultPastelColors = [
+  '#E2F1EB', // Mint Green
+  '#FCE5E2', // Soft Coral Pink
+  '#EAE6F8', // Lavender Purple
+  '#FDF3D6', // Warm Yellow
+  '#DCECF6', // Ice Blue
+  '#FCE0DD', // Coral Red
+  '#E2F2EE', // Soft Mint
+  '#FDEBD9', // Peach
+  '#E8EFFD', // Pastel Blue
+  '#F9F1E6'  // Cream Beige
+];
 
 const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) => {
   const canvasRef = useRef(null);
   const [currentAngle, setCurrentAngle] = useState(0);
   const [loadedImages, setLoadedImages] = useState({});
+  const [centerLogo, setCenterLogo] = useState(null);
   const { lang } = useLanguage();
+
+  // Load center logo from Image 2
+  useEffect(() => {
+    const img = new Image();
+    img.src = '/wheel-logo.png';
+    img.onload = () => setCenterLogo(img);
+    img.onerror = () => {
+      // Fallback if not found in public
+      const img2 = new Image();
+      img2.src = '/src/assets/wheel-logo.png';
+      img2.onload = () => setCenterLogo(img2);
+    };
+  }, []);
 
   // Load prize segment images
   useEffect(() => {
@@ -30,7 +69,6 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         const url = prize.image_url.trim();
         const img = new Image();
         
-        // ONLY set crossOrigin for remote HTTP/HTTPS URLs (Data URLs fail if crossOrigin is set!)
         if (url.startsWith('http://') || url.startsWith('https://')) {
           img.crossOrigin = 'Anonymous';
         }
@@ -56,7 +94,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 
   useEffect(() => {
     drawWheel(currentAngle);
-  }, [prizes, currentAngle, lang, loadedImages]);
+  }, [prizes, currentAngle, lang, loadedImages, centerLogo]);
 
   useEffect(() => {
     if (isSpinning && winningIndex !== null && winningIndex !== undefined) {
@@ -72,7 +110,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
     const height = canvas.height;
     const centerX = width / 2;
     const centerY = height / 2;
-    const outerRadius = width / 2 - 15;
+    const outerRadius = width / 2 - 20;
 
     ctx.clearRect(0, 0, width, height);
 
@@ -81,44 +119,52 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
     const numSegments = prizes.length;
     const arcSize = (2 * Math.PI) / numSegments;
 
-    // Outer Luxury Gold Ring
+    // 1. Outer Outer Light Ring & Shadow
     ctx.save();
     ctx.beginPath();
-    ctx.arc(centerX, centerY, outerRadius + 8, 0, 2 * Math.PI);
-    const goldGrad = ctx.createLinearGradient(0, 0, width, height);
-    goldGrad.addColorStop(0, '#FFF0B8');
-    goldGrad.addColorStop(0.5, '#D4AF37');
-    goldGrad.addColorStop(1, '#AA7C11');
-    ctx.strokeStyle = goldGrad;
-    ctx.lineWidth = 12;
-    ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
-    ctx.shadowBlur = 15;
+    ctx.arc(centerX, centerY, outerRadius + 10, 0, 2 * Math.PI);
+    const goldOuterGrad = ctx.createLinearGradient(0, 0, width, height);
+    goldOuterGrad.addColorStop(0, '#F5E5B8');
+    goldOuterGrad.addColorStop(0.5, '#D4AF37');
+    goldOuterGrad.addColorStop(1, '#B38728');
+    ctx.strokeStyle = goldOuterGrad;
+    ctx.lineWidth = 6;
+    ctx.shadowColor = 'rgba(212, 175, 55, 0.3)';
+    ctx.shadowBlur = 12;
     ctx.stroke();
     ctx.restore();
 
-    // Draw Segments
+    // 2. Inner Thin Gold Concentric Circle
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, outerRadius + 2, 0, 2 * Math.PI);
+    ctx.strokeStyle = '#E8C86B';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.restore();
+
+    // 3. Draw Pastel Segments
     prizes.forEach((prize, i) => {
       const startAngle = angleOffset + i * arcSize;
       const endAngle = startAngle + arcSize;
 
-      // Fill Slice
+      // Fill Pastel Segment
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
       ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
       ctx.closePath();
 
-      // Segment Colors
-      ctx.fillStyle = prize.color_code || (i % 2 === 0 ? '#123530' : '#1E4D45');
+      ctx.fillStyle = prize.color_code || defaultPastelColors[i % defaultPastelColors.length];
       ctx.fill();
 
-      // Gold Segment Border
-      ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
-      ctx.lineWidth = 2;
+      // Clean White/Gold Slice Divider Border
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 3;
       ctx.stroke();
       ctx.restore();
 
-      // Text & Segment Prize Image
+      // Text & Segment Prize Image Drawing
       ctx.save();
       ctx.translate(centerX, centerY);
       const textAngle = startAngle + arcSize / 2;
@@ -126,66 +172,90 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 
       const prizeImg = loadedImages[prize.id];
       
-      // Draw Prize Image on outer slice radius without touching text
+      // Draw Prize Image on outer slice radius
       if (prizeImg) {
         ctx.save();
-        const imgSize = 28;
-        const imgRadius = outerRadius - 32;
+        const imgSize = 34;
+        const imgRadius = outerRadius - 38;
 
-        // Subtle dark contrast disc behind image
-        ctx.beginPath();
-        ctx.arc(imgRadius, 0, imgSize / 2 + 2, 0, 2 * Math.PI);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-        ctx.fill();
-
+        // Draw image cleanly
         ctx.drawImage(prizeImg, imgRadius - imgSize / 2, -imgSize / 2, imgSize, imgSize);
         ctx.restore();
       }
 
-      // Prize Label Text (positioned safely inside textRadius so it NEVER overlaps with image)
-      ctx.textAlign = 'right';
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = '600 10.5px Outfit, sans-serif';
-      ctx.shadowColor = 'rgba(0,0,0,0.95)';
-      ctx.shadowBlur = 5;
+      // Prize Label Text
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#1E293B'; // Dark Slate/Charcoal for pastel contrast
+      ctx.font = lang === 'ar' ? 'bold 11.5px Amiri, serif' : '600 11px Outfit, sans-serif';
 
-      let label = lang === 'ar' && prizeTranslations[prize.name] ? prizeTranslations[prize.name] : prize.name;
-      
-      // Strict character limit when image is present to prevent leftward text overflow
-      const maxChars = prizeImg ? 14 : 20;
+      let label = prize.name;
+      if (lang === 'ar') {
+        label = prizeTranslations[prize.name] || prize.name;
+      } else {
+        // If stored name is Arabic, lookup English translation
+        label = prizeTranslations[prize.name] && !/[a-zA-Z]/.test(prize.name) ? prizeTranslations[prize.name] : prize.name;
+      }
+
+      const maxChars = prizeImg ? 16 : 22;
       if (label.length > maxChars) {
         label = label.substring(0, maxChars - 2) + '..';
       }
 
-      // Text ends at textRadius (safely before image starts at outerRadius - 46)
-      const textRadius = prizeImg ? outerRadius - 54 : outerRadius - 22;
-      ctx.fillText(label, textRadius, 3.5);
+      // Position text nicely inside segment
+      const textRadius = prizeImg ? outerRadius - 82 : outerRadius - 55;
+      
+      // Rotate text to read outwards cleanly
+      ctx.save();
+      ctx.translate(textRadius, 0);
+      ctx.fillText(label, 0, 4);
+      ctx.restore();
 
       ctx.restore();
     });
 
-    // Draw Center Cap (Majlis Al Oud Logo Hub)
+    // 4. Draw Inner Gold Ring around Center Cap
     ctx.save();
     ctx.beginPath();
-    ctx.arc(centerX, centerY, 45, 0, 2 * Math.PI);
-    const centerGrad = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, 45);
-    centerGrad.addColorStop(0, '#0A1F1C');
-    centerGrad.addColorStop(1, '#050E0C');
-    ctx.fillStyle = centerGrad;
-    ctx.shadowColor = 'rgba(0,0,0,0.6)';
+    ctx.arc(centerX, centerY, 52, 0, 2 * Math.PI);
+    ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.restore();
+
+    // 5. Draw Center Cap (Pure White Disc with Dual Gold Border)
+    const centerRadius = 46;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, centerRadius, 0, 2 * Math.PI);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
     ctx.shadowBlur = 10;
     ctx.fill();
 
+    // Dual Gold Border on Center Circle
     ctx.strokeStyle = '#D4AF37';
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 3;
     ctx.stroke();
 
-    // Center Gold Text
-    ctx.fillStyle = '#D4AF37';
-    ctx.font = 'bold 11px Playfair Display, serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(lang === 'ar' ? 'مجلس' : 'MAJLIS', centerX, centerY - 6);
-    ctx.fillText(lang === 'ar' ? 'العود' : 'AL OUD', centerX, centerY + 8);
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, centerRadius - 4, 0, 2 * Math.PI);
+    ctx.strokeStyle = '#F3E5AB';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 6. Draw Center Logo (from Image 2)
+    if (centerLogo) {
+      const logoSize = 64;
+      ctx.drawImage(centerLogo, centerX - logoSize / 2, centerY - logoSize / 2, logoSize, logoSize);
+    } else {
+      // Fallback Gold Text
+      ctx.fillStyle = '#996515';
+      ctx.font = 'bold 12px Playfair Display, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(lang === 'ar' ? 'مجلس' : 'MAJLIS', centerX, centerY - 6);
+      ctx.fillText(lang === 'ar' ? 'العود' : 'AL OUD', centerX, centerY + 10);
+    }
+
     ctx.restore();
   };
 
@@ -195,14 +265,13 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
     const numSegments = prizes.length;
     const arcSize = (2 * Math.PI) / numSegments;
 
-    // Target angle calculation: Pointer is at 12 o'clock (-Math.PI/2)
+    // Pointer is at 12 o'clock (-Math.PI/2)
     const targetSegmentAngle = -(targetIndex * arcSize + arcSize / 2) - Math.PI / 2;
 
-    // Add 12 full 360-degree rotations for high-suspense 10-second spin
     const extraRotations = 12 * 2 * Math.PI;
     const finalAngle = targetSegmentAngle - extraRotations;
 
-    const duration = 10000; // 10 full seconds spin
+    const duration = 10000; // 10 seconds spin
     const startTime = performance.now();
     const startAngle = currentAngle;
 
@@ -228,19 +297,23 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 
   return (
     <div className="relative flex flex-col items-center justify-center p-4">
-      {/* Top Gold Pointer Arrow */}
-      <div className="absolute top-0 z-20 transform -translate-y-2 flex flex-col items-center">
-        <div className="w-0 h-0 border-l-[16px] border-l-transparent border-r-[16px] border-r-transparent border-t-[28px] border-t-gold-400 filter drop-shadow-[0_4px_10px_rgba(212,175,55,0.8)]" />
-        <div className="w-4 h-4 bg-gold-200 rounded-full border-2 border-black -mt-2 shadow-md" />
+      {/* Top Gold Pointer Arrow with Ring Loop Ornament (Matching Image 1) */}
+      <div className="absolute top-0 z-20 transform -translate-y-1 flex flex-col items-center">
+        {/* Ring Loop at Top */}
+        <div className="w-6 h-6 rounded-full border-2 border-amber-500 bg-amber-100 shadow-md flex items-center justify-center -mb-2 z-10">
+          <div className="w-2.5 h-2.5 rounded-full border border-amber-600 bg-amber-300" />
+        </div>
+        {/* Downward Pointer Triangle */}
+        <div className="w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[24px] border-t-amber-500 filter drop-shadow-[0_4px_8px_rgba(212,175,55,0.6)]" />
       </div>
 
-      {/* Outer Glow Wrapper */}
-      <div className="relative rounded-full p-2 bg-gradient-to-r from-gold-400/20 via-gold-200/10 to-gold-600/20 shadow-gold-lg">
+      {/* Outer Subtle Shadow Ring */}
+      <div className="relative rounded-full p-2 bg-gradient-to-b from-amber-200/40 via-amber-100/20 to-amber-300/30 shadow-xl">
         <canvas
           ref={canvasRef}
-          width={450}
-          height={450}
-          className="max-w-full h-auto drop-shadow-2xl rounded-full cursor-pointer"
+          width={460}
+          height={460}
+          className="max-w-full h-auto rounded-full cursor-pointer"
         />
       </div>
     </div>
@@ -248,3 +321,4 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 };
 
 export default SpinWheelCanvas;
+

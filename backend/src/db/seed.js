@@ -58,87 +58,87 @@ const seedDatabase = async () => {
     const rakBranch = await getQuery(`SELECT id FROM branches WHERE code = 'rak'`);
     const sharjahBranch = await getQuery(`SELECT id FROM branches WHERE code = 'sharjah'`);
 
-    // 3. Seed 10 Spin Prizes with exact required weights (2, 5, 8, 15, 20, 25, 30, 30, 50, 50)
+    // 3. Seed 10 Spin Prizes matching the exact design image with exact pastel color hex codes
     const defaultPrizes = [
       {
-        name: 'Luxury Royal Oud Oil 3ml',
-        description: 'Pure 100% aged Cambodian Royal Oud Attar',
-        weight: 2,
-        stock_quantity: 15,
-        display_order: 1,
-        color_code: '#D4AF37'
-      },
-      {
-        name: 'Majlis Signature Eau De Parfum 100ml',
-        description: 'Our iconic unisex oud EDP luxury bottle',
-        weight: 5,
-        stock_quantity: 30,
-        display_order: 2,
-        color_code: '#1E4D45'
-      },
-      {
-        name: 'Amber & Rose Bakhoor Burner Set',
-        description: 'Handcrafted incense burner set with premium incense',
-        weight: 8,
+        name: 'Luxury Travel Set',
+        description: 'Luxury travel perfume fragrance set',
+        weight: 10,
         stock_quantity: 50,
-        display_order: 3,
-        color_code: '#AA7C11'
+        display_order: 1,
+        color_code: '#E2F1EB'
       },
       {
-        name: 'AED 100 VIP Shopping Voucher',
-        description: 'Voucher valid on any purchase above AED 300',
+        name: 'Special Edition Kit',
+        description: 'Special edition exclusive fragrance box set',
+        weight: 10,
+        stock_quantity: 50,
+        display_order: 2,
+        color_code: '#FCE5E2'
+      },
+      {
+        name: 'Majlis Al Oud Branch',
+        description: 'Voucher valid at any Majlis Al Oud branch',
         weight: 15,
         stock_quantity: 100,
-        display_order: 4,
-        color_code: '#2D6A5F'
+        display_order: 3,
+        color_code: '#EAE6F8'
       },
       {
-        name: 'Dehn El Oud Car Diffuser',
-        description: 'Premium car fragrance clip with royal oud oil refill',
+        name: 'Luxury Royal Oud Oil',
+        description: 'Pure 100% aged royal oud oil attar',
+        weight: 5,
+        stock_quantity: 30,
+        display_order: 4,
+        color_code: '#FDF3D6'
+      },
+      {
+        name: 'Majlis Signature Set',
+        description: 'Signature luxury oud perfume set',
+        weight: 10,
+        stock_quantity: 50,
+        display_order: 5,
+        color_code: '#DCECF6'
+      },
+      {
+        name: 'Amber & Oud Bukhoor',
+        description: 'Premium amber and natural oud incense bakhoor',
+        weight: 15,
+        stock_quantity: 100,
+        display_order: 6,
+        color_code: '#FCE0DD'
+      },
+      {
+        name: 'Majlis Al Oud Perfume',
+        description: 'Iconic Majlis Al Oud spray perfume',
+        weight: 10,
+        stock_quantity: 80,
+        display_order: 7,
+        color_code: '#E2F2EE'
+      },
+      {
+        name: 'Dehn El Oud Car Oil',
+        description: 'Luxury car fragrance oil diffuser',
         weight: 20,
         stock_quantity: 150,
-        display_order: 5,
-        color_code: '#996515'
+        display_order: 8,
+        color_code: '#FDEBD9'
       },
       {
-        name: 'Exclusive Oud Incense Sticks Pack',
-        description: '20 luxury scented agarwood incense sticks',
+        name: 'Exclusive Oud Incense',
+        description: 'Exclusive agarwood incense sticks pack',
+        weight: 20,
+        stock_quantity: 150,
+        display_order: 9,
+        color_code: '#E8EFFD'
+      },
+      {
+        name: 'Majlis Gift Card',
+        description: 'Store gift shopping card voucher',
         weight: 25,
         stock_quantity: 200,
-        display_order: 6,
-        color_code: '#3D8A7C'
-      },
-      {
-        name: 'AED 50 Gift Card',
-        description: 'Instant discount voucher for any store branch',
-        weight: 30,
-        stock_quantity: 250,
-        display_order: 7,
-        color_code: '#C5A059'
-      },
-      {
-        name: 'Luxury Travel Atomizer Spray',
-        description: 'Refillable metallic gold pocket scent atomizer',
-        weight: 30,
-        stock_quantity: 300,
-        display_order: 8,
-        color_code: '#123530'
-      },
-      {
-        name: 'Special Edition Fragrance Sample Vial',
-        description: '5ml mini spray sample of our newest oud collection',
-        weight: 50,
-        stock_quantity: 500,
-        display_order: 9,
-        color_code: '#8E640B'
-      },
-      {
-        name: 'Majlis Al Oud Branded Coffee Set',
-        description: 'Collector Arabic coffee cup and scented coaster set',
-        weight: 50,
-        stock_quantity: 500,
         display_order: 10,
-        color_code: '#232830'
+        color_code: '#F9F1E6'
       }
     ];
 

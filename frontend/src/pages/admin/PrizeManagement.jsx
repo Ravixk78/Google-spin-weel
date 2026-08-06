@@ -331,13 +331,39 @@ const PrizeManagement = () => {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Wheel Color</label>
-                  <input
-                    type="color"
-                    value={formData.color_code}
-                    onChange={(e) => setFormData({ ...formData, color_code: e.target.value })}
-                    className="w-full h-9 p-1 bg-slate-900 border border-slate-700 rounded-xl cursor-pointer"
-                  />
+                  <label className="block text-slate-300 font-semibold mb-1">Wheel Slice Color</label>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <input
+                      type="color"
+                      value={formData.color_code}
+                      onChange={(e) => setFormData({ ...formData, color_code: e.target.value })}
+                      className="w-10 h-8 p-0.5 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer"
+                    />
+                    <span className="font-mono text-[11px] text-slate-300 uppercase">{formData.color_code}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {[
+                      { hex: '#E2F1EB', label: 'Mint' },
+                      { hex: '#FCE5E2', label: 'Coral' },
+                      { hex: '#EAE6F8', label: 'Purple' },
+                      { hex: '#FDF3D6', label: 'Yellow' },
+                      { hex: '#DCECF6', label: 'Blue' },
+                      { hex: '#FCE0DD', label: 'Red' },
+                      { hex: '#E2F2EE', label: 'Teal' },
+                      { hex: '#FDEBD9', label: 'Peach' },
+                      { hex: '#E8EFFD', label: 'Pastel' },
+                      { hex: '#F9F1E6', label: 'Cream' }
+                    ].map((c) => (
+                      <button
+                        key={c.hex}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, color_code: c.hex })}
+                        className="w-5 h-5 rounded-full border border-white/40 shadow-sm transition-transform hover:scale-125"
+                        style={{ backgroundColor: c.hex }}
+                        title={`${c.label} (${c.hex})`}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
 
