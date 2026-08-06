@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import wheelLogoAsset from '../assets/wheel-logo.png';
 
 const prizeTranslations = {
   'Luxury Travel Set': 'مجموعة السفر الفاخرة',
@@ -39,6 +40,19 @@ const defaultPastelColors = [
   '#F9F1E6'  // Cream Beige
 ];
 
+const fallbackPrizesList = [
+  { id: 1, name: 'Luxury Travel Set', color_code: '#E2F1EB' },
+  { id: 2, name: 'Special Edition Kit', color_code: '#FCE5E2' },
+  { id: 3, name: 'Majlis Al Oud Branch', color_code: '#EAE6F8' },
+  { id: 4, name: 'Luxury Royal Oud Oil', color_code: '#FDF3D6' },
+  { id: 5, name: 'Majlis Signature Set', color_code: '#DCECF6' },
+  { id: 6, name: 'Amber & Oud Bukhoor', color_code: '#FCE0DD' },
+  { id: 7, name: 'Majlis Al Oud Perfume', color_code: '#E2F2EE' },
+  { id: 8, name: 'Dehn El Oud Car Oil', color_code: '#FDEBD9' },
+  { id: 9, name: 'Exclusive Oud Incense', color_code: '#E8EFFD' },
+  { id: 10, name: 'Majlis Gift Card', color_code: '#F9F1E6' }
+];
+
 const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) => {
   const canvasRef = useRef(null);
   const [currentAngle, setCurrentAngle] = useState(0);
@@ -46,26 +60,28 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
   const [centerLogo, setCenterLogo] = useState(null);
   const { lang } = useLanguage();
 
-  // Load center logo from Image 2
+  // Active prizes array with fallback
+  const activePrizes = prizes && prizes.length > 0 ? prizes : fallbackPrizesList;
+
+  // Load center logo using bundled asset
   useEffect(() => {
     const img = new Image();
-    img.src = '/wheel-logo.png';
+    img.src = wheelLogoAsset;
     img.onload = () => setCenterLogo(img);
     img.onerror = () => {
-      // Fallback if not found in public
       const img2 = new Image();
-      img2.src = '/src/assets/wheel-logo.png';
+      img2.src = '/wheel-logo.png';
       img2.onload = () => setCenterLogo(img2);
     };
   }, []);
 
   // Load prize segment images
   useEffect(() => {
-    if (!prizes || prizes.length === 0) return;
+    if (!activePrizes || activePrizes.length === 0) return;
     let isMounted = true;
 
-    prizes.forEach((prize) => {
-      if (prize.image_url && prize.image_url.trim()) {
+    activePrizes.forEach((prize) => {
+      if (prize && prize.image_url && typeof prize.image_url === 'string' && prize.image_url.trim()) {
         const url = prize.image_url.trim();
         const img = new Image();
         
@@ -90,11 +106,11 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
     return () => {
       isMounted = false;
     };
-  }, [prizes]);
+  }, [activePrizes]);
 
   useEffect(() => {
     drawWheel(currentAngle);
-  }, [prizes, currentAngle, lang, loadedImages, centerLogo]);
+  }, [activePrizes, currentAngle, lang, loadedImages, centerLogo]);
 
   useEffect(() => {
     if (isSpinning && winningIndex !== null && winningIndex !== undefined) {
@@ -103,166 +119,179 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
   }, [isSpinning, winningIndex]);
 
   const drawWheel = (angleOffset) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const outerRadius = width / 2 - 20;
+    try {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
 
-    ctx.clearRect(0, 0, width, height);
+      const width = canvas.width;
+      const height = canvas.height;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const outerRadius = width / 2 - 20;
 
-    if (!prizes || prizes.length === 0) return;
+      ctx.clearRect(0, 0, width, height);
 
-    const numSegments = prizes.length;
-    const arcSize = (2 * Math.PI) / numSegments;
+      if (!activePrizes || activePrizes.length === 0) return;
 
-    // 1. Outer Outer Light Ring & Shadow
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, outerRadius + 10, 0, 2 * Math.PI);
-    const goldOuterGrad = ctx.createLinearGradient(0, 0, width, height);
-    goldOuterGrad.addColorStop(0, '#F5E5B8');
-    goldOuterGrad.addColorStop(0.5, '#D4AF37');
-    goldOuterGrad.addColorStop(1, '#B38728');
-    ctx.strokeStyle = goldOuterGrad;
-    ctx.lineWidth = 6;
-    ctx.shadowColor = 'rgba(212, 175, 55, 0.3)';
-    ctx.shadowBlur = 12;
-    ctx.stroke();
-    ctx.restore();
+      const numSegments = activePrizes.length;
+      const arcSize = (2 * Math.PI) / numSegments;
 
-    // 2. Inner Thin Gold Concentric Circle
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, outerRadius + 2, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#E8C86B';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.restore();
-
-    // 3. Draw Pastel Segments
-    prizes.forEach((prize, i) => {
-      const startAngle = angleOffset + i * arcSize;
-      const endAngle = startAngle + arcSize;
-
-      // Fill Pastel Segment
+      // 1. Outer Outer Light Ring & Shadow
       ctx.save();
       ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
-      ctx.closePath();
-
-      ctx.fillStyle = prize.color_code || defaultPastelColors[i % defaultPastelColors.length];
-      ctx.fill();
-
-      // Clean White/Gold Slice Divider Border
-      ctx.strokeStyle = '#FFFFFF';
-      ctx.lineWidth = 3;
+      ctx.arc(centerX, centerY, outerRadius + 10, 0, 2 * Math.PI);
+      const goldOuterGrad = ctx.createLinearGradient(0, 0, width, height);
+      goldOuterGrad.addColorStop(0, '#F5E5B8');
+      goldOuterGrad.addColorStop(0.5, '#D4AF37');
+      goldOuterGrad.addColorStop(1, '#B38728');
+      ctx.strokeStyle = goldOuterGrad;
+      ctx.lineWidth = 6;
+      ctx.shadowColor = 'rgba(212, 175, 55, 0.3)';
+      ctx.shadowBlur = 12;
       ctx.stroke();
       ctx.restore();
 
-      // Text & Segment Prize Image Drawing
+      // 2. Inner Thin Gold Concentric Circle
       ctx.save();
-      ctx.translate(centerX, centerY);
-      const textAngle = startAngle + arcSize / 2;
-      ctx.rotate(textAngle);
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, outerRadius + 2, 0, 2 * Math.PI);
+      ctx.strokeStyle = '#E8C86B';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
 
-      const prizeImg = loadedImages[prize.id];
-      
-      // Draw Prize Image on outer slice radius
-      if (prizeImg) {
+      // 3. Draw Pastel Segments
+      activePrizes.forEach((prize, i) => {
+        if (!prize) return;
+        const startAngle = angleOffset + i * arcSize;
+        const endAngle = startAngle + arcSize;
+
+        // Fill Pastel Segment
         ctx.save();
-        const imgSize = 34;
-        const imgRadius = outerRadius - 38;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
+        ctx.closePath();
 
-        // Draw image cleanly
-        ctx.drawImage(prizeImg, imgRadius - imgSize / 2, -imgSize / 2, imgSize, imgSize);
+        ctx.fillStyle = prize.color_code || defaultPastelColors[i % defaultPastelColors.length];
+        ctx.fill();
+
+        // Clean White/Gold Slice Divider Border
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 3;
+        ctx.stroke();
         ctx.restore();
-      }
 
-      // Prize Label Text
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#1E293B'; // Dark Slate/Charcoal for pastel contrast
-      ctx.font = lang === 'ar' ? 'bold 11.5px Amiri, serif' : '600 11px Outfit, sans-serif';
+        // Text & Segment Prize Image Drawing
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        const textAngle = startAngle + arcSize / 2;
+        ctx.rotate(textAngle);
 
-      let label = prize.name;
-      if (lang === 'ar') {
-        label = prizeTranslations[prize.name] || prize.name;
-      } else {
-        // If stored name is Arabic, lookup English translation
-        label = prizeTranslations[prize.name] && !/[a-zA-Z]/.test(prize.name) ? prizeTranslations[prize.name] : prize.name;
-      }
+        const prizeImg = loadedImages[prize.id];
+        
+        // Draw Prize Image on outer slice radius
+        if (prizeImg) {
+          try {
+            ctx.save();
+            const imgSize = 34;
+            const imgRadius = outerRadius - 38;
+            ctx.drawImage(prizeImg, imgRadius - imgSize / 2, -imgSize / 2, imgSize, imgSize);
+            ctx.restore();
+          } catch (e) {
+            console.warn('Image draw warning:', e);
+          }
+        }
 
-      const maxChars = prizeImg ? 16 : 22;
-      if (label.length > maxChars) {
-        label = label.substring(0, maxChars - 2) + '..';
-      }
+        // Prize Label Text
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#1E293B'; // Dark Slate/Charcoal for pastel contrast
+        ctx.font = lang === 'ar' ? 'bold 11.5px Amiri, serif' : '600 11px Outfit, sans-serif';
 
-      // Position text nicely inside segment
-      const textRadius = prizeImg ? outerRadius - 82 : outerRadius - 55;
-      
-      // Rotate text to read outwards cleanly
+        const pName = prize.name || '';
+        let label = pName;
+        if (lang === 'ar') {
+          label = prizeTranslations[pName] || pName;
+        } else {
+          label = prizeTranslations[pName] && !/[a-zA-Z]/.test(pName) ? prizeTranslations[pName] : pName;
+        }
+
+        const maxChars = prizeImg ? 16 : 22;
+        if (label.length > maxChars) {
+          label = label.substring(0, maxChars - 2) + '..';
+        }
+
+        // Position text nicely inside segment
+        const textRadius = prizeImg ? outerRadius - 82 : outerRadius - 55;
+        
+        // Rotate text to read outwards cleanly
+        ctx.save();
+        ctx.translate(textRadius, 0);
+        ctx.fillText(String(label), 0, 4);
+        ctx.restore();
+
+        ctx.restore();
+      });
+
+      // 4. Draw Inner Gold Ring around Center Cap
       ctx.save();
-      ctx.translate(textRadius, 0);
-      ctx.fillText(label, 0, 4);
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 52, 0, 2 * Math.PI);
+      ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
       ctx.restore();
 
+      // 5. Draw Center Cap (Pure White Disc with Dual Gold Border)
+      const centerRadius = 46;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, centerRadius, 0, 2 * Math.PI);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+      ctx.shadowBlur = 10;
+      ctx.fill();
+
+      // Dual Gold Border on Center Circle
+      ctx.strokeStyle = '#D4AF37';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, centerRadius - 4, 0, 2 * Math.PI);
+      ctx.strokeStyle = '#F3E5AB';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // 6. Draw Center Logo (from Image 2)
+      if (centerLogo) {
+        try {
+          const logoSize = 64;
+          ctx.drawImage(centerLogo, centerX - logoSize / 2, centerY - logoSize / 2, logoSize, logoSize);
+        } catch (e) {
+          console.warn('Logo draw warning:', e);
+        }
+      } else {
+        // Fallback Gold Text
+        ctx.fillStyle = '#996515';
+        ctx.font = 'bold 12px Playfair Display, serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(lang === 'ar' ? 'مجلس' : 'MAJLIS', centerX, centerY - 6);
+        ctx.fillText(lang === 'ar' ? 'العود' : 'AL OUD', centerX, centerY + 10);
+      }
+
       ctx.restore();
-    });
-
-    // 4. Draw Inner Gold Ring around Center Cap
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, 52, 0, 2 * Math.PI);
-    ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.restore();
-
-    // 5. Draw Center Cap (Pure White Disc with Dual Gold Border)
-    const centerRadius = 46;
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, centerRadius, 0, 2 * Math.PI);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
-    ctx.shadowBlur = 10;
-    ctx.fill();
-
-    // Dual Gold Border on Center Circle
-    ctx.strokeStyle = '#D4AF37';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, centerRadius - 4, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#F3E5AB';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // 6. Draw Center Logo (from Image 2)
-    if (centerLogo) {
-      const logoSize = 64;
-      ctx.drawImage(centerLogo, centerX - logoSize / 2, centerY - logoSize / 2, logoSize, logoSize);
-    } else {
-      // Fallback Gold Text
-      ctx.fillStyle = '#996515';
-      ctx.font = 'bold 12px Playfair Display, serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(lang === 'ar' ? 'مجلس' : 'MAJLIS', centerX, centerY - 6);
-      ctx.fillText(lang === 'ar' ? 'العود' : 'AL OUD', centerX, centerY + 10);
+    } catch (err) {
+      console.error('Canvas Draw Error:', err);
     }
-
-    ctx.restore();
   };
 
   const animateSpin = (targetIndex) => {
-    if (!prizes || prizes.length === 0) return;
+    if (!activePrizes || activePrizes.length === 0) return;
 
-    const numSegments = prizes.length;
+    const numSegments = activePrizes.length;
     const arcSize = (2 * Math.PI) / numSegments;
 
     // Pointer is at 12 o'clock (-Math.PI/2)
