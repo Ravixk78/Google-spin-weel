@@ -3,12 +3,32 @@ import api from '../services/api';
 
 const AuthContext = createContext();
 
+const safeParseJSON = (key) => {
+  try {
+    const item = localStorage.getItem(key);
+    if (!item || item === 'undefined' || item === 'null') return null;
+    return JSON.parse(item);
+  } catch (e) {
+    console.warn(`Failed to parse localStorage key ${key}`, e);
+    try { localStorage.removeItem(key); } catch (err) {}
+    return null;
+  }
+};
+
+const safeGetItem = (key) => {
+  try {
+    return localStorage.getItem(key) || null;
+  } catch (e) {
+    return null;
+  }
+};
+
 export const AuthProvider = ({ children }) => {
-  const [adminToken, setAdminToken] = useState(localStorage.getItem('adminToken') || null);
-  const [adminUser, setAdminUser] = useState(JSON.parse(localStorage.getItem('adminUser') || 'null'));
+  const [adminToken, setAdminToken] = useState(() => safeGetItem('adminToken'));
+  const [adminUser, setAdminUser] = useState(() => safeParseJSON('adminUser'));
   
-  const [customerToken, setCustomerToken] = useState(localStorage.getItem('customerToken') || null);
-  const [customerUser, setCustomerUser] = useState(JSON.parse(localStorage.getItem('customerUser') || 'null'));
+  const [customerToken, setCustomerToken] = useState(() => safeGetItem('customerToken'));
+  const [customerUser, setCustomerUser] = useState(() => safeParseJSON('customerUser'));
 
   // Admin Login
   const loginAdmin = async (email, password) => {
@@ -16,8 +36,10 @@ export const AuthProvider = ({ children }) => {
     const { token, admin } = res.data;
     setAdminToken(token);
     setAdminUser(admin);
-    localStorage.setItem('adminToken', token);
-    localStorage.setItem('adminUser', JSON.stringify(admin));
+    try {
+      localStorage.setItem('adminToken', token);
+      localStorage.setItem('adminUser', JSON.stringify(admin));
+    } catch (e) {}
     return admin;
   };
 
@@ -25,27 +47,38 @@ export const AuthProvider = ({ children }) => {
   const logoutAdmin = () => {
     setAdminToken(null);
     setAdminUser(null);
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminUser');
+    try {
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminUser');
+    } catch (e) {}
   };
 
-  // Customer Google Auth (Real or Dev Sandbox)
+  // Customer Google Auth
   const loginCustomerGoogle = async (googleData) => {
-    const res = await api.post('/customer/auth/google', googleData);
-    const { token, customer } = res.data;
-    setCustomerToken(token);
-    setCustomerUser(customer);
-    localStorage.setItem('customerToken', token);
-    localStorage.setItem('customerUser', JSON.stringify(customer));
-    return customer;
+    try {
+      const res = await api.post('/customer/auth/google', googleData);
+      const { token, customer } = res.data;
+      setCustomerToken(token);
+      setCustomerUser(customer);
+      try {
+        localStorage.setItem('customerToken', token);
+        localStorage.setItem('customerUser', JSON.stringify(customer));
+      } catch (e) {}
+      return customer;
+    } catch (err) {
+      console.warn('Google Customer Auth warning:', err);
+      return null;
+    }
   };
 
   // Customer Logout
   const logoutCustomer = () => {
     setCustomerToken(null);
     setCustomerUser(null);
-    localStorage.removeItem('customerToken');
-    localStorage.removeItem('customerUser');
+    try {
+      localStorage.removeItem('customerToken');
+      localStorage.removeItem('customerUser');
+    } catch (e) {}
   };
 
   return (
@@ -65,3 +98,4 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+

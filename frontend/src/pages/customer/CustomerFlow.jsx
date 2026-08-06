@@ -41,19 +41,25 @@ const CustomerFlow = () => {
   // Ensure active persistent customer session on load per device
   useEffect(() => {
     if (!customerUser && detectedBranch) {
-      let deviceId = localStorage.getItem('deviceGoogleId');
-      if (!deviceId) {
-        deviceId = `google-user-device-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
-        localStorage.setItem('deviceGoogleId', deviceId);
-      }
+      try {
+        let deviceId = localStorage.getItem('deviceGoogleId');
+        if (!deviceId) {
+          deviceId = `google-user-device-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+          localStorage.setItem('deviceGoogleId', deviceId);
+        }
 
-      loginCustomerGoogle({
-        google_id: deviceId,
-        email: `${deviceId.toLowerCase()}@gmail.com`,
-        name: `Google Customer`,
-        branch_id: detectedBranch?.id || 1,
-        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
-      });
+        loginCustomerGoogle({
+          google_id: deviceId,
+          email: `${deviceId.toLowerCase()}@gmail.com`,
+          name: `Google Customer`,
+          branch_id: detectedBranch?.id || 1,
+          avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
+        }).catch(err => {
+          console.warn('Auto-login notice:', err);
+        });
+      } catch (e) {
+        console.warn('Storage notice:', e);
+      }
     }
   }, [detectedBranch, customerUser]);
 
