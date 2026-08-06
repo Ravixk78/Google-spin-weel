@@ -66,7 +66,7 @@ const seedDatabase = async () => {
         weight: 10,
         stock_quantity: 50,
         display_order: 1,
-        color_code: '#E2F1EB'
+        color_code: '#FAD0C4'
       },
       {
         name: 'Special Edition Kit',
@@ -74,7 +74,7 @@ const seedDatabase = async () => {
         weight: 10,
         stock_quantity: 50,
         display_order: 2,
-        color_code: '#FCE5E2'
+        color_code: '#FBE7C6'
       },
       {
         name: 'Majlis Al Oud Branch',
@@ -82,7 +82,7 @@ const seedDatabase = async () => {
         weight: 15,
         stock_quantity: 100,
         display_order: 3,
-        color_code: '#EAE6F8'
+        color_code: '#B5EAD7'
       },
       {
         name: 'Luxury Royal Oud Oil',
@@ -90,7 +90,7 @@ const seedDatabase = async () => {
         weight: 5,
         stock_quantity: 30,
         display_order: 4,
-        color_code: '#FDF3D6'
+        color_code: '#E2F0CB'
       },
       {
         name: 'Majlis Signature Set',
@@ -98,7 +98,7 @@ const seedDatabase = async () => {
         weight: 10,
         stock_quantity: 50,
         display_order: 5,
-        color_code: '#DCECF6'
+        color_code: '#C7CEEA'
       },
       {
         name: 'Amber & Oud Bukhoor',
@@ -106,7 +106,7 @@ const seedDatabase = async () => {
         weight: 15,
         stock_quantity: 100,
         display_order: 6,
-        color_code: '#FCE0DD'
+        color_code: '#FFDAC1'
       },
       {
         name: 'Majlis Al Oud Perfume',
@@ -114,7 +114,7 @@ const seedDatabase = async () => {
         weight: 10,
         stock_quantity: 80,
         display_order: 7,
-        color_code: '#E2F2EE'
+        color_code: '#E8DFF5'
       },
       {
         name: 'Dehn El Oud Car Oil',
@@ -122,7 +122,7 @@ const seedDatabase = async () => {
         weight: 20,
         stock_quantity: 150,
         display_order: 8,
-        color_code: '#FDEBD9'
+        color_code: '#FCE1E4'
       },
       {
         name: 'Exclusive Oud Incense',
@@ -130,7 +130,7 @@ const seedDatabase = async () => {
         weight: 20,
         stock_quantity: 150,
         display_order: 9,
-        color_code: '#E8EFFD'
+        color_code: '#FCF6BD'
       },
       {
         name: 'Majlis Gift Card',
@@ -138,7 +138,7 @@ const seedDatabase = async () => {
         weight: 25,
         stock_quantity: 200,
         display_order: 10,
-        color_code: '#F9F1E6'
+        color_code: '#D0F4DE'
       }
     ];
 
@@ -158,6 +158,10 @@ const seedDatabase = async () => {
         `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code]);
       }
     }
+
+    // Deactivate any extra legacy prizes beyond 10
+    await runQuery(`UPDATE spin_prizes SET is_active = 0 WHERE display_order > 10`);
+
     console.log('✔ Successfully synced 10 Spin Prizes with weighted probabilities and pastel colors.');
 
     // 4. Seed Test 4-digit Invoices if needed

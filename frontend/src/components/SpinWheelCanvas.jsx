@@ -28,30 +28,49 @@ const prizeTranslations = {
 };
 
 const defaultPastelColors = [
-  '#E2F1EB', // Mint Green
-  '#FCE5E2', // Soft Coral Pink
-  '#EAE6F8', // Lavender Purple
-  '#FDF3D6', // Warm Yellow
-  '#DCECF6', // Ice Blue
-  '#FCE0DD', // Coral Red
-  '#E2F2EE', // Soft Mint
-  '#FDEBD9', // Peach
-  '#E8EFFD', // Pastel Blue
-  '#F9F1E6'  // Cream Beige
+  '#FAD0C4', // Soft Pastel Pink
+  '#FBE7C6', // Soft Peach / Cream
+  '#B5EAD7', // Soft Pastel Mint
+  '#E2F0CB', // Soft Pastel Lime/Yellow
+  '#C7CEEA', // Soft Pastel Lavender Blue
+  '#FFDAC1', // Soft Pastel Apricot
+  '#E8DFF5', // Soft Pastel Lilac
+  '#FCE1E4', // Soft Pastel Blush
+  '#FCF6BD', // Soft Pastel Lemon
+  '#D0F4DE'  // Soft Pastel Seafoam
 ];
 
 const fallbackPrizesList = [
-  { id: 1, name: 'Luxury Travel Set', color_code: '#E2F1EB' },
-  { id: 2, name: 'Special Edition Kit', color_code: '#FCE5E2' },
-  { id: 3, name: 'Majlis Al Oud Branch', color_code: '#EAE6F8' },
-  { id: 4, name: 'Luxury Royal Oud Oil', color_code: '#FDF3D6' },
-  { id: 5, name: 'Majlis Signature Set', color_code: '#DCECF6' },
-  { id: 6, name: 'Amber & Oud Bukhoor', color_code: '#FCE0DD' },
-  { id: 7, name: 'Majlis Al Oud Perfume', color_code: '#E2F2EE' },
-  { id: 8, name: 'Dehn El Oud Car Oil', color_code: '#FDEBD9' },
-  { id: 9, name: 'Exclusive Oud Incense', color_code: '#E8EFFD' },
-  { id: 10, name: 'Majlis Gift Card', color_code: '#F9F1E6' }
+  { id: 1, name: 'Luxury Travel Set', color_code: '#FAD0C4' },
+  { id: 2, name: 'Special Edition Kit', color_code: '#FBE7C6' },
+  { id: 3, name: 'Majlis Al Oud Branch', color_code: '#B5EAD7' },
+  { id: 4, name: 'Luxury Royal Oud Oil', color_code: '#E2F0CB' },
+  { id: 5, name: 'Majlis Signature Set', color_code: '#C7CEEA' },
+  { id: 6, name: 'Amber & Oud Bukhoor', color_code: '#FFDAC1' },
+  { id: 7, name: 'Majlis Al Oud Perfume', color_code: '#E8DFF5' },
+  { id: 8, name: 'Dehn El Oud Car Oil', color_code: '#FCE1E4' },
+  { id: 9, name: 'Exclusive Oud Incense', color_code: '#FCF6BD' },
+  { id: 10, name: 'Majlis Gift Card', color_code: '#D0F4DE' }
 ];
+
+// Word wrap helper for canvas text without truncation
+const wrapTextLines = (text, maxCharsPerLine = 13) => {
+  if (!text) return [];
+  const words = text.split(' ');
+  const lines = [];
+  let currentLine = '';
+
+  words.forEach(word => {
+    if ((currentLine + ' ' + word).trim().length <= maxCharsPerLine) {
+      currentLine = (currentLine + ' ' + word).trim();
+    } else {
+      if (currentLine) lines.push(currentLine);
+      currentLine = word;
+    }
+  });
+  if (currentLine) lines.push(currentLine);
+  return lines.slice(0, 2); // Max 2 clean lines
+};
 
 const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) => {
   const canvasRef = useRef(null);
@@ -129,7 +148,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
       const height = canvas.height;
       const centerX = width / 2;
       const centerY = height / 2;
-      const outerRadius = width / 2 - 20;
+      const outerRadius = width / 2 - 22;
 
       ctx.clearRect(0, 0, width, height);
 
@@ -148,8 +167,8 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
       goldOuterGrad.addColorStop(1, '#B38728');
       ctx.strokeStyle = goldOuterGrad;
       ctx.lineWidth = 6;
-      ctx.shadowColor = 'rgba(212, 175, 55, 0.3)';
-      ctx.shadowBlur = 12;
+      ctx.shadowColor = 'rgba(212, 175, 55, 0.35)';
+      ctx.shadowBlur = 14;
       ctx.stroke();
       ctx.restore();
 
@@ -168,17 +187,17 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         const startAngle = angleOffset + i * arcSize;
         const endAngle = startAngle + arcSize;
 
-        // Fill Pastel Segment
+        // Fill Pastel Segment - ALWAYS use sample light pastel colors
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
         ctx.closePath();
 
-        ctx.fillStyle = prize.color_code || defaultPastelColors[i % defaultPastelColors.length];
+        ctx.fillStyle = defaultPastelColors[i % defaultPastelColors.length];
         ctx.fill();
 
-        // Clean White/Gold Slice Divider Border
+        // Clean White Slice Divider Border
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 3;
         ctx.stroke();
@@ -192,12 +211,17 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 
         const prizeImg = loadedImages[prize.id];
         
-        // Draw Prize Image on outer slice radius
+        // Draw Prize Image on outer slice radius inside clean rounded mask (no ugly white border box)
         if (prizeImg) {
           try {
             ctx.save();
-            const imgSize = 34;
+            const imgSize = 32;
             const imgRadius = outerRadius - 38;
+            
+            ctx.beginPath();
+            ctx.arc(imgRadius, 0, imgSize / 2, 0, 2 * Math.PI);
+            ctx.clip();
+
             ctx.drawImage(prizeImg, imgRadius - imgSize / 2, -imgSize / 2, imgSize, imgSize);
             ctx.restore();
           } catch (e) {
@@ -205,10 +229,10 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
           }
         }
 
-        // Prize Label Text
+        // Multi-line Prize Label Text - Crisp, readable, no truncation
         try {
           ctx.textAlign = 'center';
-          ctx.fillStyle = '#1E293B'; // Dark Slate/Charcoal for pastel contrast
+          ctx.fillStyle = '#1E293B'; // Dark Charcoal for pastel contrast
           ctx.font = lang === 'ar' ? 'bold 11px serif' : 'bold 11px sans-serif';
 
           const pName = prize.name || '';
@@ -219,18 +243,19 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
             label = prizeTranslations[pName] && !/[a-zA-Z]/.test(pName) ? prizeTranslations[pName] : pName;
           }
 
-          const maxChars = prizeImg ? 16 : 22;
-          if (label.length > maxChars) {
-            label = label.substring(0, maxChars - 2) + '..';
-          }
-
-          // Position text nicely inside segment
-          const textRadius = prizeImg ? outerRadius - 82 : outerRadius - 55;
+          const lines = wrapTextLines(String(label), prizeImg ? 12 : 14);
+          const textRadius = prizeImg ? outerRadius - 88 : outerRadius - 62;
           
-          // Rotate text to read outwards cleanly
           ctx.save();
           ctx.translate(textRadius, 0);
-          ctx.fillText(String(label), 0, 4);
+
+          if (lines.length === 1) {
+            ctx.fillText(lines[0], 0, 4);
+          } else if (lines.length >= 2) {
+            ctx.fillText(lines[0], 0, -3);
+            ctx.fillText(lines[1], 0, 9);
+          }
+
           ctx.restore();
         } catch (textErr) {
           console.warn('Text draw warning:', textErr);
