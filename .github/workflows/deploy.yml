@@ -1,0 +1,76 @@
+name: Deploy to Hostinger VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Hostinger VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: 22
+          script: |
+            set -e
+            echo "🚀 Starting Deployment on Hostinger VPS..."
+
+            TARGET_DIR="/var/www/google-spin-weel"
+
+            # Create target directory if it doesn't exist
+            if [ ! -d "$TARGET_DIR" ]; then
+              echo "📂 Creating project directory at $TARGET_DIR..."
+              mkdir -p "$TARGET_DIR"
+              git clone https://github.com/Ravixk78/Google-spin-weel.git "$TARGET_DIR"
+            fi
+
+            cd "$TARGET_DIR"
+
+            # Pull latest changes from main branch
+            echo "📥 Pulling latest code from main branch..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Ensure Node.js & PM2 are available
+            export PATH=$PATH:/usr/local/bin:/usr/bin:~/.nvm/versions/node/$(ls ~/.nvm/versions/node 2>/dev/null | tail -n 1)/bin
+
+            # Install Root Dependencies
+            echo "📦 Installing root dependencies..."
+            npm install --production=false
+
+            # Install Backend Dependencies
+            echo "📦 Installing backend dependencies..."
+            cd backend && npm install --production=false && cd ..
+
+            # Install Frontend Dependencies & Build Production Bundle
+            echo "🏗️ Building Frontend Production Assets..."
+            cd frontend && npm install --production=false && npm run build && cd ..
+
+            # Initialize DB Seed if database.sqlite does not exist
+            if [ ! -f "backend/database.sqlite" ]; then
+              echo "🌱 Initializing SQLite Database with initial seed..."
+              node backend/src/db/seed.js || true
+            fi
+
+            # Install PM2 globally if not installed
+            if ! command -v pm2 &> /dev/null; then
+              echo "⚡ Installing PM2 globally..."
+              npm install -g pm2
+            fi
+
+            # Restart application with PM2
+            echo "🔄 Restarting application with PM2..."
+            pm2 startOrReload ecosystem.config.js || pm2 restart spin-wheel || pm2 start ecosystem.config.js --name "spin-wheel"
+            pm2 save
+
+            echo "✅ Deployment completed successfully!"

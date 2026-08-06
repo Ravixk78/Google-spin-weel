@@ -129,8 +129,8 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
       // Draw Prize Image inside segment slice if available (fits inside boundary without crop)
       if (prizeImg) {
         ctx.save();
-        const imgSize = 26;
-        const imgRadius = outerRadius - 58;
+        const imgSize = 32;
+        const imgRadius = outerRadius - 55;
         ctx.drawImage(prizeImg, imgRadius - imgSize / 2, -imgSize / 2, imgSize, imgSize);
         ctx.restore();
       }

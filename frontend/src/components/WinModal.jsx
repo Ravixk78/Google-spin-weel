@@ -62,9 +62,19 @@ const WinModal = ({ isOpen, prize, ticket, onClose }) => {
           {t('prizeWonMsg')}
         </h2>
         
-        <p className="text-gold-400 font-bold text-xl mb-6">
+        <p className="text-gold-400 font-bold text-xl mb-4">
           {prizeDisplayName}
         </p>
+
+        {prize.image_url && (
+          <div className="flex justify-center mb-5">
+            <img
+              src={prize.image_url}
+              alt={prizeDisplayName}
+              className="w-24 h-24 object-contain rounded-xl border border-gold-400/40 bg-slate-950/80 p-2 shadow-gold"
+            />
+          </div>
+        )}
 
         {/* Claim Voucher Box */}
         <div className="bg-emerald-950/60 border border-emerald-700/40 rounded-xl p-4 text-right mb-6 relative">

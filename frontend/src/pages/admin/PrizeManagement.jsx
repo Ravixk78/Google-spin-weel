@@ -107,7 +107,15 @@ const PrizeManagement = () => {
         const dataUrl = canvas.toDataURL('image/png');
         setFormData((prev) => ({ ...prev, image_url: dataUrl }));
       };
+      img.onerror = () => {
+        alert('Failed to load image file.');
+      };
     };
+    reader.onerror = () => {
+      alert('Failed to read file.');
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
   };
 
   const handleSubmit = async (e) => {
