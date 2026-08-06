@@ -142,24 +142,35 @@ const seedDatabase = async () => {
       }
     ];
 
-    const prizeCount = await getQuery(`SELECT COUNT(*) as count FROM spin_prizes`);
-    if (prizeCount.count === 0) {
-      for (const p of defaultPrizes) {
+    // Sync / Upsert 10 Spin Prizes with exact design names and pastel colors
+    for (const p of defaultPrizes) {
+      const existing = await getQuery(`SELECT id FROM spin_prizes WHERE display_order = ?`, [p.display_order]);
+      if (existing) {
+        await runQuery(`
+          UPDATE spin_prizes
+          SET name = ?, description = ?, weight = ?, stock_quantity = ?, color_code = ?, is_active = 1
+          WHERE id = ?
+        `, [p.name, p.description, p.weight, p.stock_quantity, p.color_code, existing.id]);
+      } else {
         await runQuery(`
           INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, is_active)
           VALUES (?, ?, ?, ?, ?, ?, 1)
         `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code]);
       }
-      console.log('✔ Seeded 10 Spin Prizes with weighted probabilities.');
     }
+    console.log('✔ Successfully synced 10 Spin Prizes with weighted probabilities and pastel colors.');
 
     // 4. Seed Test 4-digit Invoices if needed
     console.log('🎉 Database seeding complete!');
-    process.exit(0);
+    return true;
   } catch (err) {
     console.error('Error seeding database:', err);
-    process.exit(1);
+    throw err;
   }
 };
 
-seedDatabase();
+if (require.main === module) {
+  seedDatabase().then(() => process.exit(0)).catch(() => process.exit(1));
+}
+
+module.exports = { seedDatabase };

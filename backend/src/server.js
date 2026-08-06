@@ -58,9 +58,16 @@ app.use((err, req, res, next) => {
   });
 });
 
+const { seedDatabase } = require('./db/seed');
+
 // Initialize DB and start server
-initDB().then(() => {
+initDB().then(async () => {
   console.log('✔ Database connection established and tables verified.');
+  try {
+    await seedDatabase();
+  } catch (sErr) {
+    console.warn('Seed sync warning:', sErr.message);
+  }
   app.listen(PORT, () => {
     console.log(`🚀 Majlis Al Oud Backend running on http://localhost:${PORT}`);
   });
