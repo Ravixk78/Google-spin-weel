@@ -1,4 +1,4 @@
-name: Deploy to Hostinger VPS
+name: Deploy to Hostinger VPS (spin.majlisaloud.cloud)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Hostinger VPS
+    name: Deploy to Live Domain VPS
     runs-on: ubuntu-latest
 
     steps:
@@ -23,54 +23,49 @@ jobs:
           port: 22
           script: |
             set -e
-            echo "🚀 Starting Deployment on Hostinger VPS..."
+            echo "🚀 Starting Deployment on Hostinger VPS (spin.majlisaloud.cloud)..."
 
-            TARGET_DIR="/var/www/google-spin-weel"
+            TARGET_DIR="/var/www/majlis-al-oud-spin"
 
-            # Create target directory if it doesn't exist
             if [ ! -d "$TARGET_DIR" ]; then
-              echo "📂 Creating project directory at $TARGET_DIR..."
+              echo "📂 Cloning repository into $TARGET_DIR..."
               mkdir -p "$TARGET_DIR"
               git clone https://github.com/Ravixk78/Google-spin-weel.git "$TARGET_DIR"
             fi
 
             cd "$TARGET_DIR"
 
-            # Pull latest changes from main branch
             echo "📥 Pulling latest code from main branch..."
             git fetch origin main
             git reset --hard origin/main
 
-            # Ensure Node.js & PM2 are available
             export PATH=$PATH:/usr/local/bin:/usr/bin:~/.nvm/versions/node/$(ls ~/.nvm/versions/node 2>/dev/null | tail -n 1)/bin
 
-            # Install Root Dependencies
             echo "📦 Installing root dependencies..."
             npm install --production=false
 
-            # Install Backend Dependencies
             echo "📦 Installing backend dependencies..."
             cd backend && npm install --production=false && cd ..
 
-            # Install Frontend Dependencies & Build Production Bundle
             echo "🏗️ Building Frontend Production Assets..."
             cd frontend && npm install --production=false && npm run build && cd ..
 
-            # Initialize DB Seed if database.sqlite does not exist
             if [ ! -f "backend/database.sqlite" ]; then
-              echo "🌱 Initializing SQLite Database with initial seed..."
+              echo "🌱 Initializing SQLite Database..."
               node backend/src/db/seed.js || true
             fi
 
-            # Install PM2 globally if not installed
             if ! command -v pm2 &> /dev/null; then
-              echo "⚡ Installing PM2 globally..."
               npm install -g pm2
             fi
 
-            # Restart application with PM2
             echo "🔄 Restarting application with PM2..."
-            pm2 startOrReload ecosystem.config.js || pm2 restart spin-wheel || pm2 start ecosystem.config.js --name "spin-wheel"
+            pm2 restart majlis-spin-backend || pm2 startOrReload ecosystem.config.js || pm2 start backend/src/server.js --name "majlis-spin-backend"
             pm2 save
 
-            echo "✅ Deployment completed successfully!"
+            # Ensure Nginx symlink and reload
+            rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
+            ln -sf /etc/nginx/sites-available/majlis-spin /etc/nginx/sites-enabled/majlis-spin
+            nginx -t && systemctl reload nginx
+
+            echo "✅ Deployment completed successfully for spin.majlisaloud.cloud!"

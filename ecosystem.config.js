@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'spin-wheel',
+      name: 'majlis-spin-backend',
       script: 'backend/src/server.js',
       instances: 1,
       autorestart: true,
