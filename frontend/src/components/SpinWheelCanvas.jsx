@@ -242,7 +242,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 
         ctx.restore(); // Restore wedge clip context
 
-        // Draw Prize Label Text Badge (Outside Clip to ensure 100% crisp, unclipped text)
+        // Draw Prize Label Text Badge (Pure Black Background Tag with Crisp Uncropped White Text)
         try {
           ctx.save();
           ctx.translate(centerX, centerY);
@@ -256,33 +256,40 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
             label = prizeTranslations[pName] && !/[a-zA-Z]/.test(pName) ? prizeTranslations[pName] : pName;
           }
 
-          const textRadius = outerRadius - 36;
+          const textRadius = outerRadius - 34;
           ctx.translate(textRadius, 0);
 
-          ctx.font = "bold 11px 'Outfit', 'Inter', system-ui, -apple-system, sans-serif";
-          const textWidth = ctx.measureText(label).width;
-          const paddingX = 9;
-          const pillW = textWidth + paddingX * 2;
-          const pillH = 22;
+          // Dynamic font sizing so text never crops
+          let fontSize = 11;
+          if (label.length > 18) fontSize = 9;
+          else if (label.length > 13) fontSize = 10;
 
-          // Sleek dark charcoal pill badge with subtle gold border & shadow
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
-          ctx.shadowBlur = 6;
+          ctx.font = `bold ${fontSize}px 'Outfit', 'Inter', system-ui, -apple-system, sans-serif`;
+          const textMetrics = ctx.measureText(label);
+          const textWidth = textMetrics.width;
+          const paddingX = 8;
+          const tagW = Math.min(textWidth + paddingX * 2, 110);
+          const tagH = 22;
 
+          // Pure Black Tag Box with White Border (Exact match to reference 'perfume' tag)
+          ctx.fillStyle = '#000000';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+          ctx.shadowBlur = 4;
+
+          ctx.beginPath();
           if (ctx.roundRect) {
-            ctx.beginPath();
-            ctx.roundRect(-pillW / 2, -pillH / 2, pillW, pillH, 11);
-            ctx.fill();
+            ctx.roundRect(-tagW / 2, -tagH / 2, tagW, tagH, 3);
           } else {
-            ctx.fillRect(-pillW / 2, -pillH / 2, pillW, pillH);
+            ctx.fillRect(-tagW / 2, -tagH / 2, tagW, tagH);
           }
+          ctx.fill();
 
           ctx.shadowBlur = 0;
-          ctx.strokeStyle = '#D4AF37';
-          ctx.lineWidth = 1;
+          ctx.strokeStyle = '#FFFFFF';
+          ctx.lineWidth = 1.5;
           ctx.stroke();
 
+          // High contrast white text
           ctx.fillStyle = '#FFFFFF';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';

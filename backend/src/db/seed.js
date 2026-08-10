@@ -134,6 +134,9 @@ const seedDatabase = async () => {
       }
     ];
 
+    // Deactivate ALL existing prizes first so only exact 8 active prizes remain
+    await runQuery(`UPDATE spin_prizes SET is_active = 0`);
+
     // Sync / Upsert 8 Spin Prizes with exact design names and pastel colors
     for (const p of defaultPrizes) {
       const existing = await getQuery(`SELECT id FROM spin_prizes WHERE display_order = ?`, [p.display_order]);
