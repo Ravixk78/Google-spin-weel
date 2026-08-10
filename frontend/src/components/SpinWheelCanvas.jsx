@@ -244,64 +244,6 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         }
 
         ctx.restore(); // Restore wedge clip context
-
-        // Draw Prize Label Text Badge (Pure Black Box right above the base of triangle slice)
-        try {
-          ctx.save();
-          ctx.translate(centerX, centerY);
-          ctx.rotate(textAngle);
-
-          const textRadius = outerRadius - 35;
-          ctx.translate(textRadius, 0);
-
-          const pName = prize.name || '';
-          let label = pName;
-          if (lang === 'ar') {
-            label = prizeTranslations[pName] || pName;
-          } else {
-            label = prizeTranslations[pName] && !/[a-zA-Z]/.test(pName) ? prizeTranslations[pName] : pName;
-          }
-
-          // Dynamic font sizing so text never crops
-          let fontSize = 11;
-          if (label.length > 18) fontSize = 9;
-          else if (label.length > 13) fontSize = 10;
-
-          ctx.font = `bold ${fontSize}px 'Outfit', 'Inter', system-ui, -apple-system, sans-serif`;
-          const textMetrics = ctx.measureText(label);
-          const textWidth = textMetrics.width;
-          const paddingX = 8;
-          const tagW = Math.min(textWidth + paddingX * 2, 105);
-          const tagH = 22;
-
-          // Pure Black Tag Box with White Border (Exact match to reference 'perfume' tag)
-          ctx.fillStyle = '#000000';
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-          ctx.shadowBlur = 4;
-
-          ctx.beginPath();
-          if (ctx.roundRect) {
-            ctx.roundRect(-tagW / 2, -tagH / 2, tagW, tagH, 3);
-          } else {
-            ctx.fillRect(-tagW / 2, -tagH / 2, tagW, tagH);
-          }
-          ctx.fill();
-
-          ctx.shadowBlur = 0;
-          ctx.strokeStyle = '#FFFFFF';
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
-
-          // High contrast white text
-          ctx.fillStyle = '#FFFFFF';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(label, 0, 1);
-
-          ctx.restore();
-        } catch (textErr) {
-          console.warn('Text draw warning:', textErr);
-        }
       });
 
       // 4. Draw Inner Gold Ring around Center Cap
