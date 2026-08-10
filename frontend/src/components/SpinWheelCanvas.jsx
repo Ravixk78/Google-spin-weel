@@ -28,29 +28,25 @@ const prizeTranslations = {
 };
 
 const defaultPastelColors = [
-  '#FAD0C4', // Soft Pastel Pink
-  '#FBE7C6', // Soft Peach / Cream
-  '#B5EAD7', // Soft Pastel Mint
-  '#E2F0CB', // Soft Pastel Lime/Yellow
-  '#C7CEEA', // Soft Pastel Lavender Blue
-  '#FFDAC1', // Soft Pastel Apricot
-  '#E8DFF5', // Soft Pastel Lilac
-  '#FCE1E4', // Soft Pastel Blush
-  '#FCF6BD', // Soft Pastel Lemon
-  '#D0F4DE'  // Soft Pastel Seafoam
+  '#FCE1E4', // Romantic Perfume (Soft Pink)
+  '#FEF08A', // Makhalat Barakah (Soft Yellow)
+  '#BAE6FD', // Oud Powder (Soft Sky Blue)
+  '#FECDD3', // Exclusive Oud Incense (Soft Rose)
+  '#A7F3D0', // Musk Lavender (Soft Mint)
+  '#C6F6D5', // Pearl Ajmal (Soft Lime)
+  '#E0F2FE', // Musk Al Gharam (Pastel Blue)
+  '#E8DFF5'  // Kalemat Oud (Soft Lilac)
 ];
 
 const fallbackPrizesList = [
-  { id: 1, name: 'Luxury Travel Set', color_code: '#FAD0C4' },
-  { id: 2, name: 'Special Edition Kit', color_code: '#FBE7C6' },
-  { id: 3, name: 'Majlis Al Oud Branch', color_code: '#B5EAD7' },
-  { id: 4, name: 'Luxury Royal Oud Oil', color_code: '#E2F0CB' },
-  { id: 5, name: 'Majlis Signature Set', color_code: '#C7CEEA' },
-  { id: 6, name: 'Amber & Oud Bukhoor', color_code: '#FFDAC1' },
-  { id: 7, name: 'Majlis Al Oud Perfume', color_code: '#E8DFF5' },
-  { id: 8, name: 'Dehn El Oud Car Oil', color_code: '#FCE1E4' },
-  { id: 9, name: 'Exclusive Oud Incense', color_code: '#FCF6BD' },
-  { id: 10, name: 'Majlis Gift Card', color_code: '#D0F4DE' }
+  { id: 1, name: 'Romantic Perfume', color_code: '#FCE1E4', image_url: '/assets/prizes/prize_1.png' },
+  { id: 2, name: 'مخلط بركة', color_code: '#FEF08A', image_url: '/assets/prizes/prize_2.png' },
+  { id: 3, name: 'Oud Powder', color_code: '#BAE6FD', image_url: '/assets/prizes/prize_3.png' },
+  { id: 4, name: 'Exclusive Oud Incense', color_code: '#FECDD3', image_url: '/assets/prizes/prize_4.png' },
+  { id: 5, name: 'Musk Lavender', color_code: '#A7F3D0', image_url: '/assets/prizes/prize_5.png' },
+  { id: 6, name: 'Pearl Ajmal', color_code: '#C6F6D5', image_url: '/assets/prizes/prize_6.png' },
+  { id: 7, name: 'Musk Al Gharam', color_code: '#E0F2FE', image_url: '/assets/prizes/prize_7.png' },
+  { id: 8, name: 'Kalemat Oud', color_code: '#E8DFF5', image_url: '/assets/prizes/prize_8.png' }
 ];
 
 // Word wrap helper for canvas text without truncation
@@ -100,6 +96,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
     let isMounted = true;
 
     activePrizes.forEach((prize) => {
+      const pKey = prize.id || prize.name;
       if (prize && prize.image_url && typeof prize.image_url === 'string' && prize.image_url.trim()) {
         const url = prize.image_url.trim();
         const img = new Image();
@@ -110,15 +107,32 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 
         img.onload = () => {
           if (isMounted) {
-            setLoadedImages(prev => ({ ...prev, [prize.id]: img }));
+            setLoadedImages(prev => ({ ...prev, [pKey]: img }));
           }
         };
 
-        img.onerror = (e) => {
-          console.warn(`Failed to load prize image for prize ID ${prize.id}`, e);
+        img.onerror = () => {
+          // Fallback image path
+          const fallbackUrl = `/assets/prizes/prize_${prize.display_order || prize.id || 1}.png`;
+          const fallbackImg = new Image();
+          fallbackImg.onload = () => {
+            if (isMounted) {
+              setLoadedImages(prev => ({ ...prev, [pKey]: fallbackImg }));
+            }
+          };
+          fallbackImg.src = fallbackUrl;
         };
 
         img.src = url;
+      } else {
+        const fallbackUrl = `/assets/prizes/prize_${prize.display_order || prize.id || 1}.png`;
+        const fallbackImg = new Image();
+        fallbackImg.onload = () => {
+          if (isMounted) {
+            setLoadedImages(prev => ({ ...prev, [pKey]: fallbackImg }));
+          }
+        };
+        fallbackImg.src = fallbackUrl;
       }
     });
 
@@ -187,14 +201,15 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         const startAngle = angleOffset + i * arcSize;
         const endAngle = startAngle + arcSize;
 
-        // Fill Pastel Segment - ALWAYS use sample light pastel colors
+        // Fill Pastel Segment
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
         ctx.closePath();
 
-        ctx.fillStyle = defaultPastelColors[i % defaultPastelColors.length];
+        const segmentColor = prize.color_code || defaultPastelColors[i % defaultPastelColors.length];
+        ctx.fillStyle = segmentColor;
         ctx.fill();
 
         // Clean White Slice Divider Border
@@ -209,19 +224,16 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         const textAngle = startAngle + arcSize / 2;
         ctx.rotate(textAngle);
 
-        const prizeImg = loadedImages[prize.id];
+        const pKey = prize.id || prize.name;
+        const prizeImg = loadedImages[pKey];
         
-        // Draw Prize Image on outer slice radius inside clean rounded mask (no ugly white border box)
+        // Draw Prize Product Image centered inside slice
         if (prizeImg) {
           try {
             ctx.save();
-            const imgSize = 32;
-            const imgRadius = outerRadius - 38;
+            const imgSize = 90;
+            const imgRadius = outerRadius - 68;
             
-            ctx.beginPath();
-            ctx.arc(imgRadius, 0, imgSize / 2, 0, 2 * Math.PI);
-            ctx.clip();
-
             ctx.drawImage(prizeImg, imgRadius - imgSize / 2, -imgSize / 2, imgSize, imgSize);
             ctx.restore();
           } catch (e) {
@@ -229,10 +241,10 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
           }
         }
 
-        // Multi-line Prize Label Text - Crisp, readable modern sans-serif font
+        // Multi-line Prize Label Text
         try {
           ctx.textAlign = 'center';
-          ctx.fillStyle = '#1E293B'; // Dark Charcoal for crisp pastel contrast
+          ctx.fillStyle = '#1E293B'; // Dark Charcoal
           ctx.font = "bold 12px 'Outfit', 'Inter', system-ui, -apple-system, sans-serif";
 
           const pName = prize.name || '';
@@ -243,8 +255,8 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
             label = prizeTranslations[pName] && !/[a-zA-Z]/.test(pName) ? prizeTranslations[pName] : pName;
           }
 
-          const lines = wrapTextLines(String(label), prizeImg ? 12 : 14);
-          const textRadius = prizeImg ? outerRadius - 92 : outerRadius - 66;
+          const lines = wrapTextLines(String(label), 12);
+          const textRadius = outerRadius - 135;
           
           ctx.save();
           ctx.translate(textRadius, 0);

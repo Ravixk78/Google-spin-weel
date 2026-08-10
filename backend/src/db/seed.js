@@ -58,111 +58,103 @@ const seedDatabase = async () => {
     const rakBranch = await getQuery(`SELECT id FROM branches WHERE code = 'rak'`);
     const sharjahBranch = await getQuery(`SELECT id FROM branches WHERE code = 'sharjah'`);
 
-    // 3. Seed 10 Spin Prizes matching the exact design image with exact pastel color hex codes
+    // 3. Seed 8 Spin Prizes matching the exact design image with exact pastel color hex codes and prize images
     const defaultPrizes = [
       {
-        name: 'Luxury Travel Set',
-        description: 'Luxury travel perfume fragrance set',
-        weight: 10,
+        name: 'Romantic Perfume',
+        description: 'Romantic luxury spray perfume',
+        weight: 12,
         stock_quantity: 50,
         display_order: 1,
-        color_code: '#FAD0C4'
+        color_code: '#FCE1E4',
+        image_url: '/assets/prizes/prize_1.png'
       },
       {
-        name: 'Special Edition Kit',
-        description: 'Special edition exclusive fragrance box set',
-        weight: 10,
+        name: 'مخلط بركة',
+        description: 'Makhalat Barakah luxury jar',
+        weight: 12,
         stock_quantity: 50,
         display_order: 2,
-        color_code: '#FBE7C6'
+        color_code: '#FEF08A',
+        image_url: '/assets/prizes/prize_2.png'
       },
       {
-        name: 'Majlis Al Oud Branch',
-        description: 'Voucher valid at any Majlis Al Oud branch',
-        weight: 15,
-        stock_quantity: 100,
+        name: 'Oud Powder',
+        description: 'Oud body powder Majlis Al Oud',
+        weight: 13,
+        stock_quantity: 60,
         display_order: 3,
-        color_code: '#B5EAD7'
-      },
-      {
-        name: 'Luxury Royal Oud Oil',
-        description: 'Pure 100% aged royal oud oil attar',
-        weight: 5,
-        stock_quantity: 30,
-        display_order: 4,
-        color_code: '#E2F0CB'
-      },
-      {
-        name: 'Majlis Signature Set',
-        description: 'Signature luxury oud perfume set',
-        weight: 10,
-        stock_quantity: 50,
-        display_order: 5,
-        color_code: '#C7CEEA'
-      },
-      {
-        name: 'Amber & Oud Bukhoor',
-        description: 'Premium amber and natural oud incense bakhoor',
-        weight: 15,
-        stock_quantity: 100,
-        display_order: 6,
-        color_code: '#FFDAC1'
-      },
-      {
-        name: 'Majlis Al Oud Perfume',
-        description: 'Iconic Majlis Al Oud spray perfume',
-        weight: 10,
-        stock_quantity: 80,
-        display_order: 7,
-        color_code: '#E8DFF5'
-      },
-      {
-        name: 'Dehn El Oud Car Oil',
-        description: 'Luxury car fragrance oil diffuser',
-        weight: 20,
-        stock_quantity: 150,
-        display_order: 8,
-        color_code: '#FCE1E4'
+        color_code: '#BAE6FD',
+        image_url: '/assets/prizes/prize_3.png'
       },
       {
         name: 'Exclusive Oud Incense',
-        description: 'Exclusive agarwood incense sticks pack',
-        weight: 20,
-        stock_quantity: 150,
-        display_order: 9,
-        color_code: '#FCF6BD'
+        description: 'Exclusive agarwood incense pack',
+        weight: 13,
+        stock_quantity: 80,
+        display_order: 4,
+        color_code: '#FECDD3',
+        image_url: '/assets/prizes/prize_4.png'
       },
       {
-        name: 'Majlis Gift Card',
-        description: 'Store gift shopping card voucher',
-        weight: 25,
-        stock_quantity: 200,
-        display_order: 10,
-        color_code: '#D0F4DE'
+        name: 'Musk Lavender',
+        description: 'Musk lavender perfume attar oil',
+        weight: 12,
+        stock_quantity: 50,
+        display_order: 5,
+        color_code: '#A7F3D0',
+        image_url: '/assets/prizes/prize_5.png'
+      },
+      {
+        name: 'Pearl Ajmal',
+        description: 'Pearl Ajmal luxury fragrance',
+        weight: 12,
+        stock_quantity: 50,
+        display_order: 6,
+        color_code: '#C6F6D5',
+        image_url: '/assets/prizes/prize_6.png'
+      },
+      {
+        name: 'Musk Al Gharam',
+        description: 'Musk Al Gharam perfume spray',
+        weight: 13,
+        stock_quantity: 70,
+        display_order: 7,
+        color_code: '#E0F2FE',
+        image_url: '/assets/prizes/prize_7.png'
+      },
+      {
+        name: 'Kalemat Oud',
+        description: 'Kalemat royal oud fragrance',
+        weight: 13,
+        stock_quantity: 70,
+        display_order: 8,
+        color_code: '#E8DFF5',
+        image_url: '/assets/prizes/prize_8.png'
       }
     ];
 
-    // Sync / Upsert 10 Spin Prizes with exact design names and pastel colors
+    // Sync / Upsert 8 Spin Prizes with exact design names and pastel colors
     for (const p of defaultPrizes) {
       const existing = await getQuery(`SELECT id FROM spin_prizes WHERE display_order = ?`, [p.display_order]);
       if (existing) {
         await runQuery(`
           UPDATE spin_prizes
-          SET name = ?, description = ?, weight = ?, stock_quantity = ?, color_code = ?, is_active = 1
+          SET name = ?, description = ?, weight = ?, stock_quantity = ?, color_code = ?, image_url = ?, is_active = 1
           WHERE id = ?
-        `, [p.name, p.description, p.weight, p.stock_quantity, p.color_code, existing.id]);
+        `, [p.name, p.description, p.weight, p.stock_quantity, p.color_code, p.image_url, existing.id]);
       } else {
         await runQuery(`
-          INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, is_active)
-          VALUES (?, ?, ?, ?, ?, ?, 1)
-        `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code]);
+          INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, image_url, is_active)
+          VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+        `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code, p.image_url]);
       }
     }
 
-    // Deactivate any extra legacy prizes beyond 10
-    await runQuery(`UPDATE spin_prizes SET is_active = 0 WHERE display_order > 10`);
+    // Deactivate any extra legacy prizes beyond 8
+    await runQuery(`UPDATE spin_prizes SET is_active = 0 WHERE display_order > 8`);
 
-    console.log('✔ Successfully synced 10 Spin Prizes with weighted probabilities and pastel colors.');
+    console.log('✔ Successfully synced 8 Spin Prizes with weighted probabilities and custom prize assets.');
 
     // 4. Seed Test 4-digit Invoices if needed
     console.log('🎉 Database seeding complete!');
