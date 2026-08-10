@@ -198,14 +198,12 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
       ctx.stroke();
       ctx.restore();
 
-      // 3. Draw Pastel Segments with Perfect Wedge Clipping & Upright Image / Text Badges
+      // 3. Draw Pastel Segments with Perfect Full Wedge Graphics & Black Text Badges
       activePrizes.forEach((prize, i) => {
         if (!prize) return;
         const startAngle = angleOffset + i * arcSize;
         const endAngle = startAngle + arcSize;
         const textAngle = startAngle + arcSize / 2;
-        const normAngle = ((textAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-        const isLeftHalf = normAngle > Math.PI / 2 && normAngle < (3 * Math.PI) / 2;
 
         // Clip to exact triangle slice wedge path
         ctx.save();
@@ -224,10 +222,10 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         ctx.lineWidth = 3;
         ctx.stroke();
 
-        // Clip context to exact triangle wedge so image fills slice completely
+        // Clip context to exact triangle wedge so full wedge graphic fills slice 100%
         ctx.clip();
 
-        // Draw Prize Slice Wedge Image (Upright orientation for all 8 slices)
+        // Draw Prize Full Slice Wedge Graphic
         const pKey = prize.id || prize.name;
         const prizeImg = loadedImages[pKey];
         
@@ -235,8 +233,6 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
           try {
             ctx.save();
             ctx.translate(centerX, centerY);
-            
-            // Draw image rotated cleanly along textAngle
             ctx.rotate(textAngle);
 
             const imgSize = outerRadius * 2;
@@ -249,17 +245,14 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 
         ctx.restore(); // Restore wedge clip context
 
-        // Draw Prize Label Text Badge (100% Flat Horizontal Tag - Exact same direction for ALL 8 slices)
+        // Draw Prize Label Text Badge (Pure Black Box right above the base of triangle slice)
         try {
           ctx.save();
           ctx.translate(centerX, centerY);
+          ctx.rotate(textAngle);
 
-          const textRadius = outerRadius - 36;
-          const tx = textRadius * Math.cos(textAngle);
-          const ty = textRadius * Math.sin(textAngle);
-          ctx.translate(tx, ty);
-
-          // Zero rotation: ALL text badges face 100% flat horizontal left-to-right!
+          const textRadius = outerRadius - 35;
+          ctx.translate(textRadius, 0);
 
           const pName = prize.name || '';
           let label = pName;
@@ -278,7 +271,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
           const textMetrics = ctx.measureText(label);
           const textWidth = textMetrics.width;
           const paddingX = 8;
-          const tagW = Math.min(textWidth + paddingX * 2, 110);
+          const tagW = Math.min(textWidth + paddingX * 2, 105);
           const tagH = 22;
 
           // Pure Black Tag Box with White Border (Exact match to reference 'perfume' tag)
