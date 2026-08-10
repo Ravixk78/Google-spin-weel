@@ -249,20 +249,17 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 
         ctx.restore(); // Restore wedge clip context
 
-        // Draw Prize Label Text Badge (Horizontal Tag above base of triangle slice, 100% UPRIGHT)
+        // Draw Prize Label Text Badge (100% Flat Horizontal Tag - Exact same direction for ALL 8 slices)
         try {
           ctx.save();
           ctx.translate(centerX, centerY);
 
-          const textRadius = outerRadius - 32;
-          ctx.translate(textRadius * Math.cos(textAngle), textRadius * Math.sin(textAngle));
+          const textRadius = outerRadius - 36;
+          const tx = textRadius * Math.cos(textAngle);
+          const ty = textRadius * Math.sin(textAngle);
+          ctx.translate(tx, ty);
 
-          // Align horizontally parallel to base arc of triangle wedge & ensure UPRIGHT text
-          let tagAngle = textAngle + Math.PI / 2;
-          if (isLeftHalf) {
-            tagAngle += Math.PI;
-          }
-          ctx.rotate(tagAngle);
+          // Zero rotation: ALL text badges face 100% flat horizontal left-to-right!
 
           const pName = prize.name || '';
           let label = pName;
