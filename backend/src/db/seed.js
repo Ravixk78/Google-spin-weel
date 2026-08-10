@@ -58,78 +58,78 @@ const seedDatabase = async () => {
     const rakBranch = await getQuery(`SELECT id FROM branches WHERE code = 'rak'`);
     const sharjahBranch = await getQuery(`SELECT id FROM branches WHERE code = 'sharjah'`);
 
-    // 3. Seed 8 Spin Prizes matching the exact design image with exact pastel color hex codes and prize images
+    // 3. Seed 8 Spin Prizes matching the exact 8 custom wedge design graphics
     const defaultPrizes = [
       {
-        name: 'Romantic Perfume',
-        description: 'Romantic luxury spray perfume',
+        name: 'ST Oud Perfume',
+        description: 'ST Royal luxury oud perfume set',
         weight: 12,
         stock_quantity: 50,
         display_order: 1,
-        color_code: '#FCE1E4',
+        color_code: '#F5E5D3',
         image_url: '/assets/prizes/prize_1.png'
       },
       {
-        name: 'مخلط بركة',
-        description: 'Makhalat Barakah luxury jar',
+        name: 'Burmaluxe Oud',
+        description: 'Burmaluxe royal agarwood fragrance',
         weight: 12,
         stock_quantity: 50,
         display_order: 2,
-        color_code: '#FEF08A',
+        color_code: '#2D1E18',
         image_url: '/assets/prizes/prize_2.png'
+      },
+      {
+        name: 'Thara Beauty Cream',
+        description: 'Thara luxury beauty cream jar',
+        weight: 13,
+        stock_quantity: 60,
+        display_order: 3,
+        color_code: '#FFD54F',
+        image_url: '/assets/prizes/prize_3.png'
       },
       {
         name: 'Oud Powder',
         description: 'Oud body powder Majlis Al Oud',
         weight: 13,
-        stock_quantity: 60,
-        display_order: 3,
-        color_code: '#BAE6FD',
-        image_url: '/assets/prizes/prize_3.png'
-      },
-      {
-        name: 'Exclusive Oud Incense',
-        description: 'Exclusive agarwood incense pack',
-        weight: 13,
         stock_quantity: 80,
         display_order: 4,
-        color_code: '#FECDD3',
+        color_code: '#FDD835',
         image_url: '/assets/prizes/prize_4.png'
       },
       {
-        name: 'Musk Lavender',
-        description: 'Musk lavender perfume attar oil',
+        name: 'Fakhar Gold',
+        description: 'Fakhar Gold Eau De Parfum',
         weight: 12,
         stock_quantity: 50,
         display_order: 5,
-        color_code: '#A7F3D0',
+        color_code: '#FFF8E1',
         image_url: '/assets/prizes/prize_5.png'
       },
       {
-        name: 'Pearl Ajmal',
-        description: 'Pearl Ajmal luxury fragrance',
+        name: 'Pearl Beauty',
+        description: 'Pearl Beauty luxury red fragrance',
         weight: 12,
         stock_quantity: 50,
         display_order: 6,
-        color_code: '#C6F6D5',
+        color_code: '#E53935',
         image_url: '/assets/prizes/prize_6.png'
       },
       {
-        name: 'Musk Al Gharam',
-        description: 'Musk Al Gharam perfume spray',
+        name: 'Musk Lavender',
+        description: 'Musk lavender perfume attar oil set',
         weight: 13,
         stock_quantity: 70,
         display_order: 7,
-        color_code: '#E0F2FE',
+        color_code: '#9C27B0',
         image_url: '/assets/prizes/prize_7.png'
       },
       {
-        name: 'Kalemat Oud',
-        description: 'Kalemat royal oud fragrance',
+        name: 'Exclusive Oud Incense',
+        description: 'Exclusive agarwood incense sticks pack',
         weight: 13,
         stock_quantity: 70,
         display_order: 8,
-        color_code: '#E8DFF5',
+        color_code: '#4E342E',
         image_url: '/assets/prizes/prize_8.png'
       }
     ];

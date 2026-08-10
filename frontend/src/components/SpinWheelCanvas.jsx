@@ -28,25 +28,25 @@ const prizeTranslations = {
 };
 
 const defaultPastelColors = [
-  '#FCE1E4', // Romantic Perfume (Soft Pink)
-  '#FEF08A', // Makhalat Barakah (Soft Yellow)
-  '#BAE6FD', // Oud Powder (Soft Sky Blue)
-  '#FECDD3', // Exclusive Oud Incense (Soft Rose)
-  '#A7F3D0', // Musk Lavender (Soft Mint)
-  '#C6F6D5', // Pearl Ajmal (Soft Lime)
-  '#E0F2FE', // Musk Al Gharam (Pastel Blue)
-  '#E8DFF5'  // Kalemat Oud (Soft Lilac)
+  '#F5E5D3', // ST Oud Perfume (Pastel Cream)
+  '#2D1E18', // Burmaluxe Oud (Dark Rich Wood)
+  '#FFD54F', // Thara Beauty Cream (Golden Yellow)
+  '#FDD835', // Oud Powder (Vibrant Yellow)
+  '#FFF8E1', // Fakhar Gold (Warm Ivory)
+  '#E53935', // Pearl Beauty (Crimson Red)
+  '#9C27B0', // Musk Lavender (Purple Lavender)
+  '#4E342E'  // Exclusive Oud Incense (Rich Agarwood)
 ];
 
 const fallbackPrizesList = [
-  { id: 1, name: 'Romantic Perfume', color_code: '#FCE1E4', image_url: '/assets/prizes/prize_1.png' },
-  { id: 2, name: 'مخلط بركة', color_code: '#FEF08A', image_url: '/assets/prizes/prize_2.png' },
-  { id: 3, name: 'Oud Powder', color_code: '#BAE6FD', image_url: '/assets/prizes/prize_3.png' },
-  { id: 4, name: 'Exclusive Oud Incense', color_code: '#FECDD3', image_url: '/assets/prizes/prize_4.png' },
-  { id: 5, name: 'Musk Lavender', color_code: '#A7F3D0', image_url: '/assets/prizes/prize_5.png' },
-  { id: 6, name: 'Pearl Ajmal', color_code: '#C6F6D5', image_url: '/assets/prizes/prize_6.png' },
-  { id: 7, name: 'Musk Al Gharam', color_code: '#E0F2FE', image_url: '/assets/prizes/prize_7.png' },
-  { id: 8, name: 'Kalemat Oud', color_code: '#E8DFF5', image_url: '/assets/prizes/prize_8.png' }
+  { id: 1, name: 'ST Oud Perfume', color_code: '#F5E5D3', image_url: '/assets/prizes/prize_1.png' },
+  { id: 2, name: 'Burmaluxe Oud', color_code: '#2D1E18', image_url: '/assets/prizes/prize_2.png' },
+  { id: 3, name: 'Thara Beauty Cream', color_code: '#FFD54F', image_url: '/assets/prizes/prize_3.png' },
+  { id: 4, name: 'Oud Powder', color_code: '#FDD835', image_url: '/assets/prizes/prize_4.png' },
+  { id: 5, name: 'Fakhar Gold', color_code: '#FFF8E1', image_url: '/assets/prizes/prize_5.png' },
+  { id: 6, name: 'Pearl Beauty', color_code: '#E53935', image_url: '/assets/prizes/prize_6.png' },
+  { id: 7, name: 'Musk Lavender', color_code: '#9C27B0', image_url: '/assets/prizes/prize_7.png' },
+  { id: 8, name: 'Exclusive Oud Incense', color_code: '#4E342E', image_url: '/assets/prizes/prize_8.png' }
 ];
 
 // Word wrap helper for canvas text without truncation
