@@ -3,6 +3,26 @@ import confetti from 'canvas-confetti';
 import { Trophy, Sparkles, CheckCircle2, Download, Printer, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
+import product1Asset from '../assets/prizes/product_1.png';
+import product2Asset from '../assets/prizes/product_2.png';
+import product3Asset from '../assets/prizes/product_3.png';
+import product4Asset from '../assets/prizes/product_4.png';
+import product5Asset from '../assets/prizes/product_5.png';
+import product6Asset from '../assets/prizes/product_6.png';
+import product7Asset from '../assets/prizes/product_7.png';
+import product8Asset from '../assets/prizes/product_8.png';
+
+const productAssetMap = {
+  1: product1Asset,
+  2: product2Asset,
+  3: product3Asset,
+  4: product4Asset,
+  5: product5Asset,
+  6: product6Asset,
+  7: product7Asset,
+  8: product8Asset,
+};
+
 const prizeTranslations = {
   'Exclusive Oud Perfume 50ml': 'عطر عود فاخر 50مل',
   'Luxury Oud Wood Chip 25g': 'رقائق عود فاخر 25غ',
@@ -32,6 +52,9 @@ const WinModal = ({ isOpen, prize, ticket, onClose }) => {
   if (!isOpen || !prize) return null;
 
   const prizeDisplayName = lang === 'ar' && prizeTranslations[prize.name] ? prizeTranslations[prize.name] : prize.name;
+
+  const order = prize.display_order || prize.id || 1;
+  const productCardPhoto = productAssetMap[order] || product1Asset;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn">
@@ -66,15 +89,16 @@ const WinModal = ({ isOpen, prize, ticket, onClose }) => {
           {prizeDisplayName}
         </p>
 
-        {prize.image_url && (
-          <div className="flex justify-center mb-5">
+        {/* Premium Square Product Card Photo */}
+        <div className="flex justify-center mb-5">
+          <div className="relative p-1 rounded-2xl bg-gradient-to-tr from-amber-400 via-amber-200 to-amber-600 shadow-xl">
             <img
-              src={prize.image_url}
+              src={productCardPhoto}
               alt={prizeDisplayName}
-              className="w-24 h-24 object-contain rounded-xl border border-amber-300 dark:border-gold-400/40 bg-white dark:bg-slate-950/80 p-2 shadow-md"
+              className="w-36 h-36 object-cover rounded-xl shadow-inner border border-white/60"
             />
           </div>
-        )}
+        </div>
 
         {/* Claim Voucher Box */}
         <div className="bg-amber-50/90 dark:bg-emerald-950/60 border border-amber-300 dark:border-emerald-700/40 rounded-xl p-4 text-right mb-6 relative">
