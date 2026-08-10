@@ -1,6 +1,25 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import wheelLogoAsset from '../assets/wheel-logo.png';
+import prize1Asset from '../assets/prizes/prize_1.png';
+import prize2Asset from '../assets/prizes/prize_2.png';
+import prize3Asset from '../assets/prizes/prize_3.png';
+import prize4Asset from '../assets/prizes/prize_4.png';
+import prize5Asset from '../assets/prizes/prize_5.png';
+import prize6Asset from '../assets/prizes/prize_6.png';
+import prize7Asset from '../assets/prizes/prize_7.png';
+import prize8Asset from '../assets/prizes/prize_8.png';
+
+const prizeAssetMap = {
+  1: prize1Asset,
+  2: prize2Asset,
+  3: prize3Asset,
+  4: prize4Asset,
+  5: prize5Asset,
+  6: prize6Asset,
+  7: prize7Asset,
+  8: prize8Asset
+};
 
 const prizeTranslations = {
   'Luxury Travel Set': 'مجموعة السفر الفاخرة',
@@ -90,50 +109,34 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
     };
   }, []);
 
-  // Load prize segment images
+  // Load prize segment images using bundled hashed assets for zero browser caching delays
   useEffect(() => {
     if (!activePrizes || activePrizes.length === 0) return;
     let isMounted = true;
 
     activePrizes.forEach((prize) => {
       const pKey = prize.id || prize.name;
-      if (prize && prize.image_url && typeof prize.image_url === 'string' && prize.image_url.trim()) {
-        const url = prize.image_url.trim();
-        const img = new Image();
-        
-        if (url.startsWith('http://') || url.startsWith('https://')) {
-          img.crossOrigin = 'Anonymous';
+      const order = prize.display_order || prize.id || 1;
+      const bundledAsset = prizeAssetMap[order] || prize1Asset;
+
+      const img = new Image();
+      img.onload = () => {
+        if (isMounted) {
+          setLoadedImages(prev => ({ ...prev, [pKey]: img }));
         }
+      };
 
-        img.onload = () => {
-          if (isMounted) {
-            setLoadedImages(prev => ({ ...prev, [pKey]: img }));
-          }
-        };
-
-        img.onerror = () => {
-          // Fallback image path
-          const fallbackUrl = `/assets/prizes/prize_${prize.display_order || prize.id || 1}.png`;
-          const fallbackImg = new Image();
-          fallbackImg.onload = () => {
-            if (isMounted) {
-              setLoadedImages(prev => ({ ...prev, [pKey]: fallbackImg }));
-            }
-          };
-          fallbackImg.src = fallbackUrl;
-        };
-
-        img.src = url;
-      } else {
-        const fallbackUrl = `/assets/prizes/prize_${prize.display_order || prize.id || 1}.png`;
+      img.onerror = () => {
         const fallbackImg = new Image();
         fallbackImg.onload = () => {
           if (isMounted) {
             setLoadedImages(prev => ({ ...prev, [pKey]: fallbackImg }));
           }
         };
-        fallbackImg.src = fallbackUrl;
-      }
+        fallbackImg.src = bundledAsset;
+      };
+
+      img.src = bundledAsset;
     });
 
     return () => {
