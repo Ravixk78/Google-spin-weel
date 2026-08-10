@@ -198,12 +198,14 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
       ctx.stroke();
       ctx.restore();
 
-      // 3. Draw Pastel Segments with Perfect Wedge Clipping & Non-overlapping Text Badges
+      // 3. Draw Pastel Segments with Perfect Wedge Clipping & Upright Image / Text Badges
       activePrizes.forEach((prize, i) => {
         if (!prize) return;
         const startAngle = angleOffset + i * arcSize;
         const endAngle = startAngle + arcSize;
         const textAngle = startAngle + arcSize / 2;
+        const normAngle = ((textAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        const isLeftHalf = normAngle > Math.PI / 2 && normAngle < (3 * Math.PI) / 2;
 
         // Clip to exact triangle slice wedge path
         ctx.save();
@@ -212,7 +214,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
         ctx.closePath();
 
-        // Fill Pastel Segment Background
+        // Fill Pastel Segment Background to ensure ZERO black empty space
         const segmentColor = prize.color_code || defaultPastelColors[i % defaultPastelColors.length];
         ctx.fillStyle = segmentColor;
         ctx.fill();
@@ -222,10 +224,10 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         ctx.lineWidth = 3;
         ctx.stroke();
 
-        // Clip context to exact triangle wedge so image fills slice without white square borders
+        // Clip context to exact triangle wedge so image fills slice completely
         ctx.clip();
 
-        // Draw Prize Slice Wedge Image
+        // Draw Prize Slice Wedge Image (Upright orientation for all 8 slices)
         const pKey = prize.id || prize.name;
         const prizeImg = loadedImages[pKey];
         
@@ -233,6 +235,8 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
           try {
             ctx.save();
             ctx.translate(centerX, centerY);
+            
+            // Draw image rotated cleanly along textAngle
             ctx.rotate(textAngle);
 
             const imgSize = outerRadius * 2;
@@ -245,7 +249,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 
         ctx.restore(); // Restore wedge clip context
 
-        // Draw Prize Label Text Badge (Horizontal Tag above base of triangle slice)
+        // Draw Prize Label Text Badge (Horizontal Tag above base of triangle slice, 100% UPRIGHT)
         try {
           ctx.save();
           ctx.translate(centerX, centerY);
@@ -253,10 +257,9 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
           const textRadius = outerRadius - 32;
           ctx.translate(textRadius * Math.cos(textAngle), textRadius * Math.sin(textAngle));
 
-          // Align horizontally parallel to base arc of triangle wedge
+          // Align horizontally parallel to base arc of triangle wedge & ensure UPRIGHT text
           let tagAngle = textAngle + Math.PI / 2;
-          const normAngle = ((textAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-          if (normAngle > Math.PI / 2 && normAngle < (3 * Math.PI) / 2) {
+          if (isLeftHalf) {
             tagAngle += Math.PI;
           }
           ctx.rotate(tagAngle);
