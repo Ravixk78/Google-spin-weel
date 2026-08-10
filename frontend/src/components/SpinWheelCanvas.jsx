@@ -245,11 +245,21 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 
         ctx.restore(); // Restore wedge clip context
 
-        // Draw Prize Label Text Badge (Pure Black Background Tag with Crisp Uncropped White Text)
+        // Draw Prize Label Text Badge (Horizontal Tag above base of triangle slice)
         try {
           ctx.save();
           ctx.translate(centerX, centerY);
-          ctx.rotate(textAngle);
+
+          const textRadius = outerRadius - 32;
+          ctx.translate(textRadius * Math.cos(textAngle), textRadius * Math.sin(textAngle));
+
+          // Align horizontally parallel to base arc of triangle wedge
+          let tagAngle = textAngle + Math.PI / 2;
+          const normAngle = ((textAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+          if (normAngle > Math.PI / 2 && normAngle < (3 * Math.PI) / 2) {
+            tagAngle += Math.PI;
+          }
+          ctx.rotate(tagAngle);
 
           const pName = prize.name || '';
           let label = pName;
@@ -258,9 +268,6 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
           } else {
             label = prizeTranslations[pName] && !/[a-zA-Z]/.test(pName) ? prizeTranslations[pName] : pName;
           }
-
-          const textRadius = outerRadius - 34;
-          ctx.translate(textRadius, 0);
 
           // Dynamic font sizing so text never crops
           let fontSize = 11;
