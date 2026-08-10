@@ -195,19 +195,21 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
       ctx.stroke();
       ctx.restore();
 
-      // 3. Draw Pastel Segments
+      // 3. Draw Pastel Segments with Perfect Wedge Clipping & Non-overlapping Text Badges
       activePrizes.forEach((prize, i) => {
         if (!prize) return;
         const startAngle = angleOffset + i * arcSize;
         const endAngle = startAngle + arcSize;
+        const textAngle = startAngle + arcSize / 2;
 
-        // Fill Pastel Segment
+        // Clip to exact triangle slice wedge path
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
         ctx.closePath();
 
+        // Fill Pastel Segment Background
         const segmentColor = prize.color_code || defaultPastelColors[i % defaultPastelColors.length];
         ctx.fillStyle = segmentColor;
         ctx.fill();
@@ -216,36 +218,35 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 3;
         ctx.stroke();
-        ctx.restore();
 
-        // Text & Segment Prize Image Drawing
-        ctx.save();
-        ctx.translate(centerX, centerY);
-        const textAngle = startAngle + arcSize / 2;
-        ctx.rotate(textAngle);
+        // Clip context to exact triangle wedge so image fills slice without white square borders
+        ctx.clip();
 
+        // Draw Prize Slice Wedge Image
         const pKey = prize.id || prize.name;
         const prizeImg = loadedImages[pKey];
         
-        // Draw Prize Product Image centered inside slice
         if (prizeImg) {
           try {
             ctx.save();
-            const imgSize = 90;
-            const imgRadius = outerRadius - 68;
-            
-            ctx.drawImage(prizeImg, imgRadius - imgSize / 2, -imgSize / 2, imgSize, imgSize);
+            ctx.translate(centerX, centerY);
+            ctx.rotate(textAngle);
+
+            const imgSize = outerRadius * 2;
+            ctx.drawImage(prizeImg, -outerRadius, -outerRadius, imgSize, imgSize);
             ctx.restore();
           } catch (e) {
             console.warn('Image draw warning:', e);
           }
         }
 
-        // Multi-line Prize Label Text
+        ctx.restore(); // Restore wedge clip context
+
+        // Draw Prize Label Text Badge (Outside Clip to ensure 100% crisp, unclipped text)
         try {
-          ctx.textAlign = 'center';
-          ctx.fillStyle = '#1E293B'; // Dark Charcoal
-          ctx.font = "bold 12px 'Outfit', 'Inter', system-ui, -apple-system, sans-serif";
+          ctx.save();
+          ctx.translate(centerX, centerY);
+          ctx.rotate(textAngle);
 
           const pName = prize.name || '';
           let label = pName;
@@ -255,25 +256,42 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
             label = prizeTranslations[pName] && !/[a-zA-Z]/.test(pName) ? prizeTranslations[pName] : pName;
           }
 
-          const lines = wrapTextLines(String(label), 12);
-          const textRadius = outerRadius - 135;
-          
-          ctx.save();
+          const textRadius = outerRadius - 36;
           ctx.translate(textRadius, 0);
 
-          if (lines.length === 1) {
-            ctx.fillText(lines[0], 0, 4);
-          } else if (lines.length >= 2) {
-            ctx.fillText(lines[0], 0, -3);
-            ctx.fillText(lines[1], 0, 10);
+          ctx.font = "bold 11px 'Outfit', 'Inter', system-ui, -apple-system, sans-serif";
+          const textWidth = ctx.measureText(label).width;
+          const paddingX = 9;
+          const pillW = textWidth + paddingX * 2;
+          const pillH = 22;
+
+          // Sleek dark charcoal pill badge with subtle gold border & shadow
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+          ctx.shadowBlur = 6;
+
+          if (ctx.roundRect) {
+            ctx.beginPath();
+            ctx.roundRect(-pillW / 2, -pillH / 2, pillW, pillH, 11);
+            ctx.fill();
+          } else {
+            ctx.fillRect(-pillW / 2, -pillH / 2, pillW, pillH);
           }
+
+          ctx.shadowBlur = 0;
+          ctx.strokeStyle = '#D4AF37';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          ctx.fillStyle = '#FFFFFF';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(label, 0, 1);
 
           ctx.restore();
         } catch (textErr) {
           console.warn('Text draw warning:', textErr);
         }
-
-        ctx.restore();
       });
 
       // 4. Draw Inner Gold Ring around Center Cap
