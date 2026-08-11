@@ -244,6 +244,88 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         }
 
         ctx.restore(); // Restore wedge clip context
+
+        // 3b. Draw Black Product Name Badge along the base (outer arc) of the triangle slice
+        const rawName = (lang === 'ar' && (prize.name_ar || prizeTranslations[prize.name]))
+          ? (prize.name_ar || prizeTranslations[prize.name])
+          : (prize.name || '');
+
+        if (rawName) {
+          ctx.save();
+          
+          // Badge center position at outer base arc of the triangle slice
+          const badgeRadius = outerRadius - 28;
+          const badgeX = centerX + Math.cos(textAngle) * badgeRadius;
+          const badgeY = centerY + Math.sin(textAngle) * badgeRadius;
+
+          ctx.translate(badgeX, badgeY);
+
+          // Tangential rotation along base arc
+          let labelAngle = textAngle + Math.PI / 2;
+
+          // Normalize angle to [0, 2*PI]
+          let normAngle = (labelAngle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+
+          // Keep all names oriented upright (never upside down)
+          if (normAngle > Math.PI / 2 && normAngle < 3 * Math.PI / 2) {
+            labelAngle += Math.PI;
+          }
+
+          ctx.rotate(labelAngle);
+
+          // Configure font
+          const fontSize = 11;
+          ctx.font = `bold ${fontSize}px 'Outfit', 'Inter', sans-serif`;
+          const textMetrics = ctx.measureText(rawName);
+          const measuredWidth = textMetrics.width;
+
+          // Badge dimensions with padding
+          const maxPillWidth = 140;
+          const pillWidth = Math.min(measuredWidth + 18, maxPillWidth);
+          const pillHeight = 22;
+          const pillRadius = 6;
+
+          // Draw Black Background Pill
+          ctx.fillStyle = '#000000';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+          ctx.shadowBlur = 4;
+          
+          ctx.beginPath();
+          if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(-pillWidth / 2, -pillHeight / 2, pillWidth, pillHeight, pillRadius);
+          } else {
+            const x = -pillWidth / 2;
+            const y = -pillHeight / 2;
+            const w = pillWidth;
+            const h = pillHeight;
+            const r = pillRadius;
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+          }
+          ctx.fill();
+
+          // Subtle border around pill
+          ctx.shadowBlur = 0;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          // Draw Crisp White Text
+          ctx.fillStyle = '#FFFFFF';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+
+          if (measuredWidth > maxPillWidth - 14) {
+            ctx.font = `bold 9.5px 'Outfit', 'Inter', sans-serif`;
+          }
+
+          ctx.fillText(rawName, 0, 1);
+          ctx.restore();
+        }
       });
 
       // 4. Draw Inner Gold Ring around Center Cap
