@@ -109,25 +109,25 @@ const QRCodeModal = ({ isOpen, branch, onClose, onRefresh }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="relative w-full max-w-md glass-panel bg-luxury-card border-gold-400/40 rounded-2xl p-6 text-center shadow-gold-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+      <div className="relative w-full max-w-md bg-white border-2 border-amber-300 rounded-3xl p-6 text-center shadow-2xl">
         
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-full transition-colors"
+          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 rounded-full transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-400/10 border border-gold-400/30 text-gold-300 text-xs font-semibold uppercase mb-3">
-          <QrCode className="w-3.5 h-3.5" /> Branch QR Code Standee
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-100/80 border border-amber-300 text-amber-900 text-xs font-semibold uppercase mb-3">
+          <QrCode className="w-3.5 h-3.5 text-amber-700" /> Branch QR Code Standee
         </div>
 
-        <h2 className="text-xl font-bold text-white mb-1">{branch.name}</h2>
-        <p className="text-xs text-slate-400 mb-6">{branch.address}</p>
+        <h2 className="text-xl font-bold text-slate-900 mb-1">{branch.name}</h2>
+        <p className="text-xs text-slate-600 mb-6 font-medium">{branch.address}</p>
 
         {/* QR Rendering Container */}
-        <div ref={qrRef} className="bg-white p-6 rounded-2xl shadow-xl inline-block mb-6 border-4 border-gold-400">
+        <div ref={qrRef} className="bg-white p-6 rounded-2xl shadow-lg inline-block mb-6 border-4 border-amber-300">
           <QRCodeSVG
             value={targetUrl}
             size={220}
@@ -136,21 +136,22 @@ const QRCodeModal = ({ isOpen, branch, onClose, onRefresh }) => {
           />
         </div>
 
-        <div className="bg-slate-900/80 p-3 rounded-lg text-xs font-mono text-slate-300 truncate mb-6 border border-slate-800">
+        {/* Light Theme URL Box */}
+        <div className="bg-amber-50/90 border border-amber-300/80 p-3 rounded-xl text-xs font-mono font-bold text-amber-950 truncate mb-6 shadow-xs select-all">
           {targetUrl}
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-3">
           <button
             onClick={downloadPNG}
-            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-medium border border-slate-700 transition-colors"
+            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-white hover:bg-amber-50 text-slate-900 rounded-xl text-xs font-bold border border-amber-300/80 transition-colors shadow-xs"
           >
-            <Download className="w-4 h-4 text-gold-400" /> Download PNG
+            <Download className="w-4 h-4 text-amber-700" /> Download PNG
           </button>
 
           <button
             onClick={downloadPDFPoster}
-            className="flex items-center justify-center gap-2 px-3 py-2.5 btn-gold rounded-lg text-xs font-bold shadow-gold"
+            className="flex items-center justify-center gap-2 px-3 py-2.5 btn-gold rounded-xl text-xs font-bold shadow-gold text-slate-950"
           >
             <FileText className="w-4 h-4" /> Download PDF Poster
           </button>
@@ -158,7 +159,7 @@ const QRCodeModal = ({ isOpen, branch, onClose, onRefresh }) => {
 
         <button
           onClick={handleRegenerate}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs text-rose-400 hover:text-rose-300 transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs text-rose-600 hover:text-rose-700 font-semibold transition-colors"
         >
           <RefreshCw className="w-3.5 h-3.5" /> Regenerate QR Token
         </button>

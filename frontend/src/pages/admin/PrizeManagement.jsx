@@ -263,56 +263,56 @@ const PrizeManagement = () => {
 
       {/* Add / Edit Form Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-md glass-panel bg-luxury-card border-gold-400/40 rounded-2xl p-6 shadow-gold-lg max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold text-white mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+          <div className="w-full max-w-md bg-white border-2 border-amber-300 rounded-3xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold text-slate-900 mb-4">
               {editingPrize ? 'Edit Prize Segment' : 'Add New Spin Prize'}
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Prize Name</label>
+                <label className="block text-slate-800 font-semibold mb-1">Prize Name</label>
                 <input
                   type="text"
                   placeholder="e.g. Royal Oud EDP 100ml"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 text-xs"
+                  className="w-full p-2.5 bg-slate-50 border border-amber-300/80 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-medium text-xs"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Description</label>
+                <label className="block text-slate-800 font-semibold mb-1">Description</label>
                 <textarea
                   rows={2}
                   placeholder="Brief prize description..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 text-xs"
+                  className="w-full p-2.5 bg-slate-50 border border-amber-300/80 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-medium text-xs"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Weight (Probability)</label>
+                  <label className="block text-slate-800 font-semibold mb-1">Weight (Probability)</label>
                   <input
                     type="number"
                     step="0.1"
                     value={formData.weight}
                     onChange={(e) => setFormData({ ...formData, weight: parseFloat(e.target.value) || 1 })}
-                    className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 font-mono text-xs"
+                    className="w-full p-2.5 bg-slate-50 border border-amber-300/80 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-mono text-xs font-bold"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Stock Quantity</label>
+                  <label className="block text-slate-800 font-semibold mb-1">Stock Quantity</label>
                   <input
                     type="number"
                     value={formData.stock_quantity}
                     onChange={(e) => setFormData({ ...formData, stock_quantity: parseInt(e.target.value, 10) || 0 })}
-                    className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 font-mono text-xs"
+                    className="w-full p-2.5 bg-slate-50 border border-amber-300/80 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-mono text-xs font-bold"
                     required
                   />
                 </div>
@@ -320,26 +320,26 @@ const PrizeManagement = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Display Order (1..10)</label>
+                  <label className="block text-slate-800 font-semibold mb-1">Display Order (1..10)</label>
                   <input
                     type="number"
                     value={formData.display_order}
                     onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value, 10) || 1 })}
-                    className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-gold-400 font-mono text-xs"
+                    className="w-full p-2.5 bg-slate-50 border border-amber-300/80 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-mono text-xs font-bold"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Wheel Slice Color</label>
+                  <label className="block text-slate-800 font-semibold mb-1">Wheel Slice Color</label>
                   <div className="flex items-center gap-2 mb-1.5">
                     <input
                       type="color"
                       value={formData.color_code}
                       onChange={(e) => setFormData({ ...formData, color_code: e.target.value })}
-                      className="w-10 h-8 p-0.5 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer"
+                      className="w-10 h-8 p-0.5 bg-white border border-amber-300 rounded-lg cursor-pointer shadow-xs"
                     />
-                    <span className="font-mono text-[11px] text-slate-300 uppercase">{formData.color_code}</span>
+                    <span className="font-mono text-[11px] text-slate-800 font-bold uppercase">{formData.color_code}</span>
                   </div>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {[
@@ -358,7 +358,7 @@ const PrizeManagement = () => {
                         key={c.hex}
                         type="button"
                         onClick={() => setFormData({ ...formData, color_code: c.hex })}
-                        className="w-5 h-5 rounded-full border border-white/40 shadow-sm transition-transform hover:scale-125"
+                        className="w-5 h-5 rounded-full border border-slate-300 shadow-xs transition-transform hover:scale-125"
                         style={{ backgroundColor: c.hex }}
                         title={`${c.label} (${c.hex})`}
                       />
@@ -368,11 +368,11 @@ const PrizeManagement = () => {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Prize Segment Image (Upload Pure File from Local Device)</label>
+                <label className="block text-slate-800 font-semibold mb-1">Prize Segment Image (Upload Pure File from Local Device)</label>
                 
                 <div className="flex items-center gap-2 mb-2">
-                  <label className="flex-1 cursor-pointer bg-slate-900 border border-slate-700 hover:border-gold-400 p-2.5 rounded-xl text-white flex items-center justify-center gap-2 text-xs font-bold transition-all shadow-md">
-                    <Upload className="w-4 h-4 text-gold-400" />
+                  <label className="flex-1 cursor-pointer bg-amber-100/90 border border-amber-300 hover:bg-amber-200/90 p-2.5 rounded-xl text-amber-950 flex items-center justify-center gap-2 text-xs font-bold transition-all shadow-xs">
+                    <Upload className="w-4 h-4 text-amber-800" />
                     <span>Upload Image File from Phone/PC</span>
                     <input
                       type="file"
@@ -385,7 +385,7 @@ const PrizeManagement = () => {
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, image_url: '' })}
-                      className="p-2.5 bg-rose-950/60 border border-rose-800 text-rose-300 rounded-xl text-xs flex items-center gap-1 font-semibold"
+                      className="p-2.5 bg-rose-50 border border-rose-300 text-rose-700 hover:bg-rose-100 rounded-xl text-xs flex items-center gap-1 font-semibold"
                       title="Clear Uploaded Image"
                     >
                       <Trash2 className="w-3.5 h-3.5" /> Clear
@@ -399,41 +399,41 @@ const PrizeManagement = () => {
                   placeholder="Or paste optional Image URL (Optional)"
                   value={formData.image_url.startsWith('data:') ? '[Pure Image Uploaded from Local Device]' : formData.image_url}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  className="w-full p-2 bg-slate-900/60 border border-slate-800 rounded-lg text-slate-400 text-[11px] font-mono"
+                  className="w-full p-2 bg-slate-50 border border-amber-200 rounded-lg text-slate-600 text-[11px] font-mono"
                   readOnly={formData.image_url.startsWith('data:')}
                 />
 
-                {/* Image Specs & Fit Hint Box */}
-                <div className="mt-2 p-3 bg-slate-950/80 border border-gold-400/30 rounded-xl text-[11px] text-slate-300 space-y-1">
-                  <div className="flex items-center gap-1.5 font-bold text-gold-400">
-                    <Sparkles className="w-3.5 h-3.5 text-gold-400 shrink-0" />
+                {/* Image Specs & Fit Hint Box - Light Luxury Theme */}
+                <div className="mt-2 p-3 bg-amber-50/90 border border-amber-300 rounded-xl text-[11px] text-slate-800 space-y-1 shadow-xs">
+                  <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-700 shrink-0" />
                     <span>💡 Recommended Image Specification (Image Hint):</span>
                   </div>
-                  <p className="text-slate-300 leading-normal pl-5">
-                    • <strong>Dimensions:</strong> <span className="text-emerald-400 font-mono font-bold">120 x 120 px</span> or <span className="text-emerald-400 font-mono font-bold">200 x 200 px</span> (Square ratio)<br />
+                  <p className="text-slate-700 leading-normal pl-5">
+                    • <strong>Dimensions:</strong> <span className="text-emerald-800 font-mono font-bold">120 x 120 px</span> or <span className="text-emerald-800 font-mono font-bold">200 x 200 px</span> (Square ratio)<br />
                     • <strong>Format:</strong> Transparent PNG background (No crop, fits cleanly inside wheel slice edges)<br />
                     • <strong>Fit:</strong> Scaled proportionally inside segment boundary without edge clipping.
                   </p>
                   {formData.image_url && (
                     <div className="pt-2 flex items-center gap-2 pl-5">
-                      <span className="text-slate-400 text-[10px]">Uploaded Preview:</span>
-                      <img src={formData.image_url} alt="Prize Preview" className="w-10 h-10 object-contain rounded border border-slate-700 bg-slate-900 shadow-md" />
+                      <span className="text-slate-600 font-medium text-[10px]">Uploaded Preview:</span>
+                      <img src={formData.image_url} alt="Prize Preview" className="w-10 h-10 object-contain rounded border border-amber-300 bg-white shadow-xs" />
                     </div>
                   )}
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Status</label>
+                <label className="block text-slate-800 font-semibold mb-1">Status</label>
                 <div className="flex items-center gap-4 pt-1">
-                  <label className="flex items-center gap-2 cursor-pointer text-white">
+                  <label className="flex items-center gap-2 cursor-pointer text-slate-900 font-semibold">
                     <input
                       type="radio"
                       checked={formData.is_active}
                       onChange={() => setFormData({ ...formData, is_active: true })}
                     /> Active
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer text-slate-400">
+                  <label className="flex items-center gap-2 cursor-pointer text-slate-500">
                     <input
                       type="radio"
                       checked={!formData.is_active}
@@ -447,13 +447,13 @@ const PrizeManagement = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 py-2.5 bg-slate-800 text-slate-300 rounded-xl font-medium"
+                  className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 rounded-xl font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 btn-gold py-2.5 rounded-xl font-bold shadow-gold"
+                  className="flex-1 btn-gold py-2.5 rounded-xl font-bold shadow-gold text-slate-950"
                 >
                   Save Prize
                 </button>

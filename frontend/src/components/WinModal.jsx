@@ -100,22 +100,26 @@ const WinModal = ({ isOpen, prize, ticket, onClose }) => {
           </div>
         </div>
 
-        {/* Claim Voucher Box */}
-        <div className="bg-amber-50/90 dark:bg-emerald-950/60 border border-amber-300 dark:border-emerald-700/40 rounded-xl p-4 text-right mb-6 relative">
-          <div className="flex items-center justify-between border-b border-amber-200 dark:border-emerald-800/40 pb-3 mb-3">
-            <div>
-              <span className="text-xs text-amber-800 dark:text-emerald-400 uppercase font-semibold block">{t('branchLabel')}</span>
-              <p className="text-slate-900 dark:text-white font-bold text-sm">{ticket?.branch_name || 'Majlis Al Oud'}</p>
-            </div>
-            <div className="text-left">
-              <span className="text-xs text-amber-800 dark:text-emerald-400 uppercase font-semibold block">{t('invoiceLabel')}</span>
-              <p className="text-slate-900 dark:text-white font-mono font-bold text-sm">{ticket?.invoice_number || 'N/A'}</p>
-            </div>
+        {/* Balanced Luxury Ticket Box */}
+        <div className="bg-amber-50/90 border border-amber-300 rounded-2xl p-4 md:p-5 text-left mb-6 relative shadow-sm divide-y divide-amber-200/80 space-y-2.5">
+          <div className="flex items-center justify-between pt-1">
+            <span className="text-xs font-bold text-amber-900 uppercase tracking-wider">{t('branchLabel')}</span>
+            <span className="text-xs md:text-sm font-bold text-slate-900 text-right">{ticket?.branch_name || 'Majlis Al Oud'}</span>
           </div>
 
-          <div className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 text-left">
-            <p><span className="text-slate-500 dark:text-slate-400 font-medium">{t('customerLabel')}</span> <span className="font-semibold text-slate-900 dark:text-white">{ticket?.customer_name}</span></p>
-            <p><span className="text-slate-500 dark:text-slate-400 font-medium">{t('ticketLabel')}</span> <span className="text-amber-800 dark:text-gold-400 font-mono font-bold">{ticket?.ticket_code || 'VERIFIED'}</span></p>
+          <div className="flex items-center justify-between pt-2.5">
+            <span className="text-xs font-bold text-amber-900 uppercase tracking-wider">{t('invoiceLabel')}</span>
+            <span className="text-xs md:text-sm font-mono font-bold text-slate-900 bg-amber-100/80 px-2.5 py-0.5 rounded-md border border-amber-300">{ticket?.invoice_number || 'N/A'}</span>
+          </div>
+
+          <div className="flex items-center justify-between pt-2.5">
+            <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">{t('customerLabel')}</span>
+            <span className="text-xs md:text-sm font-bold text-slate-900">{ticket?.customer_name}</span>
+          </div>
+
+          <div className="flex items-center justify-between pt-2.5">
+            <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">{t('ticketLabel')}</span>
+            <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-md border border-emerald-300">{ticket?.ticket_code || 'VERIFIED'}</span>
           </div>
         </div>
 

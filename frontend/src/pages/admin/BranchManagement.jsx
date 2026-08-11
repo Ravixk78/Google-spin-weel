@@ -161,9 +161,9 @@ const BranchManagement = () => {
 
       {/* Add / Edit Branch Form Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-          <div className="w-full max-w-md glass-panel bg-white dark:bg-luxury-card border border-amber-300/80 dark:border-gold-400/40 rounded-2xl p-6 shadow-2xl">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+          <div className="w-full max-w-md bg-white border-2 border-amber-300 rounded-3xl p-6 shadow-2xl">
+            <h2 className="text-xl font-bold text-slate-900 mb-4">
               {editingBranch ? 'Edit Physical Branch' : 'Add New Branch'}
             </h2>
 
