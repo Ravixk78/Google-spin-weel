@@ -30,18 +30,31 @@ const executeCustomerSpin = async (req, res) => {
     `, [cleanInvoice, branch_id]);
 
     if (!invoice) {
-      try {
-        await runQuery(`
-          INSERT INTO invoices (invoice_number, branch_id, amount, is_used, status)
-          VALUES (?, ?, 0, 0, 'ELIGIBLE')
-        `, [cleanInvoice, branch_id]);
-      } catch (insertErr) {
-        // Ignore duplicate insert errors if created concurrently
-      }
-
+      // Flexible lookup: check if invoice exists for this invoice number under any branch
       invoice = await getQuery(`
-        SELECT * FROM invoices WHERE UPPER(invoice_number) = ? AND branch_id = ?
-      `, [cleanInvoice, branch_id]);
+        SELECT * FROM invoices WHERE UPPER(invoice_number) = ? ORDER BY id DESC LIMIT 1
+      `, [cleanInvoice]);
+
+      if (invoice) {
+        // Re-assign branch_id if unused
+        if (invoice.is_used === 0) {
+          await runQuery(`UPDATE invoices SET branch_id = ? WHERE id = ?`, [branch_id, invoice.id]);
+          invoice.branch_id = branch_id;
+        }
+      } else {
+        try {
+          await runQuery(`
+            INSERT INTO invoices (invoice_number, branch_id, amount, is_used, status)
+            VALUES (?, ?, 0, 0, 'ELIGIBLE')
+          `, [cleanInvoice, branch_id]);
+        } catch (insertErr) {
+          // Ignore duplicate insert errors if created concurrently
+        }
+
+        invoice = await getQuery(`
+          SELECT * FROM invoices WHERE UPPER(invoice_number) = ? AND branch_id = ?
+        `, [cleanInvoice, branch_id]);
+      }
     }
 
     if (!invoice) {

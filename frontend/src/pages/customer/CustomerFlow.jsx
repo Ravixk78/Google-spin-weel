@@ -63,6 +63,27 @@ const CustomerFlow = () => {
     }
   }, [detectedBranch, customerUser]);
 
+  // Restore persistent active verified invoice session on mount if returning from Google Review
+  useEffect(() => {
+    if (detectedBranch) {
+      try {
+        const savedSessionRaw = localStorage.getItem('active_spin_session');
+        if (savedSessionRaw) {
+          const session = JSON.parse(savedSessionRaw);
+          // Check if session is valid, unspun, and less than 24h old
+          if (session && session.invoice && (Date.now() - session.timestamp < 24 * 3600 * 1000)) {
+            setValidatedInvoice(session.invoice);
+            setInvoiceNumber(session.invoice.invoice_number || '');
+            setCurrentStep(session.step || 3);
+            setReviewOpened(true);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to restore active spin session:', e);
+      }
+    }
+  }, [detectedBranch]);
+
   const fetchPrizes = async () => {
     try {
       const res = await api.get('/prizes');
@@ -114,14 +135,22 @@ const CustomerFlow = () => {
       });
 
       if (res.data?.valid) {
-        setValidatedInvoice(res.data.invoice);
-        
-        // If customer has already submitted a review for THIS SPECIFIC BRANCH, skip straight to Spin Wheel (Step 3)
-        if (res.data?.has_submitted_review) {
-          setCurrentStep(3);
-        } else {
-          setCurrentStep(2); // Proceed to Google Review step for this branch
-        }
+        const invData = res.data.invoice;
+        const targetStep = res.data?.has_submitted_review ? 3 : 2;
+
+        setValidatedInvoice(invData);
+        setCurrentStep(targetStep);
+
+        // Persist verified session to local storage
+        try {
+          localStorage.setItem('active_spin_session', JSON.stringify({
+            invoice: invData,
+            step: targetStep,
+            branch_id: detectedBranch?.id || 1,
+            timestamp: Date.now()
+          }));
+        } catch (e) {}
+
       } else {
         setInvoiceError(res.data?.error || 'Invoice validation failed.');
       }
@@ -141,6 +170,17 @@ const CustomerFlow = () => {
     setCurrentStep(3);
     setReviewOpened(true);
 
+    // Persist step 3 state to local storage before opening review URL
+    try {
+      const savedSessionRaw = localStorage.getItem('active_spin_session');
+      let sessionObj = savedSessionRaw ? JSON.parse(savedSessionRaw) : {};
+      sessionObj.step = 3;
+      if (validatedInvoice) sessionObj.invoice = validatedInvoice;
+      sessionObj.branch_id = detectedBranch?.id || 1;
+      sessionObj.timestamp = Date.now();
+      localStorage.setItem('active_spin_session', JSON.stringify(sessionObj));
+    } catch (err) {}
+
     // 2. Open Google Review URL in new tab/window
     if (detectedBranch?.google_review_url) {
       const url = detectedBranch.google_review_url.trim();
@@ -155,6 +195,12 @@ const CustomerFlow = () => {
 
   const handleCompleteReviewAndProceed = () => {
     setCurrentStep(3); // Proceed to Spin Wheel!
+    try {
+      const savedSessionRaw = localStorage.getItem('active_spin_session');
+      let sessionObj = savedSessionRaw ? JSON.parse(savedSessionRaw) : {};
+      sessionObj.step = 3;
+      localStorage.setItem('active_spin_session', JSON.stringify(sessionObj));
+    } catch (e) {}
   };
 
   // Reset flow after win modal is closed to allow next 4-digit invoice entry
@@ -168,6 +214,10 @@ const CustomerFlow = () => {
     setSpinError(null);
     setReviewOpened(false);
 
+    try {
+      localStorage.removeItem('active_spin_session');
+    } catch (e) {}
+
     setCurrentStep(1); // Go back to Step 1 (Invoice Input) for next spin
   };
 
@@ -177,11 +227,16 @@ const CustomerFlow = () => {
 
     let activeUser = customerUser;
     if (!activeUser) {
-      const randId = Math.floor(1000 + Math.random() * 9000);
+      let deviceId = localStorage.getItem('deviceGoogleId');
+      if (!deviceId) {
+        deviceId = `google-user-device-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+        localStorage.setItem('deviceGoogleId', deviceId);
+      }
+
       activeUser = await loginCustomerGoogle({
-        google_id: `google-user-${Date.now()}-${randId}`,
-        email: `customer.${Date.now()}.${randId}@gmail.com`,
-        name: `Google User ${randId}`,
+        google_id: deviceId,
+        email: `${deviceId.toLowerCase()}@gmail.com`,
+        name: `Google Customer`,
         branch_id: detectedBranch?.id || 1,
         avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
       });
