@@ -245,85 +245,99 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
 
         ctx.restore(); // Restore wedge clip context
 
-        // 3b. Draw Black Product Name Badge along the base (outer arc) of the triangle slice
+        // 3b. Draw Black Arc Banner Band with Curved White Text along foot (outer arc) of slice
         const rawName = (lang === 'ar' && (prize.name_ar || prizeTranslations[prize.name]))
           ? (prize.name_ar || prizeTranslations[prize.name])
           : (prize.name || '');
 
         if (rawName) {
           ctx.save();
-          
-          // Badge center position at outer base arc of the triangle slice
-          const badgeRadius = outerRadius - 28;
-          const badgeX = centerX + Math.cos(textAngle) * badgeRadius;
-          const badgeY = centerY + Math.sin(textAngle) * badgeRadius;
 
-          ctx.translate(badgeX, badgeY);
+          // Arc Banner boundaries at foot of slice
+          const rOuter = outerRadius - 4;
+          const rInner = outerRadius - 42; // Width of 38px along slice foot
+          const marginAngle = 0.025; // 0.025 rad margin from slice divider border
+          const bandStartAngle = startAngle + marginAngle;
+          const bandEndAngle = endAngle - marginAngle;
 
-          // Tangential rotation along base arc
-          let labelAngle = textAngle + Math.PI / 2;
-
-          // Normalize angle to [0, 2*PI]
-          let normAngle = (labelAngle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-
-          // Keep all names oriented upright (never upside down)
-          if (normAngle > Math.PI / 2 && normAngle < 3 * Math.PI / 2) {
-            labelAngle += Math.PI;
-          }
-
-          ctx.rotate(labelAngle);
-
-          // Configure font
-          const fontSize = 11;
-          ctx.font = `bold ${fontSize}px 'Outfit', 'Inter', sans-serif`;
-          const textMetrics = ctx.measureText(rawName);
-          const measuredWidth = textMetrics.width;
-
-          // Badge dimensions with padding
-          const maxPillWidth = 140;
-          const pillWidth = Math.min(measuredWidth + 18, maxPillWidth);
-          const pillHeight = 22;
-          const pillRadius = 6;
-
-          // Draw Black Background Pill
-          ctx.fillStyle = '#000000';
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-          ctx.shadowBlur = 4;
-          
+          // 1. Draw Black Arc Background Strip along slice foot
           ctx.beginPath();
-          if (typeof ctx.roundRect === 'function') {
-            ctx.roundRect(-pillWidth / 2, -pillHeight / 2, pillWidth, pillHeight, pillRadius);
-          } else {
-            const x = -pillWidth / 2;
-            const y = -pillHeight / 2;
-            const w = pillWidth;
-            const h = pillHeight;
-            const r = pillRadius;
-            ctx.moveTo(x + r, y);
-            ctx.arcTo(x + w, y, x + w, y + h, r);
-            ctx.arcTo(x + w, y + h, x, y + h, r);
-            ctx.arcTo(x, y + h, x, y, r);
-            ctx.arcTo(x, y, x + w, y, r);
-            ctx.closePath();
-          }
+          ctx.arc(centerX, centerY, rOuter, bandStartAngle, bandEndAngle, false);
+          ctx.arc(centerX, centerY, rInner, bandEndAngle, bandStartAngle, true);
+          ctx.closePath();
+
+          ctx.fillStyle = '#000000';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+          ctx.shadowBlur = 6;
           ctx.fill();
 
-          // Subtle border around pill
+          // Gold/white subtle accent border on inner arc edge
           ctx.shadowBlur = 0;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, rInner, bandStartAngle, bandEndAngle, false);
+          ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+          ctx.lineWidth = 1.5;
           ctx.stroke();
 
-          // Draw Crisp White Text
+          // 2. Draw Curved White Text along the Arc
+          let fontSize = 13.5;
+          ctx.font = `bold ${fontSize}px 'Outfit', 'Inter', sans-serif`;
+
+          // Measure character widths
+          const chars = rawName.split('');
+          let charWidths = chars.map(c => ctx.measureText(c).width);
+          let totalTextWidth = charWidths.reduce((a, b) => a + b, 0);
+
+          // Text baseline radius centered in the black arc band
+          const textRadius = (rOuter + rInner) / 2;
+          const availableArcLength = textRadius * (bandEndAngle - bandStartAngle) - 12;
+
+          // Scale down font size if text is too wide for slice foot
+          if (totalTextWidth > availableArcLength) {
+            fontSize = Math.max(10, fontSize * (availableArcLength / totalTextWidth));
+            ctx.font = `bold ${fontSize.toFixed(1)}px 'Outfit', 'Inter', sans-serif`;
+            charWidths = chars.map(c => ctx.measureText(c).width);
+            totalTextWidth = charWidths.reduce((a, b) => a + b, 0);
+          }
+
+          // Calculate total angle span of text
+          const charAngles = charWidths.map(w => w / textRadius);
+          const totalAngleSpan = charAngles.reduce((a, b) => a + b, 0);
+
+          // Check if slice is in lower hemisphere to keep text upright
+          const normTextAngle = (textAngle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+          const isLowerHemisphere = Math.sin(normTextAngle) > 0.01;
+
           ctx.fillStyle = '#FFFFFF';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
-          if (measuredWidth > maxPillWidth - 14) {
-            ctx.font = `bold 9.5px 'Outfit', 'Inter', sans-serif`;
+          if (!isLowerHemisphere) {
+            // Upper Hemisphere: Clockwise rendering (Left to Right)
+            let currentAngle = textAngle - (totalAngleSpan / 2);
+            for (let j = 0; j < chars.length; j++) {
+              const charAngle = currentAngle + (charAngles[j] / 2);
+              ctx.save();
+              ctx.translate(centerX + Math.cos(charAngle) * textRadius, centerY + Math.sin(charAngle) * textRadius);
+              ctx.rotate(charAngle + Math.PI / 2);
+              ctx.fillText(chars[j], 0, 0);
+              ctx.restore();
+              currentAngle += charAngles[j];
+            }
+          } else {
+            // Lower Hemisphere: Render Right to Left along arc so text stays upright (Left to Right)
+            let currentAngle = textAngle + (totalAngleSpan / 2);
+            for (let j = 0; j < chars.length; j++) {
+              const charAngle = currentAngle - (charAngles[j] / 2);
+              ctx.save();
+              ctx.translate(centerX + Math.cos(charAngle) * textRadius, centerY + Math.sin(charAngle) * textRadius);
+              ctx.rotate(charAngle - Math.PI / 2);
+              ctx.fillText(chars[j], 0, 0);
+              ctx.restore();
+              currentAngle -= charAngles[j];
+            }
           }
 
-          ctx.fillText(rawName, 0, 1);
           ctx.restore();
         }
       });
