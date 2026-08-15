@@ -136,7 +136,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         fallbackImg.src = bundledAsset;
       };
 
-      img.src = bundledAsset;
+      img.src = prize.image_url || bundledAsset;
     });
 
     return () => {
@@ -225,7 +225,7 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         // Clip context to exact triangle wedge so full wedge graphic fills slice 100%
         ctx.clip();
 
-        // Draw Prize Full Slice Wedge Graphic
+        // Draw Prize Full Slice Wedge Graphic or Standalone Product Photo
         const pKey = prize.id || prize.name;
         const prizeImg = loadedImages[pKey];
         
@@ -235,8 +235,16 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
             ctx.translate(centerX, centerY);
             ctx.rotate(textAngle);
 
-            const imgSize = outerRadius * 2;
-            ctx.drawImage(prizeImg, -outerRadius, -outerRadius, imgSize, imgSize);
+            const isWedgeOverlay = prize.image_url && prize.image_url.includes('/assets/prizes/prize_');
+            if (isWedgeOverlay || (!prize.image_url && prizeAssetMap[prize.display_order])) {
+              const imgSize = outerRadius * 2;
+              ctx.drawImage(prizeImg, -outerRadius, -outerRadius, imgSize, imgSize);
+            } else {
+              // Custom uploaded image or standalone product photo: render centered inside wedge segment
+              const radialDist = outerRadius * 0.52;
+              const iconSize = outerRadius * 0.35;
+              ctx.drawImage(prizeImg, radialDist - iconSize / 2, -iconSize / 2, iconSize, iconSize);
+            }
             ctx.restore();
           } catch (e) {
             console.warn('Image draw warning:', e);

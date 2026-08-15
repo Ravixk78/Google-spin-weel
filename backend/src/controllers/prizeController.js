@@ -7,7 +7,8 @@ const getPrizes = async (req, res) => {
     const prizes = await allQuery(`SELECT * FROM spin_prizes ORDER BY display_order ASC, id ASC`);
     res.json({ prizes });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch spin prizes.' });
+    console.error('Fetch prizes error:', err);
+    res.status(500).json({ error: err.message || 'Failed to fetch spin prizes.' });
   }
 };
 
@@ -20,26 +21,32 @@ const createPrize = async (req, res) => {
       return res.status(400).json({ error: 'Prize name and weight are required.' });
     }
 
+    const weightVal = !isNaN(Number(weight)) ? Number(weight) : 1;
+    const stockVal = !isNaN(Number(stock_quantity)) ? Number(stock_quantity) : 0;
+    const orderVal = !isNaN(Number(display_order)) ? Number(display_order) : 1;
+    const activeVal = is_active !== undefined ? (is_active ? 1 : 0) : 1;
+
     const result = await runQuery(`
       INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, is_active, image_url)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       name,
       description || '',
-      Number(weight) || 1,
-      Number(stock_quantity) || 0,
-      Number(display_order) || 1,
+      weightVal,
+      stockVal,
+      orderVal,
       color_code || '#D4AF37',
-      is_active !== undefined ? (is_active ? 1 : 0) : 1,
+      activeVal,
       image_url || null
     ]);
 
-    await logAudit(req.admin.id, 'CREATE_PRIZE', 'PRIZE', result.id, { name, weight, stock_quantity }, req.ip);
+    await logAudit(req.admin?.id || null, 'CREATE_PRIZE', 'PRIZE', result.id, { name, weight: weightVal, stock_quantity: stockVal }, req.ip);
 
     const created = await getQuery(`SELECT * FROM spin_prizes WHERE id = ?`, [result.id]);
     return res.status(201).json({ message: 'Prize created successfully', prize: created });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create prize.' });
+    console.error('Create prize error:', err);
+    res.status(500).json({ error: err.message || 'Failed to create prize.' });
   }
 };
 
@@ -54,6 +61,15 @@ const updatePrize = async (req, res) => {
       return res.status(404).json({ error: 'Prize not found.' });
     }
 
+    const nameVal = name !== undefined ? name : prize.name;
+    const descVal = description !== undefined ? description : prize.description;
+    const weightVal = (weight !== undefined && !isNaN(Number(weight))) ? Number(weight) : prize.weight;
+    const stockVal = (stock_quantity !== undefined && !isNaN(Number(stock_quantity))) ? Number(stock_quantity) : prize.stock_quantity;
+    const orderVal = (display_order !== undefined && !isNaN(Number(display_order))) ? Number(display_order) : prize.display_order;
+    const colorVal = color_code !== undefined ? color_code : prize.color_code;
+    const activeVal = is_active !== undefined ? (is_active ? 1 : 0) : prize.is_active;
+    const imageVal = image_url !== undefined ? image_url : prize.image_url;
+
     await runQuery(`
       UPDATE spin_prizes
       SET name = ?,
@@ -67,32 +83,34 @@ const updatePrize = async (req, res) => {
           updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `, [
-      name !== undefined ? name : prize.name,
-      description !== undefined ? description : prize.description,
-      weight !== undefined ? Number(weight) : prize.weight,
-      stock_quantity !== undefined ? Number(stock_quantity) : prize.stock_quantity,
-      display_order !== undefined ? Number(display_order) : prize.display_order,
-      color_code !== undefined ? color_code : prize.color_code,
-      is_active !== undefined ? (is_active ? 1 : 0) : prize.is_active,
-      image_url !== undefined ? image_url : prize.image_url,
+      nameVal,
+      descVal,
+      weightVal,
+      stockVal,
+      orderVal,
+      colorVal,
+      activeVal,
+      imageVal,
       id
     ]);
 
     // Record stock change if stock updated
-    if (stock_quantity !== undefined && Number(stock_quantity) !== Number(prize.stock_quantity)) {
+    if (stock_quantity !== undefined && !isNaN(Number(stock_quantity)) && Number(stock_quantity) !== Number(prize.stock_quantity)) {
       const diff = Number(stock_quantity) - Number(prize.stock_quantity);
+      const adminEmail = req.admin?.email || 'admin@majlisaloud.ae';
       await runQuery(`
         INSERT INTO prize_inventory (prize_id, action, quantity, reason, created_by)
         VALUES (?, ?, ?, 'Admin Stock Adjustment', ?)
-      `, [id, diff >= 0 ? 'RESTOCK' : 'DEDUCT', Math.abs(diff), req.admin.email]);
+      `, [id, diff >= 0 ? 'RESTOCK' : 'DEDUCT', Math.abs(diff), adminEmail]);
     }
 
-    await logAudit(req.admin.id, 'UPDATE_PRIZE', 'PRIZE', id, { name, weight, stock_quantity }, req.ip);
+    await logAudit(req.admin?.id || null, 'UPDATE_PRIZE', 'PRIZE', id, { name: nameVal, weight: weightVal, stock_quantity: stockVal }, req.ip);
 
     const updated = await getQuery(`SELECT * FROM spin_prizes WHERE id = ?`, [id]);
     return res.json({ message: 'Prize updated successfully', prize: updated });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update prize.' });
+    console.error('Update prize error:', err);
+    res.status(500).json({ error: err.message || 'Failed to update prize.' });
   }
 };
 
@@ -106,11 +124,12 @@ const deletePrize = async (req, res) => {
     }
 
     await runQuery(`DELETE FROM spin_prizes WHERE id = ?`, [id]);
-    await logAudit(req.admin.id, 'DELETE_PRIZE', 'PRIZE', id, { name: prize.name }, req.ip);
+    await logAudit(req.admin?.id || null, 'DELETE_PRIZE', 'PRIZE', id, { name: prize.name }, req.ip);
 
     return res.json({ message: 'Prize deleted successfully.' });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete prize.' });
+    console.error('Delete prize error:', err);
+    res.status(500).json({ error: err.message || 'Failed to delete prize.' });
   }
 };
 

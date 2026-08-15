@@ -33,10 +33,18 @@ const CustomerFlow = () => {
   const [showWinModal, setShowWinModal] = useState(false);
   const [spinError, setSpinError] = useState(null);
 
-  // Fetch Prizes on Mount
+  // Fetch Prizes on Mount & periodically while on Step 3 for real-time wheel updates
   useEffect(() => {
     fetchPrizes();
   }, []);
+
+  useEffect(() => {
+    if (currentStep === 3) {
+      fetchPrizes();
+      const interval = setInterval(fetchPrizes, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [currentStep]);
 
   // Ensure active persistent customer session on load per device
   useEffect(() => {
@@ -87,8 +95,8 @@ const CustomerFlow = () => {
   const fetchPrizes = async () => {
     try {
       const res = await api.get('/prizes');
-      // Filter active prizes sorted by display order
-      const activePrizes = res.data.prizes.filter(p => p.is_active);
+      // Filter active prizes with positive stock sorted by display order
+      const activePrizes = (res.data.prizes || []).filter(p => (p.is_active === 1 || p.is_active === true) && Number(p.stock_quantity) > 0);
       setPrizes(activePrizes);
     } catch (err) {
       console.error('Error loading spin prizes:', err);
