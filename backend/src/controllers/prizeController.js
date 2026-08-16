@@ -1,10 +1,14 @@
 const { getQuery, allQuery, runQuery } = require('../db');
 const { logAudit } = require('../middleware/authMiddleware');
 
-// Get all spin prizes (admin & customer)
+// Get spin prizes (admin & customer)
 const getPrizes = async (req, res) => {
   try {
-    const prizes = await allQuery(`SELECT * FROM spin_prizes ORDER BY display_order ASC, id ASC`);
+    const includeInactive = req.query.include_inactive === 'true';
+    const sql = includeInactive
+      ? `SELECT * FROM spin_prizes ORDER BY display_order ASC, id ASC`
+      : `SELECT * FROM spin_prizes WHERE is_active = 1 ORDER BY display_order ASC, id ASC`;
+    const prizes = await allQuery(sql);
     res.json({ prizes });
   } catch (err) {
     console.error('Fetch prizes error:', err);
