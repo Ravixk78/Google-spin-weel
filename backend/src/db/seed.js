@@ -176,6 +176,9 @@ const seedDatabase = async () => {
       }
     }
 
+    // Deactivate / Delete any extra legacy prizes beyond 8
+    await runQuery(`DELETE FROM spin_prizes WHERE display_order > 8 OR is_active = 0`);
+
     console.log('✔ Successfully synced 8 Spin Prizes with weighted probabilities and custom prize assets.');
 
     // 4. Seed Test 4-digit Invoices if needed
