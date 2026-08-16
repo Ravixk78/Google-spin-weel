@@ -12,11 +12,13 @@ const CustomerHistory = () => {
 
   const [search, setSearch] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
     fetchBranches();
     fetchHistory();
-  }, [selectedBranch]);
+  }, [selectedBranch, startDate, endDate]);
 
   const fetchBranches = async () => {
     try {
@@ -31,7 +33,7 @@ const CustomerHistory = () => {
     setLoading(true);
     try {
       const res = await api.get('/admin/customer-history', {
-        params: { search, branch_id: selectedBranch }
+        params: { search, branch_id: selectedBranch, start_date: startDate, end_date: endDate }
       });
       setHistory(res.data.history);
     } catch (err) {
@@ -100,7 +102,7 @@ const CustomerHistory = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="glass-panel border-gold-400/20 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="glass-panel border-gold-400/20 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between shadow-sm">
         <form onSubmit={handleSearch} className="flex-1 w-full flex items-center gap-2">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -109,22 +111,56 @@ const CustomerHistory = () => {
               placeholder={t('searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-gold-400"
+              className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-gold-400 font-medium"
             />
           </div>
-          <button type="submit" className="px-4 py-2 bg-slate-800 text-gold-300 text-xs font-bold rounded-xl border border-slate-700">
+          <button type="submit" className="px-4 py-2 bg-slate-800 text-gold-300 text-xs font-bold rounded-xl border border-slate-700 hover:bg-slate-700">
             {t('searchBtn')}
           </button>
         </form>
 
-        <select
-          value={selectedBranch}
-          onChange={(e) => setSelectedBranch(e.target.value)}
-          className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-gold-400"
-        >
-          <option value="">{t('allBranches')}</option>
-          {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-        </select>
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs">
+            <Calendar className="w-4 h-4 text-gold-400 shrink-0" />
+            <span className="text-[11px] text-slate-400 font-semibold shrink-0">From:</span>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="bg-transparent text-white focus:outline-none font-mono text-xs font-medium cursor-pointer"
+            />
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs">
+            <Calendar className="w-4 h-4 text-gold-400 shrink-0" />
+            <span className="text-[11px] text-slate-400 font-semibold shrink-0">To:</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="bg-transparent text-white focus:outline-none font-mono text-xs font-medium cursor-pointer"
+            />
+          </div>
+
+          {(startDate || endDate) && (
+            <button
+              type="button"
+              onClick={() => { setStartDate(''); setEndDate(''); }}
+              className="px-2.5 py-1.5 bg-rose-950 text-rose-300 rounded-xl text-[11px] font-bold border border-rose-800 hover:bg-rose-900"
+            >
+              Clear Dates
+            </button>
+          )}
+
+          <select
+            value={selectedBranch}
+            onChange={(e) => setSelectedBranch(e.target.value)}
+            className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-gold-400 font-medium"
+          >
+            <option value="">{t('allBranches')}</option>
+            {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+          </select>
+        </div>
       </div>
 
       {/* Audit History Table */}

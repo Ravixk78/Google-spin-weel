@@ -125,10 +125,10 @@ const validateInvoiceForCustomer = async (req, res) => {
   }
 };
 
-// Admin: List Invoices with search and filters
+// Admin: List Invoices with search, date filters, and status filters
 const listInvoices = async (req, res) => {
   try {
-    const { branch_id, is_used, status, search, page = 1, limit = 50 } = req.query;
+    const { branch_id, is_used, status, search, start_date, end_date, page = 1, limit = 50 } = req.query;
 
     let query = `
       SELECT i.*, b.name as branch_name, b.code as branch_code, c.email as used_by_email, c.name as used_by_name
@@ -158,6 +158,16 @@ const listInvoices = async (req, res) => {
       query += ` AND (i.invoice_number LIKE ? OR c.name LIKE ? OR c.email LIKE ?)`;
       const term = `%${search}%`;
       params.push(term, term, term);
+    }
+
+    if (start_date) {
+      query += ` AND DATE(i.created_at) >= DATE(?)`;
+      params.push(start_date);
+    }
+
+    if (end_date) {
+      query += ` AND DATE(i.created_at) <= DATE(?)`;
+      params.push(end_date);
     }
 
     query += ` ORDER BY i.id DESC`;

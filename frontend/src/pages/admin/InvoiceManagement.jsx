@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
-import { Receipt, Plus, Upload, Search, Filter, CheckCircle, XCircle, Trash2, Edit2, ToggleLeft, ToggleRight, FileSpreadsheet } from 'lucide-react';
+import { Receipt, Plus, Upload, Search, Filter, CheckCircle, XCircle, Trash2, Edit2, ToggleLeft, ToggleRight, FileSpreadsheet, Calendar } from 'lucide-react';
 
 const InvoiceManagement = () => {
   const { t } = useLanguage();
@@ -13,6 +13,8 @@ const InvoiceManagement = () => {
   const [search, setSearch] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -27,7 +29,7 @@ const InvoiceManagement = () => {
   useEffect(() => {
     fetchBranches();
     fetchInvoices();
-  }, [selectedBranch, selectedStatus]);
+  }, [selectedBranch, selectedStatus, startDate, endDate]);
 
   const fetchBranches = async () => {
     try {
@@ -42,7 +44,7 @@ const InvoiceManagement = () => {
     setLoading(true);
     try {
       const res = await api.get('/admin/invoices', {
-        params: { branch_id: selectedBranch, status: selectedStatus, search }
+        params: { branch_id: selectedBranch, status: selectedStatus, search, start_date: startDate, end_date: endDate }
       });
       setInvoices(res.data.invoices);
     } catch (err) {
@@ -195,7 +197,39 @@ const InvoiceManagement = () => {
           </button>
         </form>
 
-        <div className="flex items-center gap-3 w-full md:w-auto">
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs shadow-xs">
+            <Calendar className="w-4 h-4 text-amber-600 dark:text-gold-400 shrink-0" />
+            <span className="text-[11px] text-slate-500 font-semibold shrink-0">From:</span>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="bg-transparent text-slate-900 dark:text-white focus:outline-none font-mono text-xs font-medium cursor-pointer"
+            />
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs shadow-xs">
+            <Calendar className="w-4 h-4 text-amber-600 dark:text-gold-400 shrink-0" />
+            <span className="text-[11px] text-slate-500 font-semibold shrink-0">To:</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="bg-transparent text-slate-900 dark:text-white focus:outline-none font-mono text-xs font-medium cursor-pointer"
+            />
+          </div>
+
+          {(startDate || endDate) && (
+            <button
+              type="button"
+              onClick={() => { setStartDate(''); setEndDate(''); }}
+              className="px-2.5 py-1.5 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950 text-rose-800 dark:text-rose-300 rounded-xl text-[11px] font-bold border border-rose-300 dark:border-rose-800"
+            >
+              Clear Dates
+            </button>
+          )}
+
           <select
             value={selectedBranch}
             onChange={(e) => setSelectedBranch(e.target.value)}

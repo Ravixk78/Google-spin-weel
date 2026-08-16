@@ -2,7 +2,7 @@ const { allQuery } = require('../db');
 
 const getCustomerHistory = async (req, res) => {
   try {
-    const { search, branch_id } = req.query;
+    const { search, branch_id, start_date, end_date } = req.query;
 
     let query = `
       SELECT
@@ -38,6 +38,16 @@ const getCustomerHistory = async (req, res) => {
     if (branch_id) {
       query += ` AND sh.branch_id = ?`;
       params.push(branch_id);
+    }
+
+    if (start_date) {
+      query += ` AND DATE(sh.spin_date) >= DATE(?)`;
+      params.push(start_date);
+    }
+
+    if (end_date) {
+      query += ` AND DATE(sh.spin_date) <= DATE(?)`;
+      params.push(end_date);
     }
 
     query += ` ORDER BY sh.spin_date DESC`;
