@@ -160,12 +160,35 @@ const PrizeManagement = () => {
           <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">{t('prizeSubtitle')}</p>
         </div>
 
-        <button
-          onClick={handleOpenCreate}
-          className="btn-gold px-4 py-2 rounded-xl text-xs font-bold shadow-gold flex items-center gap-2 self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" /> {t('addPrizeBtn')}
-        </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <button
+            onClick={async () => {
+              if (window.confirm('Are you sure you want to reset all spin prizes back to the default 8 luxury wheel template prizes?')) {
+                try {
+                  setLoading(true);
+                  const res = await api.post('/admin/prizes/reset-defaults');
+                  setPrizes(res.data.prizes);
+                  alert('Spin wheel prizes successfully reset to the 8 template prizes!');
+                } catch (err) {
+                  alert(err.response?.data?.error || 'Failed to reset prizes.');
+                } finally {
+                  setLoading(false);
+                }
+              }
+            }}
+            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-100 dark:bg-slate-800 text-amber-900 dark:text-gold-400 border border-amber-300 dark:border-gold-400/30 hover:bg-amber-200 transition-all flex items-center gap-1.5 shadow-xs"
+            title="Reset prizes to the 8 default luxury wheel template prizes"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-700 dark:text-gold-400" /> Reset to 8 Template Prizes
+          </button>
+
+          <button
+            onClick={handleOpenCreate}
+            className="btn-gold px-4 py-2 rounded-xl text-xs font-bold shadow-gold flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" /> {t('addPrizeBtn')}
+          </button>
+        </div>
       </div>
 
       {/* Normalized Weight Banner */}
@@ -216,8 +239,16 @@ const PrizeManagement = () => {
                         <div className="w-6 h-6 rounded-full border border-slate-300 shadow-xs" style={{ backgroundColor: p.color_code || '#D4AF37' }} />
                       </td>
                       <td className="p-3.5">
-                        {p.image_url ? (
-                          <img src={p.image_url} alt={p.name} className="w-9 h-9 object-contain rounded-lg border border-amber-300 dark:border-gold-400/30 bg-white dark:bg-slate-950 p-0.5 shadow-xs" />
+                        {p.image_url || (p.display_order >= 1 && p.display_order <= 8) ? (
+                          <img
+                            src={p.image_url || `/assets/prizes/prize_${p.display_order}.png`}
+                            alt={p.name}
+                            className="w-9 h-9 object-contain rounded-lg border border-amber-300 dark:border-gold-400/30 bg-white dark:bg-slate-950 p-0.5 shadow-xs"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = '/assets/prizes/prize_1.png';
+                            }}
+                          />
                         ) : (
                           <span className="text-[10px] text-slate-400 italic">No image</span>
                         )}

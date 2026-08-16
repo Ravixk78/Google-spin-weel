@@ -133,9 +133,107 @@ const deletePrize = async (req, res) => {
   }
 };
 
+// Admin: Reset to default 8 template prizes
+const resetDefaultPrizes = async (req, res) => {
+  try {
+    const defaultPrizes = [
+      {
+        name: 'ST Oud Perfume',
+        description: 'ST Royal luxury oud perfume set',
+        weight: 12,
+        stock_quantity: 50,
+        display_order: 1,
+        color_code: '#F5E5D3',
+        image_url: '/assets/prizes/prize_1.png'
+      },
+      {
+        name: 'Burmaluxe Oud',
+        description: 'Burmaluxe royal agarwood fragrance',
+        weight: 12,
+        stock_quantity: 50,
+        display_order: 2,
+        color_code: '#2D1E18',
+        image_url: '/assets/prizes/prize_2.png'
+      },
+      {
+        name: 'Thara Beauty Cream',
+        description: 'Thara luxury beauty cream jar',
+        weight: 13,
+        stock_quantity: 60,
+        display_order: 3,
+        color_code: '#FFD54F',
+        image_url: '/assets/prizes/prize_3.png'
+      },
+      {
+        name: 'Oud Powder',
+        description: 'Oud body powder Majlis Al Oud',
+        weight: 13,
+        stock_quantity: 80,
+        display_order: 4,
+        color_code: '#FDD835',
+        image_url: '/assets/prizes/prize_4.png'
+      },
+      {
+        name: 'Fakhar Gold',
+        description: 'Fakhar Gold Eau De Parfum',
+        weight: 12,
+        stock_quantity: 50,
+        display_order: 5,
+        color_code: '#FFF8E1',
+        image_url: '/assets/prizes/prize_5.png'
+      },
+      {
+        name: 'Pearl Beauty',
+        description: 'Pearl Beauty luxury red fragrance',
+        weight: 12,
+        stock_quantity: 50,
+        display_order: 6,
+        color_code: '#E53935',
+        image_url: '/assets/prizes/prize_6.png'
+      },
+      {
+        name: 'Musk Lavender',
+        description: 'Musk lavender perfume attar oil set',
+        weight: 13,
+        stock_quantity: 70,
+        display_order: 7,
+        color_code: '#9C27B0',
+        image_url: '/assets/prizes/prize_7.png'
+      },
+      {
+        name: 'Exclusive Oud Incense',
+        description: 'Exclusive agarwood incense sticks pack',
+        weight: 13,
+        stock_quantity: 70,
+        display_order: 8,
+        color_code: '#4E342E',
+        image_url: '/assets/prizes/prize_8.png'
+      }
+    ];
+
+    await runQuery(`DELETE FROM spin_prizes`);
+
+    for (const p of defaultPrizes) {
+      await runQuery(`
+        INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, image_url, is_active)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+      `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code, p.image_url]);
+    }
+
+    await logAudit(req.admin?.id || null, 'RESET_PRIZES', 'PRIZE', 'ALL', { count: 8 }, req.ip);
+
+    const prizes = await allQuery(`SELECT * FROM spin_prizes ORDER BY display_order ASC, id ASC`);
+    return res.json({ message: 'Successfully reset to the 8 template spin wheel prizes.', prizes });
+  } catch (err) {
+    console.error('Reset prizes error:', err);
+    res.status(500).json({ error: err.message || 'Failed to reset default prizes.' });
+  }
+};
+
 module.exports = {
   getPrizes,
   createPrize,
   updatePrize,
-  deletePrize
+  deletePrize,
+  resetDefaultPrizes
 };

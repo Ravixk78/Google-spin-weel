@@ -58,6 +58,20 @@ const seedDatabase = async () => {
     const rakBranch = await getQuery(`SELECT id FROM branches WHERE code = 'rak'`);
     const sharjahBranch = await getQuery(`SELECT id FROM branches WHERE code = 'sharjah'`);
 
+    // Clean up old legacy test prizes if present in DB
+    await runQuery(`DELETE FROM spin_prizes WHERE name IN (
+      'Majlis Signature Eau De Parfum 100ml',
+      'Amber & Rose Bakhoor Burner Set',
+      'AED 100 VIP Shopping Voucher',
+      'Dehn El Oud Car Diffuser',
+      'Exclusive Oud Incense Sticks Pack',
+      'AED 50 Gift Card',
+      'Luxury Travel Atomizer Spray',
+      'Special Edition Fragrance Sample Vial',
+      'Luxury Royal Oud Oil 3ml',
+      'Majlis Al Oud Branded Coffee Set'
+    )`);
+
     // 3. Seed 8 Spin Prizes matching the exact 8 custom wedge design graphics
     const defaultPrizes = [
       {
@@ -134,28 +148,33 @@ const seedDatabase = async () => {
       }
     ];
 
-    // Deactivate ALL existing prizes first so only exact 8 active prizes remain
-    await runQuery(`UPDATE spin_prizes SET is_active = 0`);
-
-    // Sync / Upsert 8 Spin Prizes with exact design names and pastel colors
-    for (const p of defaultPrizes) {
-      const existing = await getQuery(`SELECT id FROM spin_prizes WHERE display_order = ?`, [p.display_order]);
-      if (existing) {
-        await runQuery(`
-          UPDATE spin_prizes
-          SET name = ?, description = ?, weight = ?, stock_quantity = ?, color_code = ?, image_url = ?, is_active = 1
-          WHERE id = ?
-        `, [p.name, p.description, p.weight, p.stock_quantity, p.color_code, p.image_url, existing.id]);
-      } else {
+    // If prizes table is empty or only legacy items were deleted, seed defaults
+    const currentCount = await getQuery(`SELECT COUNT(*) as count FROM spin_prizes`);
+    if (!currentCount || currentCount.count === 0) {
+      for (const p of defaultPrizes) {
         await runQuery(`
           INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, image_url, is_active)
           VALUES (?, ?, ?, ?, ?, ?, ?, 1)
         `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code, p.image_url]);
       }
+    } else {
+      // Sync defaults by display_order 1..8 if existing
+      for (const p of defaultPrizes) {
+        const existing = await getQuery(`SELECT id FROM spin_prizes WHERE display_order = ?`, [p.display_order]);
+        if (existing) {
+          await runQuery(`
+            UPDATE spin_prizes
+            SET name = ?, description = ?, weight = ?, stock_quantity = ?, color_code = ?, image_url = ?, is_active = 1
+            WHERE id = ?
+          `, [p.name, p.description, p.weight, p.stock_quantity, p.color_code, p.image_url, existing.id]);
+        } else {
+          await runQuery(`
+            INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, image_url, is_active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+          `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code, p.image_url]);
+        }
+      }
     }
-
-    // Deactivate any extra legacy prizes beyond 8
-    await runQuery(`UPDATE spin_prizes SET is_active = 0 WHERE display_order > 8`);
 
     console.log('✔ Successfully synced 8 Spin Prizes with weighted probabilities and custom prize assets.');
 

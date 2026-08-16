@@ -6,7 +6,7 @@ const { adminLogin, getAdminProfile, customerGoogleAuth } = require('../controll
 const { getBranches, detectBranch, createBranch, updateBranch, regenerateQR, deleteBranch } = require('../controllers/branchController');
 const { validateInvoiceForCustomer, listInvoices, createInvoice, updateInvoice, toggleInvoiceStatus, deleteInvoice, clearAllInvoices, importInvoicesCSV } = require('../controllers/invoiceController');
 const { executeCustomerSpin: spinAction } = require('../controllers/spinController');
-const { getPrizes, createPrize, updatePrize, deletePrize } = require('../controllers/prizeController');
+const { getPrizes, createPrize, updatePrize, deletePrize, resetDefaultPrizes } = require('../controllers/prizeController');
 const { getReports } = require('../controllers/reportController');
 const { getDashboardStats } = require('../controllers/dashboardController');
 const { getCustomerHistory } = require('../controllers/customerHistoryController');
@@ -54,6 +54,7 @@ router.get('/admin/prizes', verifyAdminToken, getPrizes);
 router.post('/admin/prizes', verifyAdminToken, createPrize);
 router.put('/admin/prizes/:id', verifyAdminToken, updatePrize);
 router.delete('/admin/prizes/:id', verifyAdminToken, deletePrize);
+router.post('/admin/prizes/reset-defaults', verifyAdminToken, resetDefaultPrizes);
 
 // Reports & Customer History
 router.get('/admin/reports', verifyAdminToken, getReports);
