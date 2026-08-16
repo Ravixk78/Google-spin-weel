@@ -160,14 +160,15 @@ const listInvoices = async (req, res) => {
       params.push(term, term, term);
     }
 
-    if (start_date) {
-      query += ` AND DATE(i.created_at) >= DATE(?)`;
-      params.push(start_date);
-    }
-
-    if (end_date) {
-      query += ` AND DATE(i.created_at) <= DATE(?)`;
-      params.push(end_date);
+    if (start_date && end_date) {
+      query += ` AND ((DATE(i.created_at) >= DATE(?) AND DATE(i.created_at) <= DATE(?)) OR (i.used_at IS NOT NULL AND DATE(i.used_at) >= DATE(?) AND DATE(i.used_at) <= DATE(?)))`;
+      params.push(start_date, end_date, start_date, end_date);
+    } else if (start_date) {
+      query += ` AND (DATE(i.created_at) >= DATE(?) OR (i.used_at IS NOT NULL AND DATE(i.used_at) >= DATE(?)))`;
+      params.push(start_date, start_date);
+    } else if (end_date) {
+      query += ` AND (DATE(i.created_at) <= DATE(?) OR (i.used_at IS NOT NULL AND DATE(i.used_at) <= DATE(?)))`;
+      params.push(end_date, end_date);
     }
 
     query += ` ORDER BY i.id DESC`;

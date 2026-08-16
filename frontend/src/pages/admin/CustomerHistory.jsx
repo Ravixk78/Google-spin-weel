@@ -4,6 +4,14 @@ import { useLanguage } from '../../context/LanguageContext';
 import { exportToExcel, exportToPDF, exportToCSV } from '../../services/exportUtils';
 import { Users, Search, ShieldAlert, Globe, MapPin, Receipt, Gift, Calendar, QrCode, Download } from 'lucide-react';
 
+const getTodayString = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const CustomerHistory = () => {
   const { t } = useLanguage();
   const [history, setHistory] = useState([]);
@@ -12,8 +20,8 @@ const CustomerHistory = () => {
 
   const [search, setSearch] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(getTodayString());
+  const [endDate, setEndDate] = useState(getTodayString());
 
   useEffect(() => {
     fetchBranches();
@@ -120,6 +128,18 @@ const CustomerHistory = () => {
         </form>
 
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <button
+            type="button"
+            onClick={() => { setStartDate(getTodayString()); setEndDate(getTodayString()); }}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              startDate === getTodayString() && endDate === getTodayString()
+                ? 'bg-gold-400 text-slate-950 shadow-sm border border-gold-300'
+                : 'bg-slate-800 text-gold-300 border border-slate-700 hover:bg-slate-700'
+            }`}
+          >
+            Today
+          </button>
+
           <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs">
             <Calendar className="w-4 h-4 text-gold-400 shrink-0" />
             <span className="text-[11px] text-slate-400 font-semibold shrink-0">From:</span>
@@ -142,15 +162,16 @@ const CustomerHistory = () => {
             />
           </div>
 
-          {(startDate || endDate) && (
+          {(startDate || endDate) ? (
             <button
               type="button"
               onClick={() => { setStartDate(''); setEndDate(''); }}
-              className="px-2.5 py-1.5 bg-rose-950 text-rose-300 rounded-xl text-[11px] font-bold border border-rose-800 hover:bg-rose-900"
+              className="px-2.5 py-1.5 bg-slate-800 text-slate-300 rounded-xl text-[11px] font-bold border border-slate-700 hover:bg-slate-700"
+              title="View all historical customer review spins across all dates"
             >
-              Clear Dates
+              Show All History
             </button>
-          )}
+          ) : null}
 
           <select
             value={selectedBranch}
@@ -184,7 +205,19 @@ const CustomerHistory = () => {
               {loading ? (
                 <tr><td colSpan={9} className="p-8 text-center text-slate-500 font-sans">{t('loadingAuditLogs')}</td></tr>
               ) : history.length === 0 ? (
-                <tr><td colSpan={9} className="p-8 text-center text-slate-500 italic font-sans">{t('noCustomerHistory')}</td></tr>
+                <tr>
+                  <td colSpan={9} className="p-8 text-center text-slate-500 italic font-sans">
+                    No customer history found for {startDate && startDate === endDate && startDate === getTodayString() ? 'Today' : 'selected filters'}.
+                    {(startDate || endDate) && (
+                      <button
+                        onClick={() => { setStartDate(''); setEndDate(''); }}
+                        className="ml-2 underline font-bold text-gold-400 not-italic hover:text-gold-300"
+                      >
+                        Click to view all history
+                      </button>
+                    )}
+                  </td>
+                </tr>
               ) : (
                 history.map((row, idx) => (
                   <tr key={idx} className="hover:bg-slate-900/40 transition-colors">
