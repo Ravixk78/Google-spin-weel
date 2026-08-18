@@ -4,7 +4,7 @@ const router = express.Router();
 const { verifyAdminToken } = require('../middleware/authMiddleware');
 const { adminLogin, getAdminProfile, customerGoogleAuth } = require('../controllers/authController');
 const { getBranches, detectBranch, createBranch, updateBranch, regenerateQR, deleteBranch } = require('../controllers/branchController');
-const { validateInvoiceForCustomer, listInvoices, createInvoice, updateInvoice, toggleInvoiceStatus, deleteInvoice, clearAllInvoices, importInvoicesCSV } = require('../controllers/invoiceController');
+const { validateInvoiceForCustomer, logCustomerReview, listInvoices, createInvoice, updateInvoice, toggleInvoiceStatus, deleteInvoice, clearAllInvoices, importInvoicesCSV } = require('../controllers/invoiceController');
 const { executeCustomerSpin: spinAction } = require('../controllers/spinController');
 const { getPrizes, createPrize, updatePrize, deletePrize, resetDefaultPrizes } = require('../controllers/prizeController');
 const { getReports } = require('../controllers/reportController');
@@ -19,6 +19,7 @@ router.get('/branches/detect', detectBranch);
 router.get('/prizes', getPrizes);
 router.post('/customer/auth/google', customerGoogleAuth);
 router.post('/customer/invoice/validate', validateInvoiceForCustomer);
+router.post('/customer/review/log', logCustomerReview);
 router.post('/customer/spin', spinAction);
 
 // ----------------------------------------------------

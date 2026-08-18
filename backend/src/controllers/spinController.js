@@ -107,11 +107,18 @@ const executeCustomerSpin = async (req, res) => {
       WHERE id = ?
     `, [selectedPrize.id]);
 
-    // C. Record Google Review
-    const reviewResult = await runQuery(`
-      INSERT INTO google_reviews (customer_id, invoice_id, branch_id, completed_at, ip_address, user_agent)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `, [customer.id, invoice.id, branch.id, nowIso, userIp, req.headers['user-agent'] || 'Browser']);
+    // C. Record or Update Google Review
+    const existingReview = await getQuery(`SELECT id FROM google_reviews WHERE customer_id = ? AND branch_id = ?`, [customer.id, branch.id]);
+    if (!existingReview) {
+      await runQuery(`
+        INSERT INTO google_reviews (customer_id, invoice_id, branch_id, completed_at, ip_address, user_agent)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `, [customer.id, invoice.id, branch.id, nowIso, userIp, req.headers['user-agent'] || 'Browser']);
+    } else {
+      await runQuery(`
+        UPDATE google_reviews SET invoice_id = COALESCE(?, invoice_id), completed_at = ? WHERE id = ?
+      `, [invoice.id, nowIso, existingReview.id]);
+    }
 
     // D. Record Spin History
     const spinResult = await runQuery(`

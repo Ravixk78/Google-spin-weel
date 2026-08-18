@@ -186,6 +186,16 @@ const CustomerFlow = () => {
     if (e) e.preventDefault();
 
     const branchId = detectedBranch?.id || 1;
+    let deviceId = localStorage.getItem('deviceGoogleId');
+
+    // Instant Backend Review Log to DB
+    api.post('/customer/review/log', {
+      branch_id: branchId,
+      customer_id: customerUser?.id,
+      google_id: deviceId,
+      invoice_id: validatedInvoice?.id || 0
+    }).catch(err => console.warn('Review log warning:', err));
+
     try {
       localStorage.setItem(`reviewed_branch_${branchId}`, 'true');
     } catch (err) {}
@@ -219,6 +229,16 @@ const CustomerFlow = () => {
 
   const handleCompleteReviewAndProceed = () => {
     const branchId = detectedBranch?.id || 1;
+    let deviceId = localStorage.getItem('deviceGoogleId');
+
+    // Instant Backend Review Log to DB
+    api.post('/customer/review/log', {
+      branch_id: branchId,
+      customer_id: customerUser?.id,
+      google_id: deviceId,
+      invoice_id: validatedInvoice?.id || 0
+    }).catch(err => console.warn('Review log warning:', err));
+
     try {
       localStorage.setItem(`reviewed_branch_${branchId}`, 'true');
     } catch (err) {}

@@ -352,8 +352,44 @@ const importInvoicesCSV = async (req, res) => {
   }
 };
 
+// Customer: Log Google Review action immediately
+const logCustomerReview = async (req, res) => {
+  try {
+    const { branch_id, customer_id, google_id, invoice_id } = req.body;
+    const userIp = req.ip || '127.0.0.1';
+
+    let targetCustId = customer_id;
+    if (!targetCustId && google_id) {
+      const gIdClean = String(google_id).trim();
+      const cust = await getQuery(`SELECT id FROM customers WHERE google_id = ? OR email = ?`, [gIdClean, `${gIdClean.toLowerCase()}@gmail.com`]);
+      if (cust) targetCustId = cust.id;
+    }
+
+    if (!targetCustId) {
+      return res.status(400).json({ error: 'Customer identifier is required.' });
+    }
+
+    const activeBranchId = branch_id || 1;
+    const nowIso = new Date().toISOString();
+
+    const existing = await getQuery(`SELECT id FROM google_reviews WHERE customer_id = ? AND branch_id = ?`, [targetCustId, activeBranchId]);
+    if (!existing) {
+      await runQuery(`
+        INSERT INTO google_reviews (customer_id, invoice_id, branch_id, completed_at, ip_address, user_agent)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `, [targetCustId, invoice_id || 0, activeBranchId, nowIso, userIp, req.headers['user-agent'] || 'Browser']);
+    }
+
+    return res.json({ success: true, message: 'Google review logged successfully.' });
+  } catch (err) {
+    console.error('Review logging error:', err);
+    res.status(500).json({ error: 'Failed to log review.' });
+  }
+};
+
 module.exports = {
   validateInvoiceForCustomer,
+  logCustomerReview,
   listInvoices,
   createInvoice,
   updateInvoice,
