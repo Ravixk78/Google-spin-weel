@@ -4,7 +4,7 @@ const { logAudit } = require('../middleware/authMiddleware');
 // Customer: Validate Invoice for scanned branch
 const validateInvoiceForCustomer = async (req, res) => {
   try {
-    const { invoice_number, branch_id, customer_id } = req.body;
+    const { invoice_number, branch_id, customer_id, google_id } = req.body;
 
     if (!invoice_number || !invoice_number.trim()) {
       return res.status(400).json({ error: 'Invoice number is required.' });
@@ -84,9 +84,16 @@ const validateInvoiceForCustomer = async (req, res) => {
     // Check if customer profile has previously submitted a Google Review or spun before for THIS SPECIFIC BRANCH
     let hasSubmittedReview = false;
 
-    if (activeBranchId && customer_id) {
-      const revCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE customer_id = ? AND branch_id = ?`, [customer_id, activeBranchId]);
-      const spinCheck = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE customer_id = ? AND branch_id = ?`, [customer_id, activeBranchId]);
+    let targetCustId = customer_id;
+    if (!targetCustId && google_id) {
+      const gIdClean = String(google_id).trim();
+      const cust = await getQuery(`SELECT id FROM customers WHERE google_id = ? OR email = ?`, [gIdClean, `${gIdClean.toLowerCase()}@gmail.com`]);
+      if (cust) targetCustId = cust.id;
+    }
+
+    if (activeBranchId && targetCustId) {
+      const revCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE customer_id = ? AND branch_id = ?`, [targetCustId, activeBranchId]);
+      const spinCheck = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE customer_id = ? AND branch_id = ?`, [targetCustId, activeBranchId]);
       const revCnt = revCheck?.cnt || 0;
       const spinCnt = spinCheck?.cnt || 0;
 

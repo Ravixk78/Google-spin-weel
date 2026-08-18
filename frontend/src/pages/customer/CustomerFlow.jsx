@@ -136,15 +136,26 @@ const CustomerFlow = () => {
     }
 
     try {
+      let deviceId = localStorage.getItem('deviceGoogleId');
       const res = await api.post('/customer/invoice/validate', {
         invoice_number: cleanNum,
         branch_id: detectedBranch?.id || 1,
-        customer_id: activeCustomer?.id
+        customer_id: activeCustomer?.id,
+        google_id: deviceId
       });
 
       if (res.data?.valid) {
         const invData = res.data.invoice;
-        const targetStep = res.data?.has_submitted_review ? 3 : 2;
+        const branchId = detectedBranch?.id || 1;
+        const localReviewedKey = `reviewed_branch_${branchId}`;
+        const hasReviewedLocal = localStorage.getItem(localReviewedKey) === 'true';
+
+        const isReviewed = Boolean(res.data?.has_submitted_review || hasReviewedLocal);
+        if (isReviewed) {
+          try { localStorage.setItem(localReviewedKey, 'true'); } catch (e) {}
+        }
+
+        const targetStep = isReviewed ? 3 : 2;
 
         setValidatedInvoice(invData);
         setCurrentStep(targetStep);
@@ -154,7 +165,7 @@ const CustomerFlow = () => {
           localStorage.setItem('active_spin_session', JSON.stringify({
             invoice: invData,
             step: targetStep,
-            branch_id: detectedBranch?.id || 1,
+            branch_id: branchId,
             timestamp: Date.now()
           }));
         } catch (e) {}
@@ -174,6 +185,11 @@ const CustomerFlow = () => {
   const handleOpenGoogleReview = (e) => {
     if (e) e.preventDefault();
 
+    const branchId = detectedBranch?.id || 1;
+    try {
+      localStorage.setItem(`reviewed_branch_${branchId}`, 'true');
+    } catch (err) {}
+
     // 1. Immediately switch our website to Step 3 (Spin Wheel page)
     setCurrentStep(3);
     setReviewOpened(true);
@@ -184,7 +200,7 @@ const CustomerFlow = () => {
       let sessionObj = savedSessionRaw ? JSON.parse(savedSessionRaw) : {};
       sessionObj.step = 3;
       if (validatedInvoice) sessionObj.invoice = validatedInvoice;
-      sessionObj.branch_id = detectedBranch?.id || 1;
+      sessionObj.branch_id = branchId;
       sessionObj.timestamp = Date.now();
       localStorage.setItem('active_spin_session', JSON.stringify(sessionObj));
     } catch (err) {}
@@ -202,6 +218,11 @@ const CustomerFlow = () => {
   };
 
   const handleCompleteReviewAndProceed = () => {
+    const branchId = detectedBranch?.id || 1;
+    try {
+      localStorage.setItem(`reviewed_branch_${branchId}`, 'true');
+    } catch (err) {}
+
     setCurrentStep(3); // Proceed to Spin Wheel!
     try {
       const savedSessionRaw = localStorage.getItem('active_spin_session');
@@ -265,6 +286,11 @@ const CustomerFlow = () => {
         setWinningIndex(res.data.prizeIndex);
         setWonPrize(res.data.prize);
         setClaimTicket(res.data.ticket);
+
+        const bId = validatedInvoice.branch_id || detectedBranch?.id || 1;
+        try {
+          localStorage.setItem(`reviewed_branch_${bId}`, 'true');
+        } catch (e) {}
 
         if (customerUser) {
           customerUser.has_submitted_review = true;
