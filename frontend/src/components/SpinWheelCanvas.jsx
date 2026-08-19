@@ -245,10 +245,19 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
               const imgSize = outerRadius * 2;
               ctx.drawImage(prizeImg, -outerRadius, -outerRadius, imgSize, imgSize);
             } else {
-              // Custom uploaded image or standalone product photo: render centered inside wedge segment
+              // Custom uploaded image: scale to fill slice wedge, centered along radial axis
               const radialDist = outerRadius * 0.52;
-              const iconSize = outerRadius * 0.35;
-              ctx.drawImage(prizeImg, radialDist - iconSize / 2, -iconSize / 2, iconSize, iconSize);
+              const maxW = outerRadius * 0.38;
+              const maxH = outerRadius * 0.55;
+              const scale = Math.min(maxW / (prizeImg.width || 100), maxH / (prizeImg.height || 100));
+              const drawW = (prizeImg.width || 100) * scale;
+              const drawH = (prizeImg.height || 100) * scale;
+
+              ctx.save();
+              ctx.translate(radialDist, 0);
+              ctx.rotate(Math.PI / 2);
+              ctx.drawImage(prizeImg, -drawW / 2, -drawH / 2, drawW, drawH);
+              ctx.restore();
             }
             ctx.restore();
           } catch (e) {
