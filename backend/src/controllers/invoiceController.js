@@ -81,8 +81,9 @@ const validateInvoiceForCustomer = async (req, res) => {
       };
     }
 
-    // Check if customer profile has previously submitted a Google Review or spun before for THIS SPECIFIC BRANCH
+    // Check if customer profile or IP address has previously submitted a Google Review or spun before for THIS SPECIFIC BRANCH
     let hasSubmittedReview = false;
+    const userIp = req.ip || '127.0.0.1';
 
     let targetCustId = customer_id;
     if (!targetCustId && google_id) {
@@ -102,11 +103,21 @@ const validateInvoiceForCustomer = async (req, res) => {
       }
     }
 
-    if (activeBranchId && targetCustId) {
-      const revCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE customer_id = ? AND branch_id = ?`, [targetCustId, activeBranchId]);
-      const spinCheck = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE customer_id = ? AND branch_id = ?`, [targetCustId, activeBranchId]);
-      const revCnt = revCheck?.cnt || 0;
-      const spinCnt = spinCheck?.cnt || 0;
+    if (activeBranchId) {
+      let revCnt = 0;
+      let spinCnt = 0;
+
+      if (targetCustId) {
+        const revCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE (customer_id = ? OR ip_address = ?) AND branch_id = ?`, [targetCustId, userIp, activeBranchId]);
+        const spinCheck = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE (customer_id = ? OR ip_address = ?) AND branch_id = ?`, [targetCustId, userIp, activeBranchId]);
+        revCnt = revCheck?.cnt || 0;
+        spinCnt = spinCheck?.cnt || 0;
+      } else {
+        const revCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE ip_address = ? AND branch_id = ?`, [userIp, activeBranchId]);
+        const spinCheck = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE ip_address = ? AND branch_id = ?`, [userIp, activeBranchId]);
+        revCnt = revCheck?.cnt || 0;
+        spinCnt = spinCheck?.cnt || 0;
+      }
 
       hasSubmittedReview = (revCnt > 0 || spinCnt > 0);
     }

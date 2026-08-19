@@ -150,11 +150,14 @@ const CustomerFlow = () => {
         const invData = res.data.invoice;
         const branchId = detectedBranch?.id || 1;
         const localReviewedKey = `reviewed_branch_${branchId}`;
-        const hasReviewedLocal = localStorage.getItem(localReviewedKey) === 'true';
+        const hasReviewedLocal = localStorage.getItem(localReviewedKey) === 'true' || localStorage.getItem('has_submitted_review') === 'true';
 
         const isReviewed = Boolean(res.data?.has_submitted_review || hasReviewedLocal);
         if (isReviewed) {
-          try { localStorage.setItem(localReviewedKey, 'true'); } catch (e) {}
+          try {
+            localStorage.setItem(localReviewedKey, 'true');
+            localStorage.setItem('has_submitted_review', 'true');
+          } catch (e) {}
         }
 
         const targetStep = isReviewed ? 3 : 2;
@@ -200,6 +203,7 @@ const CustomerFlow = () => {
 
     try {
       localStorage.setItem(`reviewed_branch_${branchId}`, 'true');
+      localStorage.setItem('has_submitted_review', 'true');
     } catch (err) {}
 
     // 1. Immediately switch our website to Step 3 (Spin Wheel page)
@@ -243,6 +247,7 @@ const CustomerFlow = () => {
 
     try {
       localStorage.setItem(`reviewed_branch_${branchId}`, 'true');
+      localStorage.setItem('has_submitted_review', 'true');
     } catch (err) {}
 
     setCurrentStep(3); // Proceed to Spin Wheel!
@@ -474,10 +479,7 @@ const CustomerFlow = () => {
 
             <button
               onClick={handleCompleteReviewAndProceed}
-              disabled={!reviewOpened}
-              className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${
-                reviewOpened ? 'btn-gold shadow-gold' : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed border border-slate-300 dark:border-slate-700'
-              }`}
+              className="w-full py-3 rounded-xl font-bold text-sm transition-all btn-gold shadow-gold"
             >
               {t('proceedToSpinBtn')}
             </button>
