@@ -58,14 +58,14 @@ const defaultPastelColors = [
 ];
 
 const fallbackPrizesList = [
-  { id: 1, name: 'ST Oud Perfume', color_code: '#F5E5D3', image_url: '/assets/prizes/prize_1.png' },
-  { id: 2, name: 'Burmaluxe Oud', color_code: '#2D1E18', image_url: '/assets/prizes/prize_2.png' },
-  { id: 3, name: 'Thara Beauty Cream', color_code: '#FFD54F', image_url: '/assets/prizes/prize_3.png' },
-  { id: 4, name: 'Oud Powder', color_code: '#FDD835', image_url: '/assets/prizes/prize_4.png' },
-  { id: 5, name: 'Fakhar Gold', color_code: '#FFF8E1', image_url: '/assets/prizes/prize_5.png' },
-  { id: 6, name: 'Pearl Beauty', color_code: '#E53935', image_url: '/assets/prizes/prize_6.png' },
-  { id: 7, name: 'Musk Lavender', color_code: '#9C27B0', image_url: '/assets/prizes/prize_7.png' },
-  { id: 8, name: 'Exclusive Oud Incense', color_code: '#4E342E', image_url: '/assets/prizes/prize_8.png' }
+  { id: 1, name: '', color_code: '#F5E5D3', image_url: '/assets/prizes/prize_1.png' },
+  { id: 2, name: '', color_code: '#2D1E18', image_url: '/assets/prizes/prize_2.png' },
+  { id: 3, name: '', color_code: '#FFD54F', image_url: '/assets/prizes/prize_3.png' },
+  { id: 4, name: '', color_code: '#FDD835', image_url: '/assets/prizes/prize_4.png' },
+  { id: 5, name: '', color_code: '#FFF8E1', image_url: '/assets/prizes/prize_5.png' },
+  { id: 6, name: '', color_code: '#E53935', image_url: '/assets/prizes/prize_6.png' },
+  { id: 7, name: '', color_code: '#9C27B0', image_url: '/assets/prizes/prize_7.png' },
+  { id: 8, name: '', color_code: '#4E342E', image_url: '/assets/prizes/prize_8.png' }
 ];
 
 // Word wrap helper for canvas text without truncation
@@ -235,8 +235,8 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
             ctx.translate(centerX, centerY);
             ctx.rotate(textAngle);
 
-            const isWedgeOverlay = prize.image_url && prize.image_url.includes('/assets/prizes/prize_');
-            if (isWedgeOverlay || (!prize.image_url && prizeAssetMap[prize.display_order])) {
+            const isWedgeOverlay = !prize.image_url || prize.image_url.includes('/assets/prizes/') || prizeAssetMap[prize.display_order || (i + 1)];
+            if (isWedgeOverlay) {
               const imgSize = outerRadius * 2;
               ctx.drawImage(prizeImg, -outerRadius, -outerRadius, imgSize, imgSize);
             } else {
