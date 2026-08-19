@@ -239,7 +239,8 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
             ctx.translate(centerX, centerY);
             ctx.rotate(textAngle);
 
-            const isWedgeOverlay = !prize.image_url || prize.image_url.includes('/assets/prizes/') || prizeAssetMap[prize.display_order || (i + 1)];
+            const isCustomImage = prize.image_url && !prize.image_url.includes('/assets/prizes/');
+            const isWedgeOverlay = !isCustomImage;
             if (isWedgeOverlay) {
               const imgSize = outerRadius * 2;
               ctx.drawImage(prizeImg, -outerRadius, -outerRadius, imgSize, imgSize);
