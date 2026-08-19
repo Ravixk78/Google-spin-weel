@@ -141,14 +141,14 @@ const deletePrize = async (req, res) => {
 const resetDefaultPrizes = async (req, res) => {
   try {
     const defaultPrizes = [
-      { name: 'Prize 1', description: 'Prize Item 1', weight: 10, stock_quantity: 100, display_order: 1, color_code: '#F5E5D3', image_url: '/assets/prizes/prize_1.png' },
-      { name: 'Prize 2', description: 'Prize Item 2', weight: 10, stock_quantity: 100, display_order: 2, color_code: '#2D1E18', image_url: '/assets/prizes/prize_2.png' },
-      { name: 'Prize 3', description: 'Prize Item 3', weight: 10, stock_quantity: 100, display_order: 3, color_code: '#FFD54F', image_url: '/assets/prizes/prize_3.png' },
-      { name: 'Prize 4', description: 'Prize Item 4', weight: 10, stock_quantity: 100, display_order: 4, color_code: '#FDD835', image_url: '/assets/prizes/prize_4.png' },
-      { name: 'Prize 5', description: 'Prize Item 5', weight: 10, stock_quantity: 100, display_order: 5, color_code: '#FFF8E1', image_url: '/assets/prizes/prize_5.png' },
-      { name: 'Prize 6', description: 'Prize Item 6', weight: 10, stock_quantity: 100, display_order: 6, color_code: '#E53935', image_url: '/assets/prizes/prize_6.png' },
-      { name: 'Prize 7', description: 'Prize Item 7', weight: 10, stock_quantity: 100, display_order: 7, color_code: '#9C27B0', image_url: '/assets/prizes/prize_7.png' },
-      { name: 'Prize 8', description: 'Prize Item 8', weight: 10, stock_quantity: 100, display_order: 8, color_code: '#4E342E', image_url: '/assets/prizes/prize_8.png' }
+      { name: 'Prize 1', description: 'Prize Item 1', weight: 10, stock_quantity: 100, display_order: 1, color_code: '#F5E5D3', image_url: null },
+      { name: 'Prize 2', description: 'Prize Item 2', weight: 10, stock_quantity: 100, display_order: 2, color_code: '#2D1E18', image_url: null },
+      { name: 'Prize 3', description: 'Prize Item 3', weight: 10, stock_quantity: 100, display_order: 3, color_code: '#FFD54F', image_url: null },
+      { name: 'Prize 4', description: 'Prize Item 4', weight: 10, stock_quantity: 100, display_order: 4, color_code: '#FDD835', image_url: null },
+      { name: 'Prize 5', description: 'Prize Item 5', weight: 10, stock_quantity: 100, display_order: 5, color_code: '#FFF8E1', image_url: null },
+      { name: 'Prize 6', description: 'Prize Item 6', weight: 10, stock_quantity: 100, display_order: 6, color_code: '#E53935', image_url: null },
+      { name: 'Prize 7', description: 'Prize Item 7', weight: 10, stock_quantity: 100, display_order: 7, color_code: '#9C27B0', image_url: null },
+      { name: 'Prize 8', description: 'Prize Item 8', weight: 10, stock_quantity: 100, display_order: 8, color_code: '#4E342E', image_url: null }
     ];
 
     await runQuery(`DELETE FROM spin_prizes`);
