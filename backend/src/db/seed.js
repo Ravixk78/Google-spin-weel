@@ -84,36 +84,15 @@ const seedDatabase = async () => {
       { name: 'Prize 8', description: 'Prize Item 8', weight: 10, stock_quantity: 100, display_order: 8, color_code: '#4E342E', image_url: '/assets/prizes/prize_8.png' }
     ];
 
-    // If prizes table is empty or only legacy items were deleted, seed defaults
-    const currentCount = await getQuery(`SELECT COUNT(*) as count FROM spin_prizes`);
-    if (!currentCount || currentCount.count === 0) {
-      for (const p of defaultPrizes) {
-        await runQuery(`
-          INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, image_url, is_active)
-          VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-        `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code, p.image_url]);
-      }
-    } else {
-      // Sync defaults by display_order 1..8 if existing, preserving custom names/weights
-      for (const p of defaultPrizes) {
-        const existing = await getQuery(`SELECT id, name FROM spin_prizes WHERE display_order = ?`, [p.display_order]);
-        if (existing) {
-          await runQuery(`
-            UPDATE spin_prizes
-            SET color_code = ?, image_url = ?, is_active = 1
-            WHERE id = ?
-          `, [p.color_code, p.image_url, existing.id]);
-        } else {
-          await runQuery(`
-            INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, image_url, is_active)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-          `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code, p.image_url]);
-        }
-      }
-    }
+    // Wipe old legacy prizes table completely and re-insert the 8 clean prize rows
+    await runQuery(`DELETE FROM spin_prizes`);
 
-    // Deactivate / Delete any extra legacy prizes beyond 8
-    await runQuery(`DELETE FROM spin_prizes WHERE display_order > 8 OR is_active = 0`);
+    for (const p of defaultPrizes) {
+      await runQuery(`
+        INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, image_url, is_active)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+      `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code, p.image_url]);
+    }
 
     console.log('✔ Successfully synced 8 Spin Prizes with weighted probabilities and custom prize assets.');
 
