@@ -1,7 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import api from '../../services/api';
-import { useLanguage } from '../../context/LanguageContext';
-import { Gift, Plus, Edit2, Trash2, CheckCircle2, XCircle, Percent, Package, Palette, ArrowUpDown, Sparkles, Upload } from 'lucide-react';
+import product1Asset from '../../assets/prizes/product_1.png';
+import product2Asset from '../../assets/prizes/product_2.png';
+import product3Asset from '../../assets/prizes/product_3.png';
+import product4Asset from '../../assets/prizes/product_4.png';
+import product5Asset from '../../assets/prizes/product_5.png';
+import product6Asset from '../../assets/prizes/product_6.png';
+import product7Asset from '../../assets/prizes/product_7.png';
+import product8Asset from '../../assets/prizes/product_8.png';
+
+const fallbackProductMap = {
+  1: product1Asset,
+  2: product2Asset,
+  3: product3Asset,
+  4: product4Asset,
+  5: product5Asset,
+  6: product6Asset,
+  7: product7Asset,
+  8: product8Asset
+};
 
 const PrizeManagement = () => {
   const { t } = useLanguage();
@@ -239,19 +254,22 @@ const PrizeManagement = () => {
                         <div className="w-6 h-6 rounded-full border border-slate-300 shadow-xs" style={{ backgroundColor: p.color_code || '#D4AF37' }} />
                       </td>
                       <td className="p-3.5">
-                        {p.image_url ? (
-                          <img
-                            src={p.image_url}
-                            alt={p.name}
-                            className="w-9 h-9 object-contain rounded-lg border border-amber-300 dark:border-gold-400/30 bg-white dark:bg-slate-950 p-0.5 shadow-xs"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.style.display = 'none';
-                            }}
-                          />
-                        ) : (
-                          <span className="text-[10px] text-slate-400 italic font-medium">No image</span>
-                        )}
+                        {(() => {
+                          const displayImg = p.image_url || fallbackProductMap[p.display_order || p.id] || fallbackProductMap[((p.id - 1) % 8) + 1];
+                          return displayImg ? (
+                            <img
+                              src={displayImg}
+                              alt={p.name}
+                              className="w-10 h-10 object-contain rounded-xl border border-amber-300 dark:border-gold-400/30 bg-white dark:bg-slate-950 p-1 shadow-xs"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <span className="text-[10px] text-slate-400 italic font-medium">No image</span>
+                          );
+                        })()}
                       </td>
                       <td className="p-3.5">
                         <p className="font-bold text-slate-900 dark:text-white text-xs">{p.name}</p>
