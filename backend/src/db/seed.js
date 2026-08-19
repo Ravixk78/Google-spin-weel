@@ -74,24 +74,28 @@ const seedDatabase = async () => {
 
     // 3. Seed 8 Spin Prizes matching the exact 8 custom wedge design graphics
     const defaultPrizes = [
-      { name: 'Prize 1', description: 'Prize Item 1', weight: 10, stock_quantity: 100, display_order: 1, color_code: '#F5E5D3', image_url: null },
-      { name: 'Prize 2', description: 'Prize Item 2', weight: 10, stock_quantity: 100, display_order: 2, color_code: '#2D1E18', image_url: null },
-      { name: 'Prize 3', description: 'Prize Item 3', weight: 10, stock_quantity: 100, display_order: 3, color_code: '#FFD54F', image_url: null },
-      { name: 'Prize 4', description: 'Prize Item 4', weight: 10, stock_quantity: 100, display_order: 4, color_code: '#FDD835', image_url: null },
-      { name: 'Prize 5', description: 'Prize Item 5', weight: 10, stock_quantity: 100, display_order: 5, color_code: '#FFF8E1', image_url: null },
-      { name: 'Prize 6', description: 'Prize Item 6', weight: 10, stock_quantity: 100, display_order: 6, color_code: '#E53935', image_url: null },
-      { name: 'Prize 7', description: 'Prize Item 7', weight: 10, stock_quantity: 100, display_order: 7, color_code: '#9C27B0', image_url: null },
-      { name: 'Prize 8', description: 'Prize Item 8', weight: 10, stock_quantity: 100, display_order: 8, color_code: '#4E342E', image_url: null }
+      { name: 'Lafirma Spray 300ml', description: 'Lafirma Room & Fabric Spray 300ml', weight: 10, stock_quantity: 100, display_order: 1, color_code: '#F5E5D3', image_url: null },
+      { name: 'Special Oudh Masala Incense', description: 'Special Oudh Masala Incense Sticks', weight: 10, stock_quantity: 100, display_order: 2, color_code: '#2D1E18', image_url: null },
+      { name: 'Misk al Wardi Attar 1/4', description: 'Misk al Wardi Concentrated Perfume Oil 1/4 Tola', weight: 10, stock_quantity: 100, display_order: 3, color_code: '#FFD54F', image_url: null },
+      { name: 'Mukallath Khady Attar 1/4', description: 'Mukallath Khady Pure Oud Oil 1/4 Tola', weight: 10, stock_quantity: 100, display_order: 4, color_code: '#FDD835', image_url: null },
+      { name: 'Khayan Attar 1/4', description: 'Khayan Royal Oud Attar 1/4 Tola', weight: 10, stock_quantity: 100, display_order: 5, color_code: '#FFF8E1', image_url: null },
+      { name: 'Rose Fresh Hair Mist 30ml', description: 'Rose Parfum Fresh Hair Mist 30ml', weight: 10, stock_quantity: 100, display_order: 6, color_code: '#E53935', image_url: null },
+      { name: 'Rashat Musk EDP Perfume', description: 'Rashat Musk Luxury Eau De Parfum', weight: 10, stock_quantity: 100, display_order: 7, color_code: '#9C27B0', image_url: null },
+      { name: 'Vaseline Powder Cream', description: 'Vaseline Powder Fragrance Cream Jar', weight: 10, stock_quantity: 100, display_order: 8, color_code: '#4E342E', image_url: null }
     ];
 
-    // Wipe old legacy prizes table completely and re-insert the 8 clean prize rows
-    await runQuery(`DELETE FROM spin_prizes`);
-
-    for (const p of defaultPrizes) {
-      await runQuery(`
-        INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, image_url, is_active)
-        VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-      `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code, p.image_url]);
+    // Only seed default 8 prizes if spin_prizes table is completely empty
+    const existingPrizesCount = await getQuery(`SELECT COUNT(*) as count FROM spin_prizes`);
+    if (!existingPrizesCount || existingPrizesCount.count === 0) {
+      for (const p of defaultPrizes) {
+        await runQuery(`
+          INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, image_url, is_active)
+          VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+        `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code, p.image_url]);
+      }
+      console.log('✔ Initialized 8 default Spin Prizes.');
+    } else {
+      console.log(`✔ Preserving existing ${existingPrizesCount.count} admin configured Spin Prizes.`);
     }
 
     console.log('✔ Successfully synced 8 Spin Prizes with weighted probabilities and custom prize assets.');
