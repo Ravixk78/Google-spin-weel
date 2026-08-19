@@ -1,3 +1,8 @@
+import React, { useState, useEffect } from 'react';
+import api from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
+import { Gift, Plus, Edit2, Trash2, CheckCircle2, XCircle, Percent, Package, Palette, ArrowUpDown, Sparkles, Upload } from 'lucide-react';
+
 import product1Asset from '../../assets/prizes/product_1.png';
 import product2Asset from '../../assets/prizes/product_2.png';
 import product3Asset from '../../assets/prizes/product_3.png';
