@@ -80,9 +80,11 @@ const CustomerFlow = () => {
           const session = JSON.parse(savedSessionRaw);
           // Check if session is valid, unspun, and less than 24h old
           if (session && session.invoice && (Date.now() - session.timestamp < 24 * 3600 * 1000)) {
+            const branchId = detectedBranch?.id || 1;
+            const isBranchReviewed = localStorage.getItem(`reviewed_branch_${branchId}`) === 'true';
             setValidatedInvoice(session.invoice);
             setInvoiceNumber(session.invoice.invoice_number || '');
-            setCurrentStep(session.step || 3);
+            setCurrentStep(isBranchReviewed || session.step === 3 ? 3 : session.step);
             setReviewOpened(true);
           }
         }
@@ -310,6 +312,7 @@ const CustomerFlow = () => {
         const bId = validatedInvoice.branch_id || detectedBranch?.id || 1;
         try {
           localStorage.setItem(`reviewed_branch_${bId}`, 'true');
+          localStorage.removeItem('active_spin_session');
         } catch (e) {}
 
         if (customerUser) {

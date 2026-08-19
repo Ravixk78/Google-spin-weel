@@ -87,8 +87,19 @@ const validateInvoiceForCustomer = async (req, res) => {
     let targetCustId = customer_id;
     if (!targetCustId && google_id) {
       const gIdClean = String(google_id).trim();
-      const cust = await getQuery(`SELECT id FROM customers WHERE google_id = ? OR email = ?`, [gIdClean, `${gIdClean.toLowerCase()}@gmail.com`]);
-      if (cust) targetCustId = cust.id;
+      let cust = await getQuery(`SELECT id FROM customers WHERE google_id = ? OR email = ?`, [gIdClean, `${gIdClean.toLowerCase()}@gmail.com`]);
+      if (!cust) {
+        // Auto-create customer if missing
+        try {
+          const resIns = await runQuery(`
+            INSERT INTO customers (google_id, email, name)
+            VALUES (?, ?, ?)
+          `, [gIdClean, `${gIdClean.toLowerCase()}@gmail.com`, 'Google Customer']);
+          targetCustId = resIns.id;
+        } catch (e) {}
+      } else {
+        targetCustId = cust.id;
+      }
     }
 
     if (activeBranchId && targetCustId) {
@@ -361,12 +372,30 @@ const logCustomerReview = async (req, res) => {
     let targetCustId = customer_id;
     if (!targetCustId && google_id) {
       const gIdClean = String(google_id).trim();
-      const cust = await getQuery(`SELECT id FROM customers WHERE google_id = ? OR email = ?`, [gIdClean, `${gIdClean.toLowerCase()}@gmail.com`]);
-      if (cust) targetCustId = cust.id;
+      let cust = await getQuery(`SELECT id FROM customers WHERE google_id = ? OR email = ?`, [gIdClean, `${gIdClean.toLowerCase()}@gmail.com`]);
+      if (!cust) {
+        try {
+          const resIns = await runQuery(`
+            INSERT INTO customers (google_id, email, name, last_ip_address)
+            VALUES (?, ?, ?, ?)
+          `, [gIdClean, `${gIdClean.toLowerCase()}@gmail.com`, 'Google Customer', userIp]);
+          targetCustId = resIns.id;
+        } catch (e) {}
+      } else {
+        targetCustId = cust.id;
+      }
     }
 
     if (!targetCustId) {
-      return res.status(400).json({ error: 'Customer identifier is required.' });
+      // Fallback customer creation if neither customer_id nor google_id gave a result
+      const fallbackGId = google_id ? String(google_id).trim() : `device-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      try {
+        const resIns = await runQuery(`
+          INSERT INTO customers (google_id, email, name, last_ip_address)
+          VALUES (?, ?, ?, ?)
+        `, [fallbackGId, `${fallbackGId.toLowerCase()}@gmail.com`, 'Google Customer', userIp]);
+        targetCustId = resIns.id;
+      } catch (e) {}
     }
 
     const activeBranchId = branch_id || 1;
