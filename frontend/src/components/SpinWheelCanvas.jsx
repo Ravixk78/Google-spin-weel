@@ -114,10 +114,10 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
     if (!activePrizes || activePrizes.length === 0) return;
     let isMounted = true;
 
-    activePrizes.forEach((prize) => {
-      const pKey = prize.id || prize.name;
-      const order = prize.display_order || prize.id || 1;
-      const bundledAsset = prizeAssetMap[order] || prize1Asset;
+    activePrizes.forEach((prize, index) => {
+      const pKey = prize.id || prize.name || index;
+      const order = prize.display_order || prize.id || (index + 1);
+      const bundledAsset = prizeAssetMap[order] || prizeAssetMap[(index % 8) + 1] || prize1Asset;
 
       const img = new Image();
       img.onload = () => {
@@ -136,7 +136,11 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         fallbackImg.src = bundledAsset;
       };
 
-      img.src = prize.image_url || bundledAsset;
+      if (!prize.image_url || prize.image_url.includes('/assets/prizes/')) {
+        img.src = bundledAsset;
+      } else {
+        img.src = prize.image_url;
+      }
     });
 
     return () => {
