@@ -38,11 +38,22 @@ app.get('/api/health', (req, res) => {
 
 // Serve frontend static build if in production
 const frontendBuildPath = path.resolve(__dirname, '../../frontend/dist');
-app.use(express.static(frontendBuildPath));
+app.use(express.static(frontendBuildPath, {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api')) {
     return next();
   }
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.sendFile(path.join(frontendBuildPath, 'index.html'), (err) => {
     if (err) {
       res.status(200).send('Majlis Al Oud Backend API is running.');

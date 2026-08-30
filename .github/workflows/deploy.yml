@@ -58,7 +58,7 @@ jobs:
             fi
 
             echo "🔄 Restarting application with PM2..."
-            pm2 restart majlis-spin-backend || pm2 startOrReload ecosystem.config.js || pm2 start backend/src/server.js --name "majlis-spin-backend"
+            pm2 reload ecosystem.config.js --update-env || pm2 restart majlis-spin-backend --update-env || pm2 start backend/src/server.js --name "majlis-spin-backend"
             pm2 save
 
             # Ensure Nginx symlink and reload
