@@ -67,6 +67,33 @@ jobs:
             cp -rf "$TARGET_DIR/frontend/dist/"* /var/www/majlis-spin/frontend/dist/ 2>/dev/null || true
             mkdir -p /var/www/majlis-al-oud/frontend/dist 2>/dev/null || true
             cp -rf "$TARGET_DIR/frontend/dist/"* /var/www/majlis-al-oud/frontend/dist/ 2>/dev/null || true
+            mkdir -p /var/www/html 2>/dev/null || true
+            cp -rf "$TARGET_DIR/frontend/dist/"* /var/www/html/ 2>/dev/null || true
+
+            # Write Nginx configuration for spin.majlisaloud.cloud
+            cat << 'EOF' > /etc/nginx/sites-available/majlis-spin
+server {
+    listen 80;
+    server_name spin.majlisaloud.cloud;
+
+    root /var/www/majlis-al-oud-spin/frontend/dist;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
+    location /api {
+        proxy_pass http://127.0.0.1:5005;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+EOF
 
             # Ensure Nginx symlink and reload
             rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
