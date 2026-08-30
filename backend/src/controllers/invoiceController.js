@@ -108,13 +108,8 @@ const validateInvoiceForCustomer = async (req, res) => {
       let spinCnt = 0;
 
       if (targetCustId) {
-        const revCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE (customer_id = ? OR ip_address = ?) AND branch_id = ?`, [targetCustId, userIp, activeBranchId]);
-        const spinCheck = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE (customer_id = ? OR ip_address = ?) AND branch_id = ?`, [targetCustId, userIp, activeBranchId]);
-        revCnt = revCheck?.cnt || 0;
-        spinCnt = spinCheck?.cnt || 0;
-      } else {
-        const revCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE ip_address = ? AND branch_id = ?`, [userIp, activeBranchId]);
-        const spinCheck = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE ip_address = ? AND branch_id = ?`, [userIp, activeBranchId]);
+        const revCheck = await getQuery(`SELECT COUNT(*) as cnt FROM google_reviews WHERE customer_id = ? AND branch_id = ?`, [targetCustId, activeBranchId]);
+        const spinCheck = await getQuery(`SELECT COUNT(*) as cnt FROM spin_history WHERE customer_id = ? AND branch_id = ?`, [targetCustId, activeBranchId]);
         revCnt = revCheck?.cnt || 0;
         spinCnt = spinCheck?.cnt || 0;
       }
