@@ -4,7 +4,7 @@ backend/node_modules/
 frontend/node_modules/
 
 # Production build
-frontend/dist/
+# frontend/dist/
 
 # SQLite Database
 backend/*.sqlite
