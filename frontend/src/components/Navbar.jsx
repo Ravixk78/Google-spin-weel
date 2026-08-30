@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Globe, Sparkles, MapPin, Sun, Moon } from 'lucide-react';
+import { Globe, MapPin, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBranch } from '../context/BranchContext';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import wheelLogoAsset from '../assets/wheel-logo.png';
 
 const Navbar = () => {
   const { adminUser } = useAuth();
@@ -21,10 +22,8 @@ const Navbar = () => {
         
         {/* Brand Logo */}
         <Link to={isAdminPage ? "/admin/dashboard" : "/"} className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-300 via-gold-500 to-gold-700 p-0.5 shadow-gold">
-            <div className="w-full h-full bg-luxury-dark rounded-full flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-gold-400 group-hover:rotate-45 transition-transform duration-300" />
-            </div>
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-300 via-gold-500 to-gold-700 p-0.5 shadow-gold overflow-hidden flex items-center justify-center">
+            <img src={wheelLogoAsset} alt="Majlis Al Oud Logo" className="w-full h-full object-cover rounded-full" />
           </div>
           <div>
             <span className="font-serif font-bold text-lg text-white tracking-wider block leading-tight">

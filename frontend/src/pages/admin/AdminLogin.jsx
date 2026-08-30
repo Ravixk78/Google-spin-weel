@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { ShieldCheck, Lock, Mail, ArrowRight } from 'lucide-react';
+import { Lock, Mail, ArrowRight } from 'lucide-react';
+import wheelLogoAsset from '../../assets/wheel-logo.png';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -30,10 +31,8 @@ const AdminLogin = () => {
     <div className="min-h-[85vh] flex items-center justify-center p-4">
       <div className="w-full max-w-md glass-panel border-gold-400/30 rounded-2xl p-8 shadow-gold-lg relative overflow-hidden">
         
-        <div className="w-16 h-16 bg-gradient-to-br from-gold-300 via-gold-500 to-gold-700 rounded-full p-0.5 shadow-gold mx-auto mb-4">
-          <div className="w-full h-full bg-luxury-dark rounded-full flex items-center justify-center">
-            <ShieldCheck className="w-8 h-8 text-gold-400" />
-          </div>
+        <div className="w-16 h-16 bg-gradient-to-br from-gold-300 via-gold-500 to-gold-700 rounded-full p-0.5 shadow-gold mx-auto mb-4 overflow-hidden flex items-center justify-center">
+          <img src={wheelLogoAsset} alt="Majlis Al Oud Logo" className="w-full h-full object-cover rounded-full" />
         </div>
 
         <h1 className="text-2xl font-serif font-bold text-center text-white mb-1">

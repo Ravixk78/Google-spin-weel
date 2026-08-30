@@ -370,13 +370,9 @@ const CustomerFlow = () => {
       <div className="glass-panel border-gold-400/30 rounded-2xl p-6 mb-8 text-center relative overflow-hidden shadow-gold">
         <div className="absolute top-0 right-0 w-32 h-32 bg-gold-400/10 rounded-full blur-xl pointer-events-none" />
 
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-600/40 text-emerald-300 text-xs font-semibold uppercase tracking-wider mb-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-600/40 text-emerald-300 text-xs font-semibold uppercase tracking-wider mb-3">
           <MapPin className="w-3.5 h-3.5 text-emerald-400" /> {t('scannedBranch')} {detectedBranch?.name}
         </div>
-
-        <h1 className="text-2xl md:text-4xl font-serif font-bold text-white mb-2 uppercase tracking-wide">
-          {t('title')}
-        </h1>
 
         <p className="text-xs md:text-sm text-slate-300 max-w-xl mx-auto">
           {t('subtitle')}

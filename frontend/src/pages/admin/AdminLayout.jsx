@@ -2,7 +2,8 @@ import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { LayoutDashboard, Store, Receipt, Gift, FileBarChart, Users, LogOut, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Store, Receipt, Gift, FileBarChart, Users, LogOut } from 'lucide-react';
+import wheelLogoAsset from '../../assets/wheel-logo.png';
 
 const AdminLayout = () => {
   const { adminUser, logoutAdmin } = useAuth();
@@ -25,8 +26,10 @@ const AdminLayout = () => {
       <aside className="w-full md:w-64 glass-panel bg-white/90 dark:bg-slate-900/60 border-r border-amber-300/40 dark:border-gold-400/20 p-4 flex flex-col justify-between shrink-0 shadow-sm">
         <div>
           <div className="px-3 py-4 border-b border-amber-300/40 dark:border-gold-400/20 mb-4">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-amber-600 dark:text-gold-400" />
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold-300 via-gold-500 to-gold-700 p-0.5 shadow-gold overflow-hidden flex items-center justify-center shrink-0">
+                <img src={wheelLogoAsset} alt="Majlis Al Oud Logo" className="w-full h-full object-cover rounded-full" />
+              </div>
               <div>
                 <h2 className="font-serif font-bold text-slate-900 dark:text-white text-sm">{t('superAdminPortal')}</h2>
                 <p className="text-[10px] text-amber-700 dark:text-gold-400 font-bold tracking-wider">{t('brandName')}</p>
