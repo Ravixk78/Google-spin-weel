@@ -59,7 +59,14 @@ jobs:
 
             echo "🔄 Restarting application with PM2..."
             pm2 reload ecosystem.config.js --update-env || pm2 restart majlis-spin-backend --update-env || pm2 start backend/src/server.js --name "majlis-spin-backend"
+            pm2 restart all || true
             pm2 save
+
+            # Sync built dist assets to potential web root directories on VPS
+            mkdir -p /var/www/majlis-spin/frontend/dist 2>/dev/null || true
+            cp -rf "$TARGET_DIR/frontend/dist/"* /var/www/majlis-spin/frontend/dist/ 2>/dev/null || true
+            mkdir -p /var/www/majlis-al-oud/frontend/dist 2>/dev/null || true
+            cp -rf "$TARGET_DIR/frontend/dist/"* /var/www/majlis-al-oud/frontend/dist/ 2>/dev/null || true
 
             # Ensure Nginx symlink and reload
             rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
