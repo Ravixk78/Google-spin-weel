@@ -72,7 +72,7 @@ const updatePrize = async (req, res) => {
     const orderVal = (display_order !== undefined && !isNaN(Number(display_order))) ? Number(display_order) : prize.display_order;
     const colorVal = color_code !== undefined ? color_code : prize.color_code;
     const activeVal = is_active !== undefined ? (is_active ? 1 : 0) : prize.is_active;
-    const imageVal = image_url !== undefined ? image_url : prize.image_url;
+    const imageVal = image_url !== undefined ? (image_url && image_url.trim() !== '' ? image_url : null) : prize.image_url;
 
     await runQuery(`
       UPDATE spin_prizes

@@ -54,7 +54,9 @@ const WinModal = ({ isOpen, prize, ticket, onClose }) => {
   const prizeDisplayName = lang === 'ar' && prizeTranslations[prize.name] ? prizeTranslations[prize.name] : prize.name;
 
   const order = prize.display_order || prize.id || 1;
-  const productCardPhoto = productAssetMap[order] || product1Asset;
+  const fallbackPhoto = productAssetMap[order] || productAssetMap[((order - 1) % 8) + 1] || product1Asset;
+  const isCustomImage = prize.image_url && typeof prize.image_url === 'string' && prize.image_url.trim() !== '' && !prize.image_url.includes('/assets/prizes/');
+  const productCardPhoto = isCustomImage ? prize.image_url : fallbackPhoto;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn">
@@ -95,7 +97,7 @@ const WinModal = ({ isOpen, prize, ticket, onClose }) => {
             <img
               src={productCardPhoto}
               alt={prizeDisplayName}
-              className="w-36 h-36 object-cover rounded-xl shadow-inner border border-white/60"
+              className="w-36 h-36 object-contain bg-white/95 rounded-xl shadow-inner border border-white/60 p-1.5"
             />
           </div>
         </div>
