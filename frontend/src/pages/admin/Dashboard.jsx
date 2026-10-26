@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
+import { resolvePrizeName } from '../../services/prizeUtils';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Star, Disc, Trophy, FileText, Award, Receipt, Store, TrendingUp, Sparkles } from 'lucide-react';
 
@@ -211,7 +212,7 @@ const Dashboard = () => {
               recentWinners.map((w) => (
                 <div key={w.id} className="p-3 bg-amber-50/70 dark:bg-slate-900/80 border border-amber-200/80 dark:border-slate-800 rounded-lg flex items-center justify-between text-xs shadow-xs">
                   <div>
-                    <p className="font-bold text-amber-900 dark:text-gold-400">{w.prize}</p>
+                    <p className="font-bold text-amber-900 dark:text-gold-400">{resolvePrizeName(w.prize)}</p>
                     <p className="text-slate-700 dark:text-slate-300 font-medium">{w.customer_name} ({w.branch_name})</p>
                   </div>
                   <span className="text-[10px] text-slate-500 font-mono font-semibold">{w.invoice_number}</span>

@@ -1,6 +1,17 @@
 const { getQuery, allQuery, runQuery } = require('../db');
 const { logAudit } = require('../middleware/authMiddleware');
 
+const defaultPrizeMap = {
+  1: { name: 'Lafirma Spray 300ml', description: 'Lafirma Room & Fabric Spray 300ml' },
+  2: { name: 'Special Oudh Masala Incense', description: 'Special Oudh Masala Incense Sticks' },
+  3: { name: 'Misk al Wardi Attar 1/4', description: 'Misk al Wardi Concentrated Perfume Oil 1/4 Tola' },
+  4: { name: 'Mukallath Khady Attar 1/4', description: 'Mukallath Khady Pure Oud Oil 1/4 Tola' },
+  5: { name: 'Khayan Attar 1/4', description: 'Khayan Royal Oud Attar 1/4 Tola' },
+  6: { name: 'Rose Fresh Hair Mist 30ml', description: 'Rose Parfum Fresh Hair Mist 30ml' },
+  7: { name: 'Rashat Musk EDP Perfume', description: 'Rashat Musk Luxury Eau De Parfum' },
+  8: { name: 'Vaseline Powder Cream', description: 'Vaseline Powder Fragrance Cream Jar' }
+};
+
 // Get spin prizes (admin & customer)
 const getPrizes = async (req, res) => {
   try {
@@ -8,7 +19,21 @@ const getPrizes = async (req, res) => {
     const sql = includeInactive
       ? `SELECT * FROM spin_prizes ORDER BY display_order ASC, id ASC`
       : `SELECT * FROM spin_prizes WHERE is_active = 1 ORDER BY display_order ASC, id ASC`;
-    const prizes = await allQuery(sql);
+    let prizes = await allQuery(sql);
+
+    // Ensure any generic placeholder name is resolved to real product title
+    prizes = prizes.map(p => {
+      const order = p.display_order || p.id;
+      if ((!p.name || /^prize\s*\d+$/i.test(String(p.name).trim())) && defaultPrizeMap[order]) {
+        return {
+          ...p,
+          name: defaultPrizeMap[order].name,
+          description: (!p.description || /^prize\s*item\s*\d+$/i.test(String(p.description).trim())) ? defaultPrizeMap[order].description : p.description
+        };
+      }
+      return p;
+    });
+
     res.json({ prizes });
   } catch (err) {
     console.error('Fetch prizes error:', err);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
+import { resolvePrizeName, resolvePrizeDescription } from '../../services/prizeUtils';
 import { Gift, Plus, Edit2, Trash2, CheckCircle2, XCircle, Percent, Package, Palette, ArrowUpDown, Sparkles, Upload } from 'lucide-react';
 
 import product1Asset from '../../assets/prizes/product_1.png';
@@ -76,8 +77,8 @@ const PrizeManagement = () => {
   const handleOpenEdit = (p) => {
     setEditingPrize(p);
     setFormData({
-      name: p.name,
-      description: p.description || '',
+      name: resolvePrizeName(p.name, p.display_order),
+      description: resolvePrizeDescription(p.description, p.display_order),
       weight: p.weight,
       stock_quantity: p.stock_quantity,
       display_order: p.display_order,
@@ -277,8 +278,8 @@ const PrizeManagement = () => {
                         })()}
                       </td>
                       <td className="p-3.5">
-                        <p className="font-bold text-slate-900 dark:text-white text-xs">{p.name}</p>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">{p.description || 'No description'}</p>
+                        <p className="font-bold text-slate-900 dark:text-white text-xs">{resolvePrizeName(p.name, p.display_order)}</p>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">{resolvePrizeDescription(p.description, p.display_order)}</p>
                       </td>
                       <td className="p-3.5 font-mono font-bold text-amber-800 dark:text-gold-400">{p.weight}</td>
                       <td className="p-3.5 font-mono font-bold text-emerald-700 dark:text-emerald-400">{probPct}%</td>

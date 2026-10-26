@@ -84,7 +84,7 @@ const seedDatabase = async () => {
       { name: 'Vaseline Powder Cream', description: 'Vaseline Powder Fragrance Cream Jar', weight: 10, stock_quantity: 100, display_order: 8, color_code: '#4E342E', image_url: null }
     ];
 
-    // Only seed default 8 prizes if spin_prizes table is completely empty
+    // Seed default 8 prizes if spin_prizes table is completely empty
     const existingPrizesCount = await getQuery(`SELECT COUNT(*) as count FROM spin_prizes`);
     if (!existingPrizesCount || existingPrizesCount.count === 0) {
       for (const p of defaultPrizes) {
@@ -95,10 +95,63 @@ const seedDatabase = async () => {
       }
       console.log('✔ Initialized 8 default Spin Prizes.');
     } else {
-      console.log(`✔ Preserving existing ${existingPrizesCount.count} admin configured Spin Prizes.`);
+      console.log(`✔ Found ${existingPrizesCount.count} existing Spin Prizes. Checking and migrating any generic placeholder names...`);
     }
 
-    console.log('✔ Successfully synced 8 Spin Prizes with weighted probabilities and custom prize assets.');
+    // Migrate any generic placeholder names ("Prize 1", "Prize 2", etc.) to real product titles
+    for (const p of defaultPrizes) {
+      const generic1 = `Prize ${p.display_order}`;
+      const generic2 = `prize ${p.display_order}`;
+
+      // Ensure missing display order segment is inserted if table has missing orders
+      const orderExists = await getQuery(`SELECT id, name FROM spin_prizes WHERE display_order = ?`, [p.display_order]);
+      if (!orderExists) {
+        await runQuery(`
+          INSERT INTO spin_prizes (name, description, weight, stock_quantity, display_order, color_code, image_url, is_active)
+          VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+        `, [p.name, p.description, p.weight, p.stock_quantity, p.display_order, p.color_code, p.image_url]);
+        console.log(`✔ Inserted missing default prize segment ${p.display_order}: ${p.name}`);
+      } else if (
+        !orderExists.name ||
+        orderExists.name.toLowerCase().startsWith('prize ') ||
+        orderExists.name.trim() === generic1 ||
+        orderExists.name.trim() === generic2
+      ) {
+        await runQuery(`
+          UPDATE spin_prizes
+          SET name = ?, description = COALESCE(NULLIF(description, ''), ?)
+          WHERE id = ?
+        `, [p.name, p.description, orderExists.id]);
+        console.log(`✔ Migrated spin_prizes #${orderExists.id} from placeholder to: ${p.name}`);
+      }
+
+      // Also update any spin_prizes matching by name directly
+      await runQuery(`
+        UPDATE spin_prizes
+        SET name = ?, description = COALESCE(NULLIF(description, ''), ?)
+        WHERE name = ? OR name = ?
+      `, [p.name, p.description, generic1, generic2]);
+
+      // Update past spin records in spin_history
+      await runQuery(`
+        UPDATE spin_history
+        SET prize_name_snapshot = ?
+        WHERE prize_name_snapshot = ? OR prize_name_snapshot = ? OR LOWER(prize_name_snapshot) = ?
+      `, [p.name, generic1, generic2, generic2.toLowerCase()]);
+    }
+
+    // Update any remaining spin_history records where prize_name_snapshot still has generic 'Prize %'
+    await runQuery(`
+      UPDATE spin_history
+      SET prize_name_snapshot = (
+        SELECT sp.name FROM spin_prizes sp WHERE sp.id = spin_history.prize_id
+      )
+      WHERE (LOWER(prize_name_snapshot) LIKE 'prize %' OR prize_name_snapshot IS NULL OR prize_name_snapshot = '')
+        AND (SELECT sp.name FROM spin_prizes sp WHERE sp.id = spin_history.prize_id) IS NOT NULL
+        AND LOWER((SELECT sp.name FROM spin_prizes sp WHERE sp.id = spin_history.prize_id)) NOT LIKE 'prize %'
+    `);
+
+    console.log('✔ Successfully synced and migrated 8 Spin Prizes with real product titles and updated past spin histories.');
 
     // 4. Seed Test 4-digit Invoices if needed
     console.log('🎉 Database seeding complete!');

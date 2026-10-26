@@ -10,7 +10,27 @@ const getReports = async (req, res) => {
         i.invoice_number,
         b.name as branch_name,
         b.code as branch_code,
-        sh.prize_name_snapshot as prize_won,
+        CASE
+          WHEN sh.prize_name_snapshot IS NOT NULL AND sh.prize_name_snapshot != '' AND LOWER(sh.prize_name_snapshot) NOT LIKE 'prize %' THEN sh.prize_name_snapshot
+          WHEN sp.name IS NOT NULL AND sp.name != '' AND LOWER(sp.name) NOT LIKE 'prize %' THEN sp.name
+          WHEN sp.display_order = 1 THEN 'Lafirma Spray 300ml'
+          WHEN sp.display_order = 2 THEN 'Special Oudh Masala Incense'
+          WHEN sp.display_order = 3 THEN 'Misk al Wardi Attar 1/4'
+          WHEN sp.display_order = 4 THEN 'Mukallath Khady Attar 1/4'
+          WHEN sp.display_order = 5 THEN 'Khayan Attar 1/4'
+          WHEN sp.display_order = 6 THEN 'Rose Fresh Hair Mist 30ml'
+          WHEN sp.display_order = 7 THEN 'Rashat Musk EDP Perfume'
+          WHEN sp.display_order = 8 THEN 'Vaseline Powder Cream'
+          WHEN sh.prize_name_snapshot = 'Prize 1' OR sh.prize_name_snapshot = 'prize 1' THEN 'Lafirma Spray 300ml'
+          WHEN sh.prize_name_snapshot = 'Prize 2' OR sh.prize_name_snapshot = 'prize 2' THEN 'Special Oudh Masala Incense'
+          WHEN sh.prize_name_snapshot = 'Prize 3' OR sh.prize_name_snapshot = 'prize 3' THEN 'Misk al Wardi Attar 1/4'
+          WHEN sh.prize_name_snapshot = 'Prize 4' OR sh.prize_name_snapshot = 'prize 4' THEN 'Mukallath Khady Attar 1/4'
+          WHEN sh.prize_name_snapshot = 'Prize 5' OR sh.prize_name_snapshot = 'prize 5' THEN 'Khayan Attar 1/4'
+          WHEN sh.prize_name_snapshot = 'Prize 6' OR sh.prize_name_snapshot = 'prize 6' THEN 'Rose Fresh Hair Mist 30ml'
+          WHEN sh.prize_name_snapshot = 'Prize 7' OR sh.prize_name_snapshot = 'prize 7' THEN 'Rashat Musk EDP Perfume'
+          WHEN sh.prize_name_snapshot = 'Prize 8' OR sh.prize_name_snapshot = 'prize 8' THEN 'Vaseline Powder Cream'
+          ELSE COALESCE(sh.prize_name_snapshot, 'Reward Prize')
+        END as prize_won,
         sp.color_code as prize_color,
         sh.review_date,
         sh.spin_date,
@@ -21,7 +41,7 @@ const getReports = async (req, res) => {
       FROM spin_history sh
       JOIN invoices i ON sh.invoice_id = i.id
       JOIN branches b ON sh.branch_id = b.id
-      JOIN spin_prizes sp ON sh.prize_id = sp.id
+      LEFT JOIN spin_prizes sp ON sh.prize_id = sp.id
       JOIN customers c ON sh.customer_id = c.id
       WHERE 1=1
     `;

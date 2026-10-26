@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { exportToExcel, exportToPDF, exportToCSV } from '../../services/exportUtils';
+import { resolvePrizeName } from '../../services/prizeUtils';
 import { FileBarChart, Filter, Search, RotateCcw, Download, Calendar, Receipt, Store, Gift, PieChart } from 'lucide-react';
 
 const Reports = () => {
@@ -83,7 +84,7 @@ const Reports = () => {
     const dataToExport = reports.map(r => ({
       'Invoice Number': r.invoice_number,
       'Branch': r.branch_name,
-      'Prize Won': r.prize_won,
+      'Prize Won': resolvePrizeName(r.prize_won),
       'Review Date': new Date(r.review_date).toLocaleString(),
       'Spin Date': new Date(r.spin_date).toLocaleString(),
       'Customer Name': r.customer_name,
@@ -97,7 +98,7 @@ const Reports = () => {
     const dataToExport = reports.map(r => ({
       'Invoice Number': r.invoice_number,
       'Branch': r.branch_name,
-      'Prize Won': r.prize_won,
+      'Prize Won': resolvePrizeName(r.prize_won),
       'Review Date': new Date(r.review_date).toLocaleString(),
       'Spin Date': new Date(r.spin_date).toLocaleString()
     }));
@@ -109,7 +110,7 @@ const Reports = () => {
     const rows = reports.map(r => [
       r.invoice_number,
       r.branch_name,
-      r.prize_won,
+      resolvePrizeName(r.prize_won),
       new Date(r.review_date).toLocaleString(),
       new Date(r.spin_date).toLocaleString()
     ]);
@@ -213,7 +214,7 @@ const Reports = () => {
                 className="w-full p-2 bg-slate-50 border border-amber-300/80 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 text-xs font-medium"
               >
                 <option value="">All Prizes</option>
-                {prizes.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                {prizes.map(p => <option key={p.id} value={p.id}>{resolvePrizeName(p.name, p.display_order)}</option>)}
               </select>
             </div>
 
@@ -270,7 +271,7 @@ const Reports = () => {
                   <tr key={r.spin_id} className="hover:bg-amber-50/40 transition-colors">
                     <td className="p-3.5 font-mono font-bold text-slate-900">{r.invoice_number}</td>
                     <td className="p-3.5 text-slate-700">{r.branch_name}</td>
-                    <td className="p-3.5 font-bold text-amber-800">{r.prize_won}</td>
+                    <td className="p-3.5 font-bold text-amber-800">{resolvePrizeName(r.prize_won)}</td>
                     <td className="p-3.5 font-mono text-slate-600">{new Date(r.review_date).toLocaleString()}</td>
                     <td className="p-3.5 font-mono text-slate-600">{new Date(r.spin_date).toLocaleString()}</td>
                   </tr>
@@ -297,7 +298,7 @@ const Reports = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {prizeDistribution.map((item, idx) => (
               <div key={idx} className="p-3 bg-amber-50/90 rounded-xl border border-amber-200 text-center shadow-xs">
-                <span className="text-[11px] font-bold text-slate-700 block truncate mb-1">{item.prize_name}</span>
+                <span className="text-[11px] font-bold text-slate-700 block truncate mb-1">{resolvePrizeName(item.prize_name)}</span>
                 <span className="text-2xl font-bold font-mono text-amber-800">{item.count}</span>
               </div>
             ))}

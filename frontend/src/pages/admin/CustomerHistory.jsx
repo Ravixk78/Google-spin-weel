@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { exportToExcel, exportToPDF, exportToCSV } from '../../services/exportUtils';
+import { resolvePrizeName } from '../../services/prizeUtils';
 import { Users, Search, ShieldAlert, Globe, MapPin, Receipt, Gift, Calendar, QrCode, Download } from 'lucide-react';
 
 const getTodayString = () => {
@@ -62,7 +63,7 @@ const CustomerHistory = () => {
       'Google Account ID': h.google_account_id,
       'Branch': h.branch_name,
       'Invoice Number': h.invoice_number,
-      'Prize Won': h.prize_won,
+      'Prize Won': resolvePrizeName(h.prize_won),
       'Review Date': new Date(h.review_date).toLocaleString(),
       'Spin Date': new Date(h.spin_date).toLocaleString(),
       'IP Address': h.ip_address || '127.0.0.1'
@@ -75,7 +76,7 @@ const CustomerHistory = () => {
       'Customer Name': h.customer_name,
       'Branch': h.branch_name,
       'Invoice Number': h.invoice_number,
-      'Prize Won': h.prize_won,
+      'Prize Won': resolvePrizeName(h.prize_won),
       'Spin Date': new Date(h.spin_date).toLocaleString()
     }));
     exportToCSV(dataToExport, 'Customer_Google_Review_History');
@@ -225,7 +226,7 @@ const CustomerHistory = () => {
                     <td className="p-3.5 text-slate-400 text-[10px]">{row.google_account_id}</td>
                     <td className="p-3.5 font-sans text-emerald-400">{row.branch_name}</td>
                     <td className="p-3.5 font-bold text-gold-300">{row.invoice_number}</td>
-                    <td className="p-3.5 font-sans font-bold text-white">{row.prize_won}</td>
+                    <td className="p-3.5 font-sans font-bold text-white">{resolvePrizeName(row.prize_won)}</td>
                     <td className="p-3.5 text-slate-400">{new Date(row.review_date).toLocaleString()}</td>
                     <td className="p-3.5 text-slate-400">{new Date(row.spin_date).toLocaleString()}</td>
                     <td className="p-3.5 text-slate-400 text-[10px]">{row.qr_code_used || 'N/A'}</td>

@@ -23,7 +23,29 @@ const productAssetMap = {
   8: product8Asset,
 };
 
+import { resolvePrizeName } from '../services/prizeUtils';
+
 const prizeTranslations = {
+  // 8 Real Wheel Products
+  'Lafirma Spray 300ml': 'بخاخ لافيرما 300 مل',
+  'Special Oudh Masala Incense': 'بخور عود مسالا خاص',
+  'Misk al Wardi Attar 1/4': 'عطر مسك الوردي ربع تولة',
+  'Mukallath Khady Attar 1/4': 'عطر مخلط خدي ربع تولة',
+  'Khayan Attar 1/4': 'عطر خيان ربع تولة',
+  'Rose Fresh Hair Mist 30ml': 'معطر شعر روز فريش 30 مل',
+  'Rashat Musk EDP Perfume': 'عطر رشات مسك',
+  'Vaseline Powder Cream': 'كريم فازلين بودرة',
+
+  // Generic fallback aliases
+  'Prize 1': 'بخاخ لافيرما 300 مل',
+  'Prize 2': 'بخور عود مسالا خاص',
+  'Prize 3': 'عطر مسك الوردي ربع تولة',
+  'Prize 4': 'عطر مخلط خدي ربع تولة',
+  'Prize 5': 'عطر خيان ربع تولة',
+  'Prize 6': 'معطر شعر روز فريش 30 مل',
+  'Prize 7': 'عطر رشات مسك',
+  'Prize 8': 'كريم فازلين بودرة',
+
   'Exclusive Oud Perfume 50ml': 'عطر عود فاخر 50مل',
   'Luxury Oud Wood Chip 25g': 'رقائق عود فاخر 25غ',
   'Royal Bakhoor Incense Box': 'صندوق بخور ملكي',
@@ -51,7 +73,8 @@ const WinModal = ({ isOpen, prize, ticket, onClose }) => {
 
   if (!isOpen || !prize) return null;
 
-  const prizeDisplayName = lang === 'ar' && prizeTranslations[prize.name] ? prizeTranslations[prize.name] : prize.name;
+  const resolvedName = resolvePrizeName(prize.name, prize.display_order);
+  const prizeDisplayName = lang === 'ar' && prizeTranslations[resolvedName] ? prizeTranslations[resolvedName] : resolvedName;
 
   const order = prize.display_order || prize.id || 1;
   const fallbackPhoto = productAssetMap[order] || productAssetMap[((order - 1) % 8) + 1] || product1Asset;

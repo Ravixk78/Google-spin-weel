@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { resolvePrizeName } from '../services/prizeUtils';
 import wheelLogoAsset from '../assets/wheel-logo.png';
 import prize1Asset from '../assets/prizes/prize_1.png';
 import prize2Asset from '../assets/prizes/prize_2.png';
@@ -22,6 +23,25 @@ const prizeAssetMap = {
 };
 
 const prizeTranslations = {
+  // 8 Real Wheel Products
+  'Lafirma Spray 300ml': 'بخاخ لافيرما 300 مل',
+  'Special Oudh Masala Incense': 'بخور عود مسالا خاص',
+  'Misk al Wardi Attar 1/4': 'عطر مسك الوردي ربع تولة',
+  'Mukallath Khady Attar 1/4': 'عطر مخلط خدي ربع تولة',
+  'Khayan Attar 1/4': 'عطر خيان ربع تولة',
+  'Rose Fresh Hair Mist 30ml': 'معطر شعر روز فريش 30 مل',
+  'Rashat Musk EDP Perfume': 'عطر رشات مسك',
+  'Vaseline Powder Cream': 'كريم فازلين بودرة',
+
+  // Generic fallback aliases
+  'Prize 1': 'بخاخ لافيرما 300 مل',
+  'Prize 2': 'بخور عود مسالا خاص',
+  'Prize 3': 'عطر مسك الوردي ربع تولة',
+  'Prize 4': 'عطر مخلط خدي ربع تولة',
+  'Prize 5': 'عطر خيان ربع تولة',
+  'Prize 6': 'معطر شعر روز فريش 30 مل',
+  'Prize 7': 'عطر رشات مسك',
+  'Prize 8': 'كريم فازلين بودرة',
   'Luxury Travel Set': 'مجموعة السفر الفاخرة',
   'Special Edition Kit': 'مجموعة الإصدار الخاص',
   'Majlis Al Oud Branch': 'فرع مجلس العود',
@@ -268,9 +288,10 @@ const SpinWheelCanvas = ({ prizes, winningIndex, isSpinning, onSpinComplete }) =
         ctx.restore(); // Restore wedge clip context
 
         // 3b. Draw Black Arc Banner Band with Curved White Text along foot (outer arc) of slice
-        const rawName = (lang === 'ar' && (prize.name_ar || prizeTranslations[prize.name]))
-          ? (prize.name_ar || prizeTranslations[prize.name])
-          : (prize.name || '');
+        const pResolved = resolvePrizeName(prize.name, prize.display_order || (i + 1));
+        const rawName = (lang === 'ar' && (prize.name_ar || prizeTranslations[pResolved] || prizeTranslations[prize.name]))
+          ? (prize.name_ar || prizeTranslations[pResolved] || prizeTranslations[prize.name])
+          : (pResolved || '');
 
         if (rawName) {
           ctx.save();
